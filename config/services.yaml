@@ -22,3 +22,89 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Service\WimsFileObjectCreator:
+        arguments:
+            $config:
+                directory_structure: '%kernel.project_dir%/../log/classes'
+                user: '%env(resolve:USER)%'
+                group: '%env(resolve:GROUP)%'
+                directory_right: 0o755
+                file_right: 0o644
+                structure_id:
+                    min: 1000000
+                    max: 9999999
+                    regex: '/[0-9]{7}/'
+                default_template_data:
+                    cas: &cas '%env(resolve:CAS)%'
+                    supervisor:
+                        first_name: '%env(resolve:SUPERVISOR_FIRST_NAME)%'
+                        last_name: '%env(resolve:SUPERVISOR_LAST_NAME)%'
+                        email: '%env(resolve:SUPERVISOR_EMAIL)%'
+                        password: '%env(resolve:SUPERVISOR_PASSWORD)%'
+                        agree_cgu: true
+                        agree_sup_cgu: true
+                        exists: true
+                    class:
+                        password: 'test'
+                        supervisor:
+                        groupement_name: 'Nom du groupement'
+                        etablissement_name: "Nom de l'établissement"
+                        location: ''
+                        geoloc: ''
+                        lang: 'fr'
+                        creation: 'now'
+                        expiration: '20240915'
+                        limit: 50
+                        top_score:
+                        super_class:
+                        type: 2
+                        level: ''
+                        parent:
+                        secure: 'all'
+                        type_name: 'group'
+                        cas_auth: *cas
+                        auth_idp: 'cas;'
+                        connections:
+                        bg_color: '#f6f6f6'
+                        bg_img: ''
+                        score_color: '#FFFFFF,#FF0000,#FF0000,#FF0000,#FFA500,#FFA500,#FFA500,#FFFF00,#FFFF00,#00FF00,#00FF00'
+                        act_color: '#000000,#CCCCFF,#99CCFF,#9999FF,#6666FF,#FFFFFF,#99CCDD,#AFB31E,#E6A493'
+                        css: '-theme-'
+                        logo: ''
+                        logo_side: ''
+                        ref_color: ''
+                        ref_menu_color: ''
+                        ref_button_color: ''
+                        ref_button_bg_color: ''
+                        ref_button_help_color: ''
+                        ref_button_help_bg_color: ''
+                        theme: 'standard'
+                        theme_icon: 'default'
+                        exo_log: 2
+                        creator: '127.0.0.1'
+                        defined: true
+                groupement_de_classes:
+                    directories:
+                        - 'cdt'
+                        - 'def'
+                        - 'doc'
+                        - 'exams'
+                        - 'freeworks'
+                        - 'freeworksdata'
+                        - 'livret'
+                        - 'noscore'
+                        - 'score'
+                        - 'seq'
+                        - 'sheets'
+                        - 'src'
+                        - 'tool'
+                        - '.users'
+                        - 'vote'
+                    files:
+                        - '.def'
+                        - 'Exindex'
+                        - 'Extitles'
+                        - 'supervisor'
+                        - '.userlist'
+                        - 'version'
