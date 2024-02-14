@@ -36,7 +36,7 @@ class Test3 extends Command
         $io = new SymfonyStyle($input, $output);
 
         $io->title('Création de la class :');
-        $this->wimsFileObjectCreator->createClassInGroupementDeClasses($data, $etablissementId, $uid);
+        $this->wimsFileObjectCreator->createClassInGroupingClasses($data, $data, $etablissementId, $uid);
         //$io->text($this->wimsFileObjectCreator->createNewGroupementDeClasses());
 
         return Command::SUCCESS;

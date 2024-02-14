@@ -4,12 +4,11 @@ namespace App\Command;
 use App\Service\WimsFileObjectCreator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Finder\Finder;
+use Symfony\Component\Yaml\Yaml;
 
 #[AsCommand('app:test', 'test des commandes')]
 class Test extends Command
@@ -22,39 +21,29 @@ class Test extends Command
 
     protected function configure(): void
     {
-        $this->addOption('etablissementName', null, InputOption::VALUE_REQUIRED,
+        $this->addOption('etabName', null, InputOption::VALUE_REQUIRED,
             "Nom de l'établissement");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $etablissementName = $input->getOption("etablissementName");
-        $data = ['class' => []];
+        $data = Yaml::parseFile('data.yaml');
 
-        if ($etablissementName) {
-            $data['class']['etablissement_name'] = $etablissementName;
-        }
+        // Récupérer les données de test
+        $users = $data['users'];
 
         $io = new SymfonyStyle($input, $output);
-        $directories = $this->wimsFileObjectCreator->listAllStructureWithoutSample();
 
-        $io->title('Les résultats');
+        $etabName = $input->getOption("etabName");
+        $dataGroupingClasses = [];
 
-        foreach ($directories as $directory) {
-            $io->text($directory);
-        }
-
-        $io->title('Des nouveaux id');
-
-        for ($i = 0; $i < 5; $i++) {
-            $io->text($this->wimsFileObjectCreator->generateStructureId());
+        if ($etabName) {
+            $dataGroupingClasses['etablissement_name'] = $etabName;
         }
 
         $io->title('Création du groupement de classes :');
-        $io->text($this->wimsFileObjectCreator->createNewGroupementDeClasses($data));
-        /*$io->text($this->wimsFileObjectCreator->createNewGroupementDeClasses([
-            'supervisor' => ['first_name' => "toto"]
-        ]));*/
+        $io->text($this->wimsFileObjectCreator->createNewGroupingClasses(
+            [], $dataGroupingClasses));
 
         return Command::SUCCESS;
     }

@@ -29,21 +29,59 @@ services:
                 directory_structure: '%env(resolve:DIRECTORY_STRUCTURE)%'
                 directory_right: 0o775
                 file_right: 0o664
-                structure_id:
+                user_id:
+                    regex: /^[a-z0-9]{8}$/
+                grouping_classes_id:
                     min: 1000000
                     max: 9999999
-                    regex: '/[0-9]{7}/'
+                    regex: /^[1-9]\d{6}$/
+                structure:
+                    sub_folders:
+                        - 'cdt'
+                        - 'def'
+                        - 'doc'
+                        - 'exams'
+                        - 'freeworks'
+                        - 'freeworksdata'
+                        - 'livret'
+                        - 'noscore'
+                        - 'score'
+                        - 'seq'
+                        - 'sheets'
+                        - 'src'
+                        - 'tool'
+                        - '.users'
+                        - 'vote'
+                    files:
+                        - '.def'
+                        - 'Exindex'
+                        - 'Extitles'
+                        - 'supervisor'
+                        - '.userlist'
+                        - 'version'
                 default_template_data:
                     cas: &cas '%env(resolve:CAS)%'
+                    user: &user
+                        uid: ''
+                        first_name: ''
+                        last_name: ''
+                        email: ''
+                        password: ''
+                        agree_cgu: true
+                        agree_sup_cgu: true
+                        exists: true
+                        supervisable: true
+                        forcechpwd: false
+                        creator: '127.0.0.1'
                     supervisor:
+                        <<: *user
                         first_name: '%env(resolve:SUPERVISOR_FIRST_NAME)%'
                         last_name: '%env(resolve:SUPERVISOR_LAST_NAME)%'
                         email: '%env(resolve:SUPERVISOR_EMAIL)%'
                         password: '%env(resolve:SUPERVISOR_PASSWORD)%'
-                        agree_cgu: true
-                        agree_sup_cgu: true
-                        exists: true
-                    class:
+                    teacher:
+                        <<: *user
+                    structure: &structure
                         password: 'test'
                         supervisor:
                         groupement_name: 'Nom du groupement'
@@ -56,7 +94,7 @@ services:
                         limit: 50
                         top_score:
                         super_class:
-                        type: 2
+                        type:
                         level: ''
                         parent:
                         secure: 'all'
@@ -82,41 +120,14 @@ services:
                         exo_log: 2
                         creator: '127.0.0.1'
                         defined: true
-                    teacher:
-                        uid: '%env(resolve:TEACHER_UID)%'
-                        first_name: '%env(resolve:TEACHER_FIRST_NAME)%'
-                        last_name: '%env(resolve:TEACHER_LAST_NAME)%'
-                        email: '%env(resolve:TEACHER_EMAIL)%'
-                        exists: true
-                        supervisable: true
-                        agreecgu: true
-                        password: '%env(resolve:TEACHER_PASSWORD)%'
-                        forcechpwd: true
-                        creator: '127.0.0.1'
-                groupement_de_classes:
-                    directories:
-                        - 'cdt'
-                        - 'def'
-                        - 'doc'
-                        - 'exams'
-                        - 'freeworks'
-                        - 'freeworksdata'
-                        - 'livret'
-                        - 'noscore'
-                        - 'score'
-                        - 'seq'
-                        - 'sheets'
-                        - 'src'
-                        - 'tool'
-                        - '.users'
-                        - 'vote'
-                    files:
-                        - '.def'
-                        - 'Exindex'
-                        - 'Extitles'
-                        - 'supervisor'
-                        - '.userlist'
-                        - 'version'
+                        version: 6
+                    class:
+                        <<: *structure
+                        type: 1
+                    grouping_classes:
+                        <<: *structure
+                        type: 2
+                # Revoir cette section pour la supprimer
                 teacher:
                     files_append:
                         - '.log'
@@ -125,3 +136,6 @@ services:
                         - '.userlist_external'
                     files_create:
                         - '.users/{uid}'
+                    
+
+                

@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Yaml\Yaml;
 
 #[AsCommand('app:test2', 'test des commandes')]
 class Test2 extends Command
@@ -22,19 +23,30 @@ class Test2 extends Command
     protected function configure(): void
     {
         $this->addArgument('etablissementId', InputArgument::REQUIRED,
-            "Nom de l'établissement");
+            "Id de l'établissement");
+        $this->addArgument('uid', InputArgument::REQUIRED,
+            "User id");
 
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $data = Yaml::parseFile('data.yaml');
         $etablissementId = $input->getArgument("etablissementId");
-        $data = [];
+        $uid = $input->getArgument("uid");
+        $dataTeacher = [];
+
+        if ($uid !== null) {
+            $users = $data['users'];
+            $dataTeacher = $users[$uid];
+        }
+
+        $dataGroupingClasses = [];
         $io = new SymfonyStyle($input, $output);
 
         $io->title('Inscription du prof :');
-        $this->wimsFileObjectCreator->createTeacherInGroupementDeClasses($data, $etablissementId);
-        //$io->text($this->wimsFileObjectCreator->createNewGroupementDeClasses());
+        $this->wimsFileObjectCreator->createTeacherInGroupingClasses(
+            $dataTeacher, $dataGroupingClasses, $etablissementId);
 
         return Command::SUCCESS;
     }

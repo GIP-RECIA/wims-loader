@@ -1,7 +1,9 @@
 <?php
 namespace App\Service;
 
-use App\Exception\InvalidGroupementDeClassesException;
+use App\Exception\BuildIndexException;
+use App\Exception\DirectoryAlreadyExistException;
+use App\Exception\InvalidGroupingClassesException;
 use App\Exception\InvalidUserException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
@@ -10,28 +12,10 @@ use Twig\Environment;
 
 class WimsFileObjectCreator
 {
-    // Le format d'un identifiant de groupement de classes
-    private const REGEX_GROUPEMENT_DE_CLASSES_ID = '/^[1-9]\d{6}$/';
-
-    // Le format d'un identifiant d'un user id'
-    private const REGEX_USER_ID = '/^[a-z0-9]{8}$/';
-
-    // La liste de tous les sous-répertoires d'un groupement de classes ou d'une
-    //  classe
-    private const STRUCTURE_SUB_FOLDERS = [
-        'cdt', 'def', 'doc', 'exams', 'freeworks', 'freeworksdata', 'livret',
-        'noscore', 'score', 'seq', 'sheets', 'src', 'tool', '.users', 'vote'
-    ];
-    // La liste de tous les fichiers d'un groupement de classes ou d'une classe
-    private const STRUCTURE_FILES = [
-        '.def', 'Exindex', 'Extitles', 'supervisor', '.userlist', 'version'
-    ];
-    //private const 
 
     public function __construct(
         private Environment $twig,
         private array $config,
-        private Finder      $finder     = new Finder(),
         private Filesystem  $filesystem = new Filesystem()
     ) {
     }
@@ -47,8 +31,8 @@ class WimsFileObjectCreator
         $directories = $this->listAllStructureWithoutSample();
 
         do {
-            $id = strval(rand($this->config['structure_id']['min'],
-            $this->config['structure_id']['max']));
+            $id = strval(rand($this->config['grouping_classes_id']['min'],
+            $this->config['grouping_classes_id']['max']));
         } while (in_array($id, $directories));
 
         return $id;
@@ -61,8 +45,9 @@ class WimsFileObjectCreator
      */
     public function listAllStructureWithoutSample(): array
     {
-        $result = $this->finder->in($this->config['directory_structure'])
-            ->directories()->name($this->config['structure_id']['regex']);
+        $finder = new Finder();
+        $result = $finder->in($this->config['directory_structure'])
+            ->directories()->name($this->config['grouping_classes_id']['regex']);
         $directories = [];
 
         foreach ($result as $directory) {
@@ -75,47 +60,38 @@ class WimsFileObjectCreator
     /**
      * Permet de créer un nouveau groupement de classes
      *
-     * @param array $data Les données pour l'insertion, si non fournis on
-     *  prends les valeurs par défaut du fichier de config
+     * @param array $dataSupervisor Les données du superviseur à insérer
+     * @param array $dataGroupingClasses Les données du groupement de classes à insérer
      * @param string|null $id L'identifiant du groupement de classes. S'il n'est
      *  pas fournit, un nouveau sera généré automatiquement.
      *
      * @return string L'identifiant du groupement de classes créé
      */
-    public function createNewGroupementDeClasses(array $data = [], string $id = null): string
+    public function createNewGroupingClasses(
+        array $dataSupervisor = [], array $dataGroupingClasses = [],
+        string $id = null): string
     {
-        $conf = $this->config['groupement_de_classes'];
-        $defaultTemplateData = $this->config['default_template_data'];
-        $templateData = array_replace_recursive($defaultTemplateData, $data);
+        $dataSupervisor = array_replace(
+            $this->config['default_template_data']['supervisor'],
+            $dataSupervisor
+        );
+        $dataGroupingClasses = array_replace(
+            $this->config['default_template_data']['grouping_classes'],
+            $dataGroupingClasses
+        );
 
         if ($id === null) {
             $id = $this->generateStructureId();
         }
 
-        $racine = $this->config['directory_structure'].'/'.$id;
-        $this->filesystem->mkdir($racine, $this->config['directory_right']);
+        $folder = $racine = $this->config['directory_structure'] . '/' . $id;
+        $this->createStructure($folder, $dataSupervisor, $dataGroupingClasses);
 
-        foreach ($conf['directories'] as $directory) {
-            $this->filesystem->mkdir($racine.'/'.$directory,
-                $this->config['directory_right']);
+        $output = exec($this->config['directory_structure'].'/.build-index');
+
+        if ($output === false) {
+            throw new BuildIndexException();
         }
-
-        foreach ($conf['files'] as $fileName) {
-            $file = $racine.'/'.$fileName;
-            $template = $this->twig->load('groupementDeClasses/'.$fileName.'.twig');
-            $content = $template->render($templateData);
-            $contentWindows1252 = iconv('UTF-8', 'WINDOWS-1252', $content);
-            file_put_contents($file, $contentWindows1252);
-            $this->filesystem->chmod($file, 0644);
-        }
-
-        $output = shell_exec($this->config['directory_structure'].'/.build-index');
-
-        /*if ($output !== null) {
-            echo "Commande exécutée avec succès. Sortie : $output";
-        } else {
-            echo "Erreur lors de l'exécution de la commande.";
-        }*/
 
         return $id;
     }
@@ -123,20 +99,42 @@ class WimsFileObjectCreator
     /**
      * Permet de créer un prof dans un groupement de class
      *
-     * @param array $data Les données pour l'insertion, si non fournis on
-     *  prends les valeurs par défaut du fichier de config
+     * @param array $dataTeacher Les données du professeur pour l'insertion
+     * @param array $dataGroupingClasses Les données du groupement de classes
+     *  pour l'insertion
      * @param string $id L'identifiant du groupement de classes dans lequel
      *  créer le prof
      */
-    public function createTeacherInGroupementDeClasses(array $data = [], string $id)
+    public function createTeacherInGroupingClasses(
+        array $dataTeacher, array $dataGroupingClasses, string $id)
     {
-        // TODO: Contrôler l'existence du groupement de class
-        // TODO: avant tout traitement vérifier l'existence des fichiers et de l'utilisateur
-        //  Si utilisateur déjà présent déclencher une exception
+        if (!$this->isGroupingClassesExist($id)) {
+            throw new InvalidGroupingClassesException(
+                "Le groupement de classes avec l'id '$id' n'existe pas"
+            );
+        }
+
+        $dataTeacher = array_replace(
+            $this->config['default_template_data']['supervisor'],
+            $dataTeacher
+        );
+        $dataGroupingClasses = array_replace(
+            $this->config['default_template_data']['grouping_classes'],
+            $dataGroupingClasses
+        );
+        $uid = $dataTeacher['uid'];
+
+        if ($this->isTeacherRegisteredInGroupingClasses($id, $uid)) {
+            throw new InvalidUserException(
+                "Le professeur '$uid' est déjà présent dans le groupement de " .
+                "classes '$id'"
+            );
+        }
+
+        // TODO: reprendre la suite de cette fonction
         $conf = $this->config['teacher'];
-        $defaultTemplateData = $this->config['default_template_data'];
-        $templateData = array_replace_recursive($defaultTemplateData, $data);
         $racine = $this->config['directory_structure'].'/'.$id;
+        $templateData = ['teacher' => $dataTeacher];
 
         if (!$this->filesystem->exists($racine)) {
             throw new DirectoryNotFoundException($racine);
@@ -148,7 +146,7 @@ class WimsFileObjectCreator
             $content = $template->render($templateData);
             $contentWindows1252 = iconv('UTF-8', 'WINDOWS-1252', $content);
             file_put_contents($file, $contentWindows1252, FILE_APPEND);
-            $this->filesystem->chmod($file, 0644);
+            $this->filesystem->chmod($file, $this->config['file_right']);
         }
 
         foreach ($conf['files_create'] as $fileName) {
@@ -158,28 +156,50 @@ class WimsFileObjectCreator
             $contentWindows1252 = iconv('UTF-8', 'WINDOWS-1252', $content);
             $file = str_replace("{uid}", $templateData['teacher']['uid'], $file);
             file_put_contents($file, $contentWindows1252, FILE_APPEND);
-            $this->filesystem->chmod($file, 0644);
+            $this->filesystem->chmod($file, $this->config['file_right']);
         }
-
-        //$output = shell_exec($this->config['directory_structure'].'/.build-index');
-
-        /*if ($output !== null) {
-            echo "Commande exécutée avec succès. Sortie : $output";
-        } else {
-            echo "Erreur lors de l'exécution de la commande.";
-        }*/
     }
 
-    public function createClassInGroupementDeClasses(array $data = [], string $id, string $uid)
+    /**
+     * Créé une nouvelle classe dans le groupement de classes
+     *
+     * @param array $dataTeacher Les données du professeur à insérer
+     * @param array $dataClass Les données de la classe à insérer
+     * @param string $id L'identifiant du groupement de classes
+     * @param string $uid L'identifiant du superviseur (professeur)
+     * @return void
+     */
+    public function createClassInGroupingClasses(
+        array $dataTeacher, array $dataClass, string $id, string $uid): void
     {
-        if (!$this->isTeacherRegisteredInGroupementDeClasses($id, $uid)) {
+        // Contrôles sur le groupement de classes
+        if (!$this->isGroupingClassesExist($id)) {
+            throw new InvalidGroupingClassesException(
+                "Le groupement de classes '$id' n'existe pas"
+            );
+        }
+
+        if (!$this->isTeacherRegisteredInGroupingClasses($id, $uid)) {
             throw new InvalidUserException(
                 "Le professeur '$uid' est absent de ce groupement de classes"
             );
         }
 
+        $dataTeacher = array_replace(
+            $this->config['default_template_data']['teacher'],
+            $dataTeacher
+        );
+        $dataClass = array_replace(
+            $this->config['default_template_data']['class'],
+            $dataClass
+        );
         $idClass = $this->findFirstAvailableIdForClass($id);
+        $folder = $racine = $this->config['directory_structure'] . '/' . $id
+            . '/' . $idClass;
 
+        $this->createStructure($folder, $dataTeacher, $dataClass);
+
+        // TODO: ajouter la modif du fichier id/.users/uid a la ligne user_supervise
     }
 
     /**
@@ -188,15 +208,15 @@ class WimsFileObjectCreator
      * @param string $id L'identifiant du groupement de classes
      * @return boolean true s'il existe, false sinon
      *
-     * @throws InvalidGroupementDeClassesException Si l'identifiant du
+     * @throws InvalidGroupingClassesException Si l'identifiant du
      *  groupement de classes est mal formé ou si la structure du groupement
      *  de classes est invalide
      */
-    private function isGroupementDeClassesExist(string $id): bool
+    private function isGroupingClassesExist(string $id): bool
     {
         // Vérification de la structure de l'id
-        if (!preg_match($this::REGEX_GROUPEMENT_DE_CLASSES_ID, $id)) {
-            throw new InvalidGroupementDeClassesException(
+        if (!preg_match($this->config['grouping_classes_id']['regex'], $id)) {
+            throw new InvalidGroupingClassesException(
                 "Le format de l'id du groupement de classes suivant : '$id' " .
                 "est invalide, il devrait être constitué de 7 chiffres"
             );
@@ -210,43 +230,43 @@ class WimsFileObjectCreator
         }
 
         if (!is_dir($folder)) {
-            throw new InvalidGroupementDeClassesException(
+            throw new InvalidGroupingClassesException(
                 "'$folder' n'est pas un dossier de groupement de classes " .
                 "mais un fichier"
             );
         }
 
         // Vérification des sous répertoires du groupement de classes
-        foreach ($this::STRUCTURE_SUB_FOLDERS as $subFolder) {
+        foreach ($this->config['structure']['sub_folders'] as $subFolder) {
             $subFolder = $folder . '/' . $subFolder;
 
             if (!$this->filesystem->exists($subFolder)) {
-                throw new InvalidGroupementDeClassesException(
+                throw new InvalidGroupingClassesException(
                     "Le sous dossier '$subFolder' pour le groupement de " .
                     "classes '$id' n'existe pas"
                 );
             }
 
             if (!is_dir($subFolder)) {
-                throw new InvalidGroupementDeClassesException(
+                throw new InvalidGroupingClassesException(
                     "'$subFolder' devrait être un dossier mais est un fichier"
                 );
             }
         }
 
         // Vérification des fichiers du groupement de classes
-        foreach ($this::STRUCTURE_FILES as $file) {
+        foreach ($this->config['structure']['files'] as $file) {
             $file = $folder . '/' . $file;
 
             if (!$this->filesystem->exists($file)) {
-                throw new InvalidGroupementDeClassesException(
+                throw new InvalidGroupingClassesException(
                     "Le fichier '$file' pour le groupement de " .
                     "classes '$id' n'existe pas"
                 );
             }
 
             if (!is_file($file)) {
-                throw new InvalidGroupementDeClassesException(
+                throw new InvalidGroupingClassesException(
                     "'$file' devrait être un fichier mais est un dossier"
                 );
             }
@@ -263,22 +283,15 @@ class WimsFileObjectCreator
      * @param string $uid L'identifiant de du professeur
      * @return boolean true s'il existe, false sinon
      *
-     * @throws InvalidGroupementDeClassesException S'il y'a un soucis avec le
+     * @throws InvalidGroupingClassesException S'il y'a un soucis avec le
      *  groupement de classes
      */
-    private function isTeacherRegisteredInGroupementDeClasses(string $id, string $uid): bool
+    private function isTeacherRegisteredInGroupingClasses(string $id, string $uid): bool
     {
-        // Contrôles sur le groupement de classes
-        if (!$this->isGroupementDeClassesExist($id)) {
-            throw new InvalidGroupementDeClassesException(
-                "Le groupement de classes '$id' n'existe pas"
-            );
-        }
-
         // Vérification de la structure de l'uid
-        if (!preg_match($this::REGEX_USER_ID, $uid)) {
+        if (!preg_match($this->config['user_id']['regex'], $uid)) {
             throw new InvalidUserException(
-                "Le format de l'id du user suivant : '$id' est invalide"
+                "Le format de l'id du user suivant : '$uid' est invalide"
             );
         }
 
@@ -326,5 +339,45 @@ class WimsFileObjectCreator
         }
         
         return strval($idClass);
+    }
+
+    /**
+     * Permet de créer une structure de type groupement de classes ou classe
+     *
+     * @param string $folder        Le répertoire de création de la structure
+     * @param array $dataSupervisor Les données du superviseur
+     * @param array $dataStructure  Les données de la structure
+     * @return void
+     */
+    private function createStructure(
+        string $folder, array $dataSupervisor, array $dataStructure): void
+    {
+        $conf = $this->config['structure'];
+        $data = [
+            'supervisor' => $dataSupervisor,
+            'structure' => $dataStructure
+        ];
+        
+        if ($this->filesystem->exists($folder)) {
+            throw new DirectoryAlreadyExistException(
+                "Le répertoire de structure '$folder' existe déjà"
+            );
+        }
+
+        $this->filesystem->mkdir($folder, $this->config['directory_right']);
+
+        foreach ($conf['sub_folders'] as $subFolder) {
+            $this->filesystem->mkdir($folder.'/'.$subFolder,
+                $this->config['directory_right']);
+        }
+
+        foreach ($conf['files'] as $fileName) {
+            $file = $folder.'/'.$fileName;
+            $template = $this->twig->load('structure/'.$fileName.'.twig');
+            $content = $template->render($data);
+            $contentWindows1252 = iconv('UTF-8', 'WINDOWS-1252', $content);
+            file_put_contents($file, $contentWindows1252);
+            $this->filesystem->chmod($file, $this->config['file_right']);
+        }
     }
 }
