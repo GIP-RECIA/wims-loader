@@ -4,7 +4,9 @@ namespace App\Command;
 use App\Service\WimsFileObjectCreator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
@@ -20,11 +22,19 @@ class Test extends Command
 
     protected function configure(): void
     {
-
+        $this->addOption('etablissementName', null, InputOption::VALUE_REQUIRED,
+            "Nom de l'établissement");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $etablissementName = $input->getOption("etablissementName");
+        $data = ['class' => []];
+
+        if ($etablissementName) {
+            $data['class']['etablissement_name'] = $etablissementName;
+        }
+
         $io = new SymfonyStyle($input, $output);
         $directories = $this->wimsFileObjectCreator->listAllStructureWithoutSample();
 
@@ -41,7 +51,10 @@ class Test extends Command
         }
 
         $io->title('Création du groupement de classes :');
-        $io->text($this->wimsFileObjectCreator->createNewGroupementDeClasses());
+        $io->text($this->wimsFileObjectCreator->createNewGroupementDeClasses($data));
+        /*$io->text($this->wimsFileObjectCreator->createNewGroupementDeClasses([
+            'supervisor' => ['first_name' => "toto"]
+        ]));*/
 
         return Command::SUCCESS;
     }

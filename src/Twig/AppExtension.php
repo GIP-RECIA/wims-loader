@@ -12,6 +12,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('pass_crypt', [$this, 'passCrypt']),
             new TwigFilter('bool', [$this, 'bool']),
             new TwigFilter('wims_date', [$this, 'wimsDate']),
+            new TwigFilter('wims_log_date_time', [$this, 'wimsLogDateTime']),
         ];
     }
 
@@ -52,6 +53,25 @@ class AppExtension extends AbstractExtension
 
         if ($date instanceof \DateTime) {
             return $date->format('Ymd');
+        }
+
+        return $date;
+    }
+
+    /**
+     * Converti une date time au format log wims
+     * 
+     * @param string|\DateTime $date
+     * @return string La date time sous forme de string
+     */
+    public function wimsLogDateTime($date): string
+    {
+        if ($date === 'now') {
+            return date('Ymd.H.i.s');
+        }
+
+        if ($date instanceof \DateTime) {
+            return $date->format('Ymd.H.i.s');
         }
 
         return $date;
