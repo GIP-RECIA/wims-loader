@@ -26,7 +26,6 @@ class Test2 extends Command
             "Id de l'établissement");
         $this->addArgument('uid', InputArgument::REQUIRED,
             "User id");
-
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

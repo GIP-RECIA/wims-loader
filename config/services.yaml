@@ -84,8 +84,8 @@ services:
                     structure: &structure
                         password: 'test'
                         supervisor:
-                        groupement_name: 'Nom du groupement'
-                        etablissement_name: "Nom de l'établissement"
+                        description: 'Nom de la structure'
+                        institution_name: "Nom de l'institution"
                         location: ''
                         geoloc: ''
                         lang: 'fr'
@@ -98,7 +98,7 @@ services:
                         level: ''
                         parent:
                         secure: 'all'
-                        type_name: 'group'
+                        type_name: ''
                         cas_auth: *cas
                         auth_idp: 'cas;'
                         connections:
@@ -123,10 +123,16 @@ services:
                         version: 6
                     class:
                         <<: *structure
+                        description: 'Nom de la class'
+                        institution_name: "Nom du groupement"
                         type: 1
+                        type_name: 'class'
                     grouping_classes:
                         <<: *structure
+                        description: 'Nom du groupement'
+                        institution_name: "Nom de l'établissement"
                         type: 2
+                        type_name: 'group'
                 # Revoir cette section pour la supprimer
                 teacher:
                     files_append:

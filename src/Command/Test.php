@@ -38,7 +38,7 @@ class Test extends Command
         $dataGroupingClasses = [];
 
         if ($etabName) {
-            $dataGroupingClasses['etablissement_name'] = $etabName;
+            $dataGroupingClasses['institution_name'] = $etabName;
         }
 
         $io->title('Création du groupement de classes :');

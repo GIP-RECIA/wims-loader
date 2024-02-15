@@ -3,22 +3,22 @@ users:
     f2060rgs:
         uid: 'f2060rgs'
         first_name: 'Alain'
-        last_name: 'Loire'
+        last_name: 'Loireé'
         email: 'alain.loire@mon-e-college.loiret.fr'
     f2060rgt:
         uid: 'f2060rgt'
         first_name: 'Laure'
-        last_name: 'Allier'
+        last_name: 'Allieré'
         email: 'laure.allier@mon-e-college.loiret.fr'
     f2060rgu:
         uid: 'f2060rgu'
         first_name: 'Arnaud'
-        last_name: 'Seine'
+        last_name: 'Seineé'
         email: 'arnaud.seine@mon-e-college.loiret.fr'
     f2060rgv:
         uid: 'f2060rgv'
         first_name: 'Damien'
-        last_name: 'Indre'
+        last_name: 'Indreé'
         email: 'damien.indre@mon-e-college.loiret.fr'
     f2060rgw:
         uid: 'f2060rgw'

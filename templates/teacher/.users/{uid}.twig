@@ -4,6 +4,6 @@
 !set user_exists={{ teacher.exists|bool }}
 !set user_supervisable={{ teacher.supervisable|bool }}
 !set user_external_auth={{ teacher.uid }}
-!set user_agreecgu={{ teacher.agreecgu|bool }}
+!set user_agreecgu={{ teacher.agree_cgu|bool }}
 !set user_password=*{{ teacher.password|pass_crypt }}
 !set user_forcechpwd={{ teacher.forcechpwd|bool }}

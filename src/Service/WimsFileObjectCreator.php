@@ -5,6 +5,7 @@ use App\Exception\BuildIndexException;
 use App\Exception\DirectoryAlreadyExistException;
 use App\Exception\InvalidGroupingClassesException;
 use App\Exception\InvalidUserException;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
@@ -185,6 +186,10 @@ class WimsFileObjectCreator
             );
         }
 
+        $idClass = $this->findFirstAvailableIdForClass($id);
+        $folderGroupingClasses = $this->config['directory_structure'] . '/' . $id;
+        $folderClass = $folderGroupingClasses . '/' . $idClass;
+
         $dataTeacher = array_replace(
             $this->config['default_template_data']['teacher'],
             $dataTeacher
@@ -193,13 +198,47 @@ class WimsFileObjectCreator
             $this->config['default_template_data']['class'],
             $dataClass
         );
-        $idClass = $this->findFirstAvailableIdForClass($id);
-        $folder = $racine = $this->config['directory_structure'] . '/' . $id
-            . '/' . $idClass;
+        $dataClass['super_class'] = $dataClass['parent'] = $id;
+        $dataClass['id_class'] = $idClass;
+        $classInstitution = $this->getValueOfLine(
+            $folderGroupingClasses . '/.def', '!set class_institution');
+        $dataClass['institution_name'] = $classInstitution;
 
-        $this->createStructure($folder, $dataTeacher, $dataClass);
+        $this->createStructure($folderClass, $dataTeacher, $dataClass);
 
-        // TODO: ajouter la modif du fichier id/.users/uid a la ligne user_supervise
+        $subClassFile = $folderGroupingClasses . '/.subclasses';
+
+        if (!$this->filesystem->exists($subClassFile)) {
+            $this->filesystem->touch($subClassFile);
+            $this->filesystem->chmod($subClassFile, $this->config['file_right']);
+        }
+
+        $data = ['structure' => $dataClass, 'supervisor' => $dataTeacher];
+        $template = $this->twig->load('other/.subclasses.twig');
+        $content = $template->render($data);
+        $contentWindows1252 = iconv('UTF-8', 'WINDOWS-1252', $content);
+        $this->filesystem->appendToFile($subClassFile, $contentWindows1252);
+        $fileUsersUid = $folderGroupingClasses . '/.users' . '/' . $uid;
+        $userSupervise = $this->getValueOfLine($fileUsersUid, '!set user_supervise');
+
+            echo '--'.$userSupervise.'--'."\n";
+
+        if ($userSupervise === null) {
+            // Ici on ajoute nos deux lignes qui n'existent pas
+            $template = $this->twig->load('other/uid-sup.twig');
+            $content = $template->render([
+                'supervise' => $id . '/' . $idClass,
+                'agree_sup_cgu' => true
+            ]);
+            $contentWindows1252 = iconv('UTF-8', 'WINDOWS-1252', $content);
+            $this->filesystem->appendToFile($fileUsersUid, $contentWindows1252);
+        } else {
+            // Ici on modifie seulement la ligne en question
+            $content = iconv('WINDOWS-1252', 'UTF-8', file_get_contents($fileUsersUid));
+            $content = preg_replace('/^(!set user_supervise=.*)$/m', '$1,' . $id . '/' . $idClass, $content);
+            $contentWindows1252 = iconv('UTF-8', 'WINDOWS-1252', $content);
+            file_put_contents($fileUsersUid, $contentWindows1252);
+        }
     }
 
     /**
@@ -299,15 +338,17 @@ class WimsFileObjectCreator
 
         // On commence par vérifier le fichier .teacherlist
         $regex = '/^[^,]*,[^,]*,' . $uid . '$/m';
+        $file = $folder . "/.teacherlist";
 
-        if (!preg_match($regex, file_get_contents($folder . "/.teacherlist"))) {
+        if (!$this->filesystem->exists($file) || !preg_match($regex, file_get_contents($file))) {
             return false;
         }
         
         // Puis le fichier .teacherlist_external
         $regex = '/^' . $uid . ':' . $uid . '$/m';
+        $file = $folder . "/.teacherlist_external";
 
-        if (!preg_match($regex, file_get_contents($folder . "/.teacherlist_external"))) {
+        if (!$this->filesystem->exists($file) || !preg_match($regex, file_get_contents($file))) {
             return false;
         }
 
@@ -378,6 +419,34 @@ class WimsFileObjectCreator
             $contentWindows1252 = iconv('UTF-8', 'WINDOWS-1252', $content);
             file_put_contents($file, $contentWindows1252);
             $this->filesystem->chmod($file, $this->config['file_right']);
+        }
+    }
+
+    /**
+     * Permet de récupérer la valeur d'une clé dans un fichier
+     *
+     * @param string $file Le fichier
+     * @param string $key La clé
+     * @return string La valeur récupéré ou null si aucun résultat
+     */
+    private function getValueOfLine(string $file, string $key): string|null
+    {
+        echo "$file\n";
+        echo "$key\n";
+        // Vérifier si le fichier existe
+        if ($this->filesystem->exists($file)) {
+            // Lire le contenu du fichier en utilisant le bon encodage
+            $contenu = iconv('WINDOWS-1252', 'UTF-8', file_get_contents($file));
+            echo $contenu."\n";
+
+            // Rechercher la ligne correspondante en utilisant une expression régulière
+            if (preg_match('/^'.$key.'=(.*)$/m', $contenu, $matches)) {
+                return $matches[1];
+            }
+
+            return null;
+        } else {
+            throw new FileNotFoundException("Le fichier '$file' n'existe pas");
         }
     }
 }
