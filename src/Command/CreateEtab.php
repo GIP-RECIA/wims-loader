@@ -10,8 +10,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
 
-#[AsCommand('app:test', 'test des commandes')]
-class Test extends Command
+#[AsCommand('app:create-etab', 'création d\'établissement')]
+class CreateEtab extends Command
 {
     public function __construct(
         private WimsFileObjectCreator $wimsFileObjectCreator,
@@ -30,7 +30,7 @@ class Test extends Command
         $data = Yaml::parseFile('data.yaml');
 
         // Récupérer les données de test
-        $users = $data['users'];
+        //$users = $data['users'];
 
         $io = new SymfonyStyle($input, $output);
 

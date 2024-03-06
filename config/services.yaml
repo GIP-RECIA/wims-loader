@@ -35,6 +35,10 @@ services:
                     min: 1000000
                     max: 9999999
                     regex: /^[1-9]\d{6}$/
+                class_id:
+                    regex: /^[1-9][0-9]*$/
+                class_name:
+                    regex: /^.{2,}$/
                 structure:
                     sub_folders:
                         - 'cdt'
@@ -62,6 +66,9 @@ services:
                 default_template_data:
                     cas: &cas '%env(resolve:CAS)%'
                     user: &user
+                        is_teacher: false
+                        is_supervisor: false
+                        is_student: false
                         uid: ''
                         first_name: ''
                         last_name: ''
@@ -75,12 +82,19 @@ services:
                         creator: '127.0.0.1'
                     supervisor:
                         <<: *user
+                        is_supervisor: true
                         first_name: '%env(resolve:SUPERVISOR_FIRST_NAME)%'
                         last_name: '%env(resolve:SUPERVISOR_LAST_NAME)%'
                         email: '%env(resolve:SUPERVISOR_EMAIL)%'
                         password: '%env(resolve:SUPERVISOR_PASSWORD)%'
                     teacher:
                         <<: *user
+                        is_teacher: true
+                    student:
+                        <<: *user
+                        is_student: true
+                        agree_cgu: false
+                        supervisable: false
                     structure: &structure
                         password: 'test'
                         supervisor:
@@ -142,6 +156,17 @@ services:
                         - '.userlist_external'
                     files_create:
                         - '.users/{uid}'
+                grouping_classes_user:
+                    files_append:
+                        - '.userlist'
+                        - '.userlist_external'
+                    files_create:
+                        - '.users/{uid}'
+                class_user:
+                    files_append:
+                        - '.log'
+                        - '.userlist'
+                        - '.userlist_external'
                     
 
                 

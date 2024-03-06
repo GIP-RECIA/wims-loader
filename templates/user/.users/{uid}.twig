@@ -1,0 +1,12 @@
+!set user_lastname={{ user.last_name }}
+!set user_firstname={{ user.first_name }}
+!set user_email={{ user.email }}
+!set user_exists={{ user.exists|bool }}
+!set user_password=*{{ user.password|pass_crypt }}
+!set user_agreecgu={{ user.agree_cgu|bool }}
+{% if not user.is_supervisor %}!set user_supervisable={{ user.supervisable|bool }}
+!set user_external_auth={{ user.uid }}
+!set user_forcechpwd={{ user.forcechpwd|bool }}
+{% endif %}{% if attribute(user, 'participate') is defined %}!set user_participate={{ user.participate }}
+{% endif %}{% if attribute(user, 'agree_sup_cgu') is defined %}!set user_agreesupcgu={{ user.agree_sup_cgu|bool }}
+{% endif %}

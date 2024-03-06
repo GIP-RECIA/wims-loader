@@ -6,14 +6,12 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 
-#[AsCommand('app:test3', 'test des commandes')]
-class Test3 extends Command
+#[AsCommand('app:add-user-in-class', 'Ajout d\'un utilisateur dans une classe')]
+class AddUserInClass extends Command
 {
     public function __construct(
         private WimsFileObjectCreator $wimsFileObjectCreator,
@@ -23,37 +21,32 @@ class Test3 extends Command
 
     protected function configure(): void
     {
-        $this->addArgument('etablissementId', InputArgument::REQUIRED,
-            "Nom de l'établissement");
+        $this->addArgument('idEtab', InputArgument::REQUIRED,
+            "Id de l'établissement");
+        $this->addArgument('idClass', InputArgument::REQUIRED,
+            "Id de la classe");
         $this->addArgument('uid', InputArgument::REQUIRED,
             "Id de l'utilisateur");
-        $this->addOption('className', null, InputOption::VALUE_REQUIRED,
-        "Nom de la classe");
 
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $data = Yaml::parseFile('data.yaml');
-        $etablissementId = $input->getArgument("etablissementId");
+        $idEtab = $input->getArgument("idEtab");
+        $idClass = $input->getArgument("idClass");
         $uid = $input->getArgument("uid");
-        $className = $input->getOption("className");
-        $dataTeacher = [];
-        $dataClass = [];
+        $dataStudent = [];
 
         if ($uid !== null) {
             $users = $data['users'];
-            $dataTeacher = $users[$uid];
-        }
-
-        if ($className) {
-            $dataClass['description'] = $className;
+            $dataStudent = $users[$uid];
         }
 
         $io = new SymfonyStyle($input, $output);
 
-        $io->title('Création de la class :');
-        $this->wimsFileObjectCreator->createClassInGroupingClasses($dataTeacher, $dataClass, $etablissementId, $uid);
+        $io->title('Ajout de l\'utilisateur dans la class :');
+        $this->wimsFileObjectCreator->addUserInClass($dataStudent, $idEtab, $idClass, $uid);
         //$io->text($this->wimsFileObjectCreator->createNewGroupementDeClasses());
 
         return Command::SUCCESS;

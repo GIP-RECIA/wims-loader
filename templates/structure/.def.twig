@@ -1,12 +1,12 @@
 !set class_password=*{{ structure.password|pass_crypt }}
-!set class_Supervisor={{ supervisor.uid }}
-!set class_supervisor={{ supervisor.first_name }} {{ supervisor.last_name }}
+!set class_Supervisor={{ user.uid }}
+!set class_supervisor={{ user.first_name }} {{ user.last_name }}
 !set class_description={{ structure.description }}
 !set class_institution={{ structure.institution_name }}
 !set class_location={{ structure.location }}
 !set class_geoloc={{ structure.geoloc }}
 !set class_lang={{ structure.lang }}
-!set class_email={{ supervisor.email }}
+!set class_email={{ user.email }}
 !set class_creation={{ structure.creation|wims_date }}
 !set class_expiration={{ structure.expiration|wims_date }}
 !set class_limit={{ structure.limit }}
