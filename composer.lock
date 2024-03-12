@@ -4,8 +4,79 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4838927c45c493d9f029ba84fa70bb0d",
+    "content-hash": "3be50ed8b65377ef8292389432f8d4e0",
     "packages": [
+        {
+            "name": "apereo/phpcas",
+            "version": "1.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/apereo/phpCAS.git",
+                "reference": "c129708154852656aabb13d8606cd5b12dbbabac"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/apereo/phpCAS/zipball/c129708154852656aabb13d8606cd5b12dbbabac",
+                "reference": "c129708154852656aabb13d8606cd5b12dbbabac",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "php": ">=7.1.0",
+                "psr/log": "^1.0 || ^2.0 || ^3.0"
+            },
+            "require-dev": {
+                "monolog/monolog": "^1.0.0 || ^2.0.0",
+                "phpstan/phpstan": "^1.5",
+                "phpunit/phpunit": ">=7.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "source/CAS.php"
+                ],
+                "classmap": [
+                    "source/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Joachim Fritschi",
+                    "email": "jfritschi@freenet.de",
+                    "homepage": "https://github.com/jfritschi"
+                },
+                {
+                    "name": "Adam Franco",
+                    "homepage": "https://github.com/adamfranco"
+                },
+                {
+                    "name": "Henry Pan",
+                    "homepage": "https://github.com/phy25"
+                }
+            ],
+            "description": "Provides a simple API for authenticating users against a CAS server",
+            "homepage": "https://wiki.jasig.org/display/CASC/phpCAS",
+            "keywords": [
+                "apereo",
+                "cas",
+                "jasig"
+            ],
+            "support": {
+                "issues": "https://github.com/apereo/phpCAS/issues",
+                "source": "https://github.com/apereo/phpCAS/tree/1.6.1"
+            },
+            "time": "2023-02-19T19:52:35+00:00"
+        },
         {
             "name": "composer/semver",
             "version": "3.4.0",
@@ -1475,6 +1546,50 @@
                 }
             ],
             "time": "2023-10-06T06:47:41+00:00"
+        },
+        {
+            "name": "l3/cas-guard-bundle",
+            "version": "1.1.16",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/l3-team/CasGuardBundle.git",
+                "reference": "9f7b35caea1ac4846f90f87c9ba22b2eaae65668"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/l3-team/CasGuardBundle/zipball/9f7b35caea1ac4846f90f87c9ba22b2eaae65668",
+                "reference": "9f7b35caea1ac4846f90f87c9ba22b2eaae65668",
+                "shasum": ""
+            },
+            "require": {
+                "apereo/phpcas": "1.6.1",
+                "php": ">=8.2",
+                "symfony/framework-bundle": "~7.0",
+                "symfony/security-bundle": "~7.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "L3\\Bundle\\CasGuardBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Mathieu Hétru",
+                    "email": "mathieu.hetru@univ-lille.fr"
+                }
+            ],
+            "description": "PHPCas wrapper for Symfony3, Symfony4, Symfony5, Symfony6, Symfony7",
+            "homepage": "https://github.com/l3-team/CasGuardBundle",
+            "support": {
+                "issues": "https://github.com/l3-team/CasGuardBundle/issues",
+                "source": "https://github.com/l3-team/CasGuardBundle/tree/1.1.16"
+            },
+            "time": "2023-12-24T14:06:42+00:00"
         },
         {
             "name": "monolog/monolog",

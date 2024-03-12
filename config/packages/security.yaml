@@ -9,6 +9,13 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        l3_firewall:
+            pattern: ^/test/
+            security: true
+            custom_authenticators:
+                - cas.security.authentication.authenticator
+        
         main:
             lazy: true
             provider: users_in_memory

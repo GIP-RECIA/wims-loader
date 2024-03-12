@@ -25,6 +25,6 @@
 ###< symfony/asset-mapper ###
 
 # Modif perso
-/.deploy.sh
+/deploy.sh
 /.data.yaml
 /TODO.md
