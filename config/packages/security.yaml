@@ -13,7 +13,7 @@ security:
             security: false
 
         l3_firewall:
-            pattern: ^/test/
+            pattern: ^/test
             security: true
             custom_authenticators:
                 - cas.security.authentication.authenticator
