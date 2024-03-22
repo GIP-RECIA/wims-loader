@@ -12,8 +12,16 @@ class TestRootController extends AbstractController
     {
         $number = random_int(0, 100);
 
-        return new Response(
-            '<html><body>ok : '.$number . '</body></html>'
-        );
+        $res = '<html>
+        <head>
+        <base href="/wims-loader/">
+        </head>
+        <body>start0<br>ok : '.$number . '<br>
+        <a href="' . $this->generateUrl('phpinfo') . '">test page phpinfo</a><br>
+        <a href="' . $this->generateUrl('test') . '">test page protégé</a><br>
+        </body></html>';
+
+
+        return new Response($res);
     }
 }
