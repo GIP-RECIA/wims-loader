@@ -13,6 +13,8 @@ class TestController extends AbstractController
     {
         $number = random_int(0, 100);
         $user = $security->getUser();
+        $token = $security->getToken();
+        dump($token) ;
 
         return new Response(
             '<html><body>user: ' . $user->getUserIdentifier().'<br>'
