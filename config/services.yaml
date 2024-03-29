@@ -37,6 +37,21 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    # ldap
+    Symfony\Component\Ldap\Ldap:
+        arguments: ['@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter']
+        tags:
+            - ldap
+    Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
+        arguments:
+            -   host: "%ldap_hostname%"
+                port: 389
+                encryption: tls
+                options:
+                    protocol_version: 3
+                    referrals: false
+
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
