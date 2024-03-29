@@ -12,11 +12,10 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        l3_firewall:
+        main_firewall:
             pattern: ^/test
             security: true
-            custom_authenticators:
-                - cas.security.authentication.authenticator
+            custom_authenticator: App\Security\CasAuthenticator
         
         main:
             lazy: true

@@ -18,7 +18,7 @@ class UserProvider implements UserProviderInterface
      *
      * @throws UserNotFoundException if the user is not found
      */
-    public function loadUserByIdentifier($identifier): UserInterface
+    public function loadUserByIdentifier($identifier, $attributs = null): UserInterface
     {
         $user = new User();
         $user->setUid($identifier);
@@ -28,6 +28,19 @@ class UserProvider implements UserProviderInterface
             $roles = array('ROLE_ANON');
         } else {
             $roles = array('ROLE_ANON', 'ROLE_USER');
+
+            if ($attributs !== null) {
+                if (array_key_exists('profils', $attributs)) {
+                    switch ($attributs['profils']) {
+                        case 'National_ELV':
+                            $roles[] = 'ROLE_ELV';
+                            break;
+                        case 'National_COL':
+                            $roles[] = 'ROLE_COL';
+                            break;
+                    }
+                }
+            }
         }
 
         $user->setRoles($roles);
