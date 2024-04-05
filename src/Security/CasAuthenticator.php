@@ -2,14 +2,11 @@
 
 namespace App\Security;
 
-use App\Event\CasAuthenticationFailureEvent;
 use L3\Bundle\CasGuardBundle\Security\CasAuthenticator as SecurityCasAuthenticator;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
-use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CasAuthenticator extends SecurityCasAuthenticator
@@ -29,6 +26,29 @@ class CasAuthenticator extends SecurityCasAuthenticator
 	    \phpCAS::setVerbose(false);
 
         \phpCAS::client(CAS_VERSION_2_0, $this->getParameter('host'), $this->getParameter('port'), is_null($this->getParameter('path')) ? '' : $this->getParameter('path'), $this->getParameter('casServiceBaseUrl'), true);
+        
+        // Configuration des attributs à récupérer
+        $attributes = array(
+            'mail', // Adresse e-mail
+        );
+
+        // Convertir les attributs en une chaîne JSON
+        $jsonAttributes = json_encode($attributes);
+
+        // Définir l'en-tête HTTP pour spécifier les attributs
+        $header = [
+            'CAS-User-Attrs: ' . $jsonAttributes,
+            'CAS-Attribute: mail',
+            'CAS-Attributes: ' . $jsonAttributes,
+            'CAS-ATTRIBUTE_NAMES: ' . $jsonAttributes,
+            'CAS_ATTRIBUTE: mail',
+            'CAS_ATTRIBUTES: ' . $jsonAttributes,
+        ];
+
+        // Configuration de l'option CURL pour spécifier les attributs
+        //\phpCAS::setExtraCurlOption(CURLOPT_HTTPHEADER, $header);
+        dump("test");
+
 
         if(is_bool($this->getParameter('ca')) && $this->getParameter('ca') == false) {
             \phpCAS::setNoCasServerValidation();
@@ -108,6 +128,8 @@ class CasAuthenticator extends SecurityCasAuthenticator
                 //}
             } 
         }
+
+        // TODO: faire un traitement ici pour ne retourner que les attributs nécessaires
 
         $passport = new SelfValidatingPassport(new UserBadge($user, null, \phpCAS::getAttributes()), []);        
 

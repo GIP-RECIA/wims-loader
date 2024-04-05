@@ -38,20 +38,30 @@ services:
                 casLogoutTarget: '%env(string:CAS_LOGOUT_TARGET)%'
                 force: '%env(bool:CAS_FORCE)%'
                 gateway: '%env(bool:CAS_GATEWAY)%'
+    
+    
+    App\Service\LdapService:
+        arguments:
+            $config:
+                host: '%env(string:LDAP_HOSTNAME)%'
+                port: '%env(int:LDAP_PORT)%'
+                encryption: '%env(string:LDAP_ENCRYPTION)%'
+                dn: '%env(string:LDAP_DN)%'
+                password: '%env(string:LDAP_PASSWORD)%'
 
     # ldap
-    Symfony\Component\Ldap\Ldap:
-        arguments: ['@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter']
-        tags:
-            - ldap
-    Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
-        arguments:
-            -   host: "%ldap_hostname%"
-                port: 389
-                encryption: tls
-                options:
-                    protocol_version: 3
-                    referrals: false
+    #Symfony\Component\Ldap\Ldap:
+    #    arguments: ['@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter']
+    #    tags:
+    #        - ldap
+    #Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
+    #    arguments:
+    #        -   host: "%ldap_hostname%"
+    #            port: 389
+    #            encryption: tls
+    #            options:
+    #                protocol_version: 3
+    #                referrals: false
 
 
     # add more service definitions when explicit configuration is needed

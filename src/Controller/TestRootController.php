@@ -19,6 +19,7 @@ class TestRootController extends AbstractController
         <body>start0<br>ok : '.$number . '<br>
         <a href="' . $this->generateUrl('phpinfo') . '">test page phpinfo</a><br>
         <a href="' . $this->generateUrl('test') . '">test page protégé</a><br>
+        <a href="' . $this->generateUrl('ldap') . '">test page ldap</a><br>
         </body></html>';
 
 

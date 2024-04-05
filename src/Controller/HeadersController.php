@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class HeadersController extends AbstractController
 {
     #[Route(path:"/headers", name:"headers")]
-    public function phpinfo(): Response
+    public function headers(): Response
     {
         ob_start();
         var_dump($_SERVER);
