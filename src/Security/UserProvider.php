@@ -20,6 +20,7 @@ class UserProvider implements UserProviderInterface
      */
     public function loadUserByIdentifier($identifier, $attributs = null): UserInterface
     {
+        dump($attributs);
         $user = new User();
         $user->setUid($identifier);
         $roles = [];
@@ -35,11 +36,30 @@ class UserProvider implements UserProviderInterface
                         case 'National_ELV':
                             $roles[] = 'ROLE_ELV';
                             break;
+                        case 'National_ENS':
+                            $roles[] = 'ROLE_ENS';
+                            break;
                         case 'National_COL':
                             $roles[] = 'ROLE_COL';
                             break;
                     }
                 }
+
+                /*
+                ENTPersonProfils:National_ENS
+
+clg37:Etablissements:MONTAIGNE_0370884K:4EME (NC 4E AES):Profs_4D
+clg37:Etablissements:MONTAIGNE_0370884K:4EME (NC 4E AES):Profs_4E
+clg37:Etablissements:MONTAIGNE_0370884K:4EME (NC 4E AES):Profs_4F
+clg37:Etablissements:MONTAIGNE_0370884K:5EME:Profs_5A
+clg37:Etablissements:MONTAIGNE_0370884K:5EME:Profs_5E
+
+(&(ENTPersonJointure=AC-DEMO$FICTIF*))
+
+esco:Etablissements:CHARLES PEGUY_0451526P:PREMIERE GENERALE et TECHNO YC BT:Profs_1G05
+clg45:Etablissements:FICTIF CLG 45_0450000A:6EME:Profs_6EME A
+[^:]+:Etablissements:[^:]+:[^:]+:Profs_(.+)
+                 */
             }
         }
 

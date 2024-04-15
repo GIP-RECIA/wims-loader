@@ -131,8 +131,72 @@ class CasAuthenticator extends SecurityCasAuthenticator
 
         // TODO: faire un traitement ici pour ne retourner que les attributs nécessaires
 
-        $passport = new SelfValidatingPassport(new UserBadge($user, null, \phpCAS::getAttributes()), []);        
+        //$attributesClean = \phpCAS::getAttributes();
+        $attributes = \phpCAS::getAttributes();
+        $attributesClean = ['profils' => $attributes['profils'], 'nom' => $attributes['nom'], 'prenom' => $attributes['prenom']];
+        //$attributesClean = [];
+
+        $passport = new SelfValidatingPassport(new UserBadge($user, null, $this->getCleanAttributes()), []);        
 
         return $passport;
+    }
+
+    /**
+     * Permet de filtrer proprement les attributs du ticket qui nous intéressent
+     * ENTPersonProfils, profils : le profil
+     * ENTPersonNomPatro, sn, nom : le nom
+     * ENTPersonAutresPrenoms, givenName, prenom : le prénom
+     * ENTEnsClasses, ensClasses : les classes de l'enseignant avec les structures
+     * ENTEleveClasses, eleveClasses : les classes de l'élève
+     * ESCOSIRENCourant : Le siren de l'établissement courant
+     *
+     * @return array
+     */
+    private function getCleanAttributes(): array
+    {
+        $src = \phpCAS::getAttributes();
+        $sirenCourant = $src['ESCOSIRENCourant'];
+        $resEnsClasses = [];
+        $srcEnsClasses = isset($src['ENTAuxEnsClasses']) ? $src['ENTAuxEnsClasses'] :
+            (isset($src['ensClasses']) ? $src['ensClasses'] : []);
+        $srcEnsClasses = is_array($srcEnsClasses) ? $srcEnsClasses : [$srcEnsClasses];
+        $resElvClasses = [];
+        $srcElvClasses = isset($src['ENTEleveClasses']) ? $src['ENTEleveClasses'] :
+            (isset($src['eleveClasses']) ? $src['eleveClasses'] : []);
+        $srcElvClasses = is_array($srcElvClasses) ? $srcElvClasses : [$srcElvClasses];
+
+        // Traitement des classes des enseignants
+        for ($i = 0; $i < count($srcEnsClasses); $i += 4) {
+            // On vérifie que le siren correspond au siren courant
+            if ((explode('=', $srcEnsClasses[$i]))[1] == $sirenCourant) {
+                // On récupère la classe
+                $resEnsClasses[] = (explode('$', $srcEnsClasses[$i+3]))[1];
+            }
+        }
+
+        // Traitement des classes des élèves
+        foreach ($srcElvClasses as $elvClasse) {
+            $arrExp = explode(",", $elvClasse);
+
+            if ((explode('=', $arrExp[0]))[1] == $sirenCourant) {
+                $resElvClasses[] = (explode('$', $arrExp[3]))[1];
+            }
+        }
+
+        $res = [
+            'profils' => isset($src['ENTPersonProfils']) ? $src['ENTPersonProfils'] :
+                (isset($src['profils']) ? $src['profils'] : null),
+            'nom' => isset($src['ENTPersonNomPatro']) ? $src['ENTPersonNomPatro'] :
+                (isset($src['sn']) ? $src['sn'] : (isset($src['nom']) ? $src['nom'] : null)),
+            'prenom' => isset($src['ENTPersonAutresPrenoms']) ? $src['ENTPersonAutresPrenoms'] :
+                (isset($src['givenName']) ? $src['givenName'] : (isset($src['prenom']) ? $src['prenom'] : null)),
+            'mail' => $src['mail'],
+            'ensClasses' => $resEnsClasses,
+            'elvClasses' => $resElvClasses,
+            // TODO: voir si c'est utile de garder le siren courant pour la suite
+            'sirenCourant' => $sirenCourant,
+        ];
+
+        return $res;
     }
 }
