@@ -23,22 +23,39 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
      */
     public function loadUserByIdentifier($identifier, $attributs = null): UserInterface
     {
+        // Dans le cas où l'on n'a pas les informations du ticket cas, on retourne un user vide
+        if ($attributs == null) {
+            return new User();
+        }
+
         $em = $this->getEntityManager();
         $user = $em->getRepository(User::class)->findOneByUid($identifier);
+        $firstName = substr($attributs['firstName'], 0, 60);
+        $lastName = substr($attributs['lastName'], 0, 60);
+        $mail = $attributs['mail'];
+
 
         if ($user === null) {
+            // Si l'utilisateur n'existe pas en base, on le créé
             dump('je passe par le new user');
             $user = new User();
             $user->setUid($identifier);
-            $user->setFirstName(substr($attributs['prenom'], 0, 60));
-            $user->setLastName(substr($attributs['nom'], 0, 60));
-            $user->setMail($attributs['mail']);
+            $user->setFirstName($firstName);
+            $user->setLastName($lastName);
+            $user->setMail($mail);
             $em->persist($user);
             // TODO: voir pour déplacer le flush su nécessaire
             $em->flush();
         } else {
-            dump('le user est chargé de la bdd');
+            // L'utilisateur a été chargé de la base et on vérifie qu'il n'a pas évolué
+            dump('user chargé de la bdd');
+            $user->setFirstName($firstName);
+            $user->setLastName($lastName);
+            $user->setMail($mail);
+            $em->flush();
         }
+
+
         
         $roles = [];
 

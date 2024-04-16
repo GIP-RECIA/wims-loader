@@ -18,7 +18,6 @@ class User implements UserInterface
     /**
      * @var list<string> The user roles
      */
-    #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column(length: 8)]

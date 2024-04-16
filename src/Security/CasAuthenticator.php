@@ -158,9 +158,9 @@ class CasAuthenticator extends SecurityCasAuthenticator
 
         return [
             'profils' => $srcProfils,
-            'nom' => isset($src['ENTPersonNomPatro']) ? $src['ENTPersonNomPatro'] :
+            'lastName' => isset($src['ENTPersonNomPatro']) ? $src['ENTPersonNomPatro'] :
                 (isset($src['sn']) ? $src['sn'] : (isset($src['nom']) ? $src['nom'] : null)),
-            'prenom' => isset($src['ENTPersonAutresPrenoms']) ? $src['ENTPersonAutresPrenoms'] :
+            'firstName' => isset($src['ENTPersonAutresPrenoms']) ? $src['ENTPersonAutresPrenoms'] :
                 (isset($src['givenName']) ? $src['givenName'] : (isset($src['prenom']) ? $src['prenom'] : null)),
             'mail' => $src['mail'],
             'ensClasses' => $resEnsClasses,
