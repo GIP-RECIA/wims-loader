@@ -11,7 +11,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Twig\Environment;
 
-class WimsFileObjectCreator
+class WimsFileObjectCreatorService
 {
 
     public function __construct(

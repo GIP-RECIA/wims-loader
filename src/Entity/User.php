@@ -52,8 +52,13 @@ class User implements UserInterface
      */
     public function getUserIdentifier(): string
     {
+        return (string) $this->id;
+    }
+
+    public function __toString()
+    {
         return (string) $this->firstName . ' ' . $this->lastName . ' (' .
-            $this->uid . ')';
+            $this->id . ', ' . $this->uid . ')';
     }
 
     /**

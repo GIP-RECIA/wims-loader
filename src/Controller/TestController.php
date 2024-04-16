@@ -11,14 +11,13 @@ class TestController extends AbstractController
     #[Route(path:"/test", name:"test")]
     public function test(Security $security): Response
     {
-        $number = random_int(0, 100);
         $user = $security->getUser();
-        $token = $security->getToken();
-        dump($token) ;
+        //$token = $security->getToken();
+        //dump($token) ;
+        dump($user);
 
         return new Response(
-            '<html><body>user: ' . $user->getUserIdentifier().'<br>'
-            . $number . '</body></html>'
+            '<html><body>user: ' . $user . '</body></html>'
         );
     }
 }
