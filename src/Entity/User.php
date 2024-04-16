@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_ID', fields: ['id'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_UID', fields: ['uid'])]
 class User implements UserInterface
 {
     #[ORM\Id]
