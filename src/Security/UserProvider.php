@@ -44,19 +44,17 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
             $user->setLastName($lastName);
             $user->setMail($mail);
             $em->persist($user);
-            // TODO: voir pour déplacer le flush su nécessaire
-            $em->flush();
         } else {
             // L'utilisateur a été chargé de la base et on vérifie qu'il n'a pas évolué
             dump('user chargé de la bdd');
             $user->setFirstName($firstName);
             $user->setLastName($lastName);
             $user->setMail($mail);
-            $em->flush();
         }
 
-
+        $em->flush();
         
+        $user->setSirenCourant($attributs['sirenCourant']);
         $roles = [];
 
         if ($identifier === '__NO_USER__') {

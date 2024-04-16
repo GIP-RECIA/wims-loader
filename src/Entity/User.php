@@ -33,6 +33,8 @@ class User implements UserInterface
     #[ORM\Column(length: 60)]
     private ?string $mail = null;
 
+    private ?string $sirenCourant = null;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -138,6 +140,18 @@ class User implements UserInterface
     public function setMail(string $mail): static
     {
         $this->mail = $mail;
+
+        return $this;
+    }
+
+    public function getSirenCourant(): ?string
+    {
+        return $this->sirenCourant;
+    }
+
+    public function setSirenCourant(string $sirenCourant): static
+    {
+        $this->sirenCourant = $sirenCourant;
 
         return $this;
     }
