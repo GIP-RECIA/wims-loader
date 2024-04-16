@@ -2,12 +2,15 @@
 
 namespace App\Security;
 
+use App\Entity\User;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+//use User
 
-class UserProvider implements UserProviderInterface
+class UserProvider extends ServiceEntityRepository implements UserProviderInterface
 {
     /**
      * Symfony calls this method if you use features like switch_user
@@ -20,9 +23,23 @@ class UserProvider implements UserProviderInterface
      */
     public function loadUserByIdentifier($identifier, $attributs = null): UserInterface
     {
-        dump($attributs);
-        $user = new User();
-        $user->setUid($identifier);
+        $em = $this->getEntityManager();
+        $user = $em->getRepository(User::class)->findOneByUid($identifier);
+
+        if ($user === null) {
+            dump('je passe par le new user');
+            $user = new User();
+            $user->setUid($identifier);
+            $user->setFirstName(substr($attributs['prenom'], 0, 60));
+            $user->setLastName(substr($attributs['nom'], 0, 60));
+            $user->setMail($attributs['mail']);
+            $em->persist($user);
+            // TODO: voir pour déplacer le flush su nécessaire
+            $em->flush();
+        } else {
+            dump('le user est chargé de la bdd');
+        }
+        
         $roles = [];
 
         if ($identifier === '__NO_USER__') {

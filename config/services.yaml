@@ -49,6 +49,10 @@ services:
                 dn: '%env(string:LDAP_DN)%'
                 password: '%env(string:LDAP_PASSWORD)%'
 
+    App\Security\UserProvider:
+        arguments:
+            $entityClass: 'App\Entity\User'
+
     # ldap
     #Symfony\Component\Ldap\Ldap:
     #    arguments: ['@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter']
