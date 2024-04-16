@@ -27,26 +27,6 @@ class CasAuthenticator extends SecurityCasAuthenticator
 
         \phpCAS::client(CAS_VERSION_2_0, $this->getParameter('host'), $this->getParameter('port'), is_null($this->getParameter('path')) ? '' : $this->getParameter('path'), $this->getParameter('casServiceBaseUrl'), true);
         
-        // Configuration des attributs à récupérer
-        $attributes = array(
-            'mail', // Adresse e-mail
-        );
-
-        // Convertir les attributs en une chaîne JSON
-        $jsonAttributes = json_encode($attributes);
-
-        // Définir l'en-tête HTTP pour spécifier les attributs
-        $header = [
-            'CAS-User-Attrs: ' . $jsonAttributes,
-            'CAS-Attribute: mail',
-            'CAS-Attributes: ' . $jsonAttributes,
-            'CAS-ATTRIBUTE_NAMES: ' . $jsonAttributes,
-            'CAS_ATTRIBUTE: mail',
-            'CAS_ATTRIBUTES: ' . $jsonAttributes,
-        ];
-
-        // Configuration de l'option CURL pour spécifier les attributs
-        //\phpCAS::setExtraCurlOption(CURLOPT_HTTPHEADER, $header);
         dump("test");
 
 
@@ -129,13 +109,6 @@ class CasAuthenticator extends SecurityCasAuthenticator
             } 
         }
 
-        // TODO: faire un traitement ici pour ne retourner que les attributs nécessaires
-
-        //$attributesClean = \phpCAS::getAttributes();
-        $attributes = \phpCAS::getAttributes();
-        $attributesClean = ['profils' => $attributes['profils'], 'nom' => $attributes['nom'], 'prenom' => $attributes['prenom']];
-        //$attributesClean = [];
-
         $passport = new SelfValidatingPassport(new UserBadge($user, null, $this->getCleanAttributes()), []);        
 
         return $passport;
@@ -164,6 +137,9 @@ class CasAuthenticator extends SecurityCasAuthenticator
         $srcElvClasses = isset($src['ENTEleveClasses']) ? $src['ENTEleveClasses'] :
             (isset($src['eleveClasses']) ? $src['eleveClasses'] : []);
         $srcElvClasses = is_array($srcElvClasses) ? $srcElvClasses : [$srcElvClasses];
+        $srcProfils = isset($src['ENTPersonProfils']) ? $src['ENTPersonProfils'] :
+            (isset($src['profils']) ? $src['profils'] : []);
+        $srcProfils = is_array($srcProfils) ? $srcProfils : [$srcProfils];
 
         // Traitement des classes des enseignants
         for ($i = 0; $i < count($srcEnsClasses); $i += 4) {
@@ -183,9 +159,8 @@ class CasAuthenticator extends SecurityCasAuthenticator
             }
         }
 
-        $res = [
-            'profils' => isset($src['ENTPersonProfils']) ? $src['ENTPersonProfils'] :
-                (isset($src['profils']) ? $src['profils'] : null),
+        return [
+            'profils' => $srcProfils,
             'nom' => isset($src['ENTPersonNomPatro']) ? $src['ENTPersonNomPatro'] :
                 (isset($src['sn']) ? $src['sn'] : (isset($src['nom']) ? $src['nom'] : null)),
             'prenom' => isset($src['ENTPersonAutresPrenoms']) ? $src['ENTPersonAutresPrenoms'] :
@@ -196,7 +171,5 @@ class CasAuthenticator extends SecurityCasAuthenticator
             // TODO: voir si c'est utile de garder le siren courant pour la suite
             'sirenCourant' => $sirenCourant,
         ];
-
-        return $res;
     }
 }
