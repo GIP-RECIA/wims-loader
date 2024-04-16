@@ -1,7 +1,7 @@
 <?php
 namespace App\Command;
 
-use App\Service\WimsFileObjectCreator;
+use App\Service\WimsFileObjectCreatorService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\Yaml\Yaml;
 class CreateEtab extends Command
 {
     public function __construct(
-        private WimsFileObjectCreator $wimsFileObjectCreator,
+        private WimsFileObjectCreatorService $wimsFileObjectCreator,
     ) {
         parent::__construct();
     }
