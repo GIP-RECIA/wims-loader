@@ -20,6 +20,7 @@ class TestController extends AbstractController
     public function test(Security $security): Response
     {
         $user = $security->getUser();
+        dump($user);
         //$token = $security->getToken();
 
         // Un user est forcément de la class User
@@ -31,7 +32,11 @@ class TestController extends AbstractController
 
         if ($this->authorizationChecker->isGranted('ROLE_ENS')) {
             $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
-            $response .= '<br>' . $groupingClasses;
+            $response .= '<br>' . $groupingClasses .'<br>';
+
+            foreach ($user->getTicketEnsClasses() as $class) {
+                $response .= '* ' . $class . '<br>';
+            }
         }
 
         $response .= '</body></html>';

@@ -35,6 +35,11 @@ class User implements UserInterface
 
     private ?string $sirenCourant = null;
 
+    /**
+     * @var list<string> Les classes provenant du ticket cas
+     */
+    private array $ticketEnsClasses = [];
+
     public function getId(): ?string
     {
         return $this->id;
@@ -152,6 +157,24 @@ class User implements UserInterface
     public function setSirenCourant(string $sirenCourant): static
     {
         $this->sirenCourant = $sirenCourant;
+
+        return $this;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getTicketEnsClasses(): array
+    {
+        return $this->ticketEnsClasses;
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setTicketEnsClasses(array $ticketEnsClasses): static
+    {
+        $this->ticketEnsClasses = $ticketEnsClasses;
 
         return $this;
     }

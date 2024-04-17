@@ -55,6 +55,7 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
         $em->flush();
         
         $user->setSirenCourant($attributs['sirenCourant']);
+        $user->setTicketEnsClasses($attributs['ensClasses']);
         $roles = [];
 
         if ($identifier === '__NO_USER__') {
