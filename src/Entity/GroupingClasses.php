@@ -23,11 +23,17 @@ class GroupingClasses
     #[ORM\Column(length: 7)]
     private ?string $idWims = null;
 
-    #[ORM\Column(length: 14)]
+    #[ORM\Column(length: 15)]
     private ?string $siren = null;
 
     #[ORM\Column(length: 50)]
     private ?string $name = null;
+
+    public function __toString()
+    {
+        return (string) $this->name . ' (' .
+            $this->id . ', ' . $this->uai . ', ' . $this->idWims . ')';
+    }
 
     public function getId(): ?int
     {

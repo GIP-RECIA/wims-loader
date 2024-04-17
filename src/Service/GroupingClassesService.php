@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Entity\GroupingClasses;
+use App\Exception\InvalidGroupingClassesException;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -11,7 +12,8 @@ class GroupingClassesService
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private LdapService $ldapService
+        private LdapService $ldapService,
+        private WimsFileObjectCreatorService $wimsFileObjectCreator
     ) {}
 
     /**
@@ -25,13 +27,30 @@ class GroupingClassesService
         $groupingClasses = $this->em->getRepository(GroupingClasses::class)->findOneBySiren($siren);
 
         if ($groupingClasses === null) {
-            $results = $this->ldapService->search('ou=structures,dc=esco-centre,dc=fr', "(&(ObjectClass=ENTEtablissement)(ENTStructureSiren=$siren))");
-            dump($results);
-            dump($results->toArray());
-            // TODO: récupérer ESCOStructureNomCourt et ENTStructureUAI
-            // TODO: voir pour réduire les données retournées
+            $data = $this->ldapService->search('ou=structures,dc=esco-centre,dc=fr', "(&(ObjectClass=ENTEtablissement)(ENTStructureSiren=$siren))");
+            $results = $data->toArray();
+
+            if (count($results) === 0) {
+                throw new InvalidGroupingClassesException(
+                    "Le groupement de classes (établissement) avec le siren '$siren' n'existe pas dans le ldap"
+                );
+            }
+
+            $res = $results[0];
+            $groupingClassesName = $res->getAttribute('ESCOStructureNomCourt')[0];
+            $uai = $res->getAttribute('ENTStructureUAI')[0];
+            $dataGroupingClasses = ['institution_name' => $groupingClassesName, 'description' => $uai];
+            $groupingClassesIdWims = $this->wimsFileObjectCreator->createNewGroupingClasses([], $dataGroupingClasses);
+            $groupingClasses = new GroupingClasses();
+            $groupingClasses
+                ->setUai($uai)
+                ->setSiren($siren)
+                ->setIdWims($groupingClassesIdWims)
+                ->setName($groupingClassesName);
+            $this->em->persist($groupingClasses);
+            $this->em->flush();
         }
 
-        return new GroupingClasses();
+        return $groupingClasses;
     }
 }

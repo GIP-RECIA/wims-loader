@@ -1,15 +1,18 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Service\GroupingClassesService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class TestController extends AbstractController
 {
     public function __construct(
+        private AuthorizationCheckerInterface $authorizationChecker,
         private GroupingClassesService $groupingClassesService
     ) {}
 
@@ -18,13 +21,22 @@ class TestController extends AbstractController
     {
         $user = $security->getUser();
         //$token = $security->getToken();
-        //dump($token) ;
-        dump($user);
 
-        $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
+        // Un user est forcément de la class User
+        if (!($user instanceof User)) {
+            throw new \Exception("Le user devrait être de type User.");
+        }
 
-        return new Response(
-            '<html><body>user: ' . $user . '</body></html>'
-        );
+        $response = '<html><body>user: ' . $user;
+
+        if ($this->authorizationChecker->isGranted('ROLE_ENS')) {
+            $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
+            $response .= '<br>' . $groupingClasses;
+        }
+
+        $response .= '</body></html>';
+
+        return new Response($response);
+
     }
 }
