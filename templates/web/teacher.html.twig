@@ -1,0 +1,18 @@
+{# templates/web/teacher.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+user: {{ app.user }}<br>
+Est un enseignant<br>
+{{ groupingClasses }}<br>
+<ul>
+{% for class in ticketEnsClasses %}
+    <li>{{ class.className }}</li>
+    <ol>
+    {% for uid in class.listUidStudent %}
+        <li>{{ uid }}</li>
+    {% endfor %}
+    </ol>
+{% endfor %}
+</ul>
+{% endblock %}

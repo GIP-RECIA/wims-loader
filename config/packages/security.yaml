@@ -14,13 +14,9 @@ security:
             security: false
 
         main_firewall:
-            pattern: ^/test
+            pattern: ^/
             security: true
             custom_authenticator: App\Security\CasAuthenticator
-        
-        main:
-            lazy: true
-            provider: app_user_provider
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -31,6 +27,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        #- { path: ^/enseignant/, roles: ROLE_ENS }
+        - { path: ^/eleve/, roles: ROLE_ELV }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

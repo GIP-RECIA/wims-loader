@@ -1,0 +1,9 @@
+{# templates/web/root.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+{{ app.user }}<br>
+<br>
+Accès à la partie élève : <a href="{{ path('student') }}">Partie élève</a><br>
+Accès à la partie enseignant : <a href="{{ path('teacher') }}">Partie enseignant</a>
+{% endblock %}
