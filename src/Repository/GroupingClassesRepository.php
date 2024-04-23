@@ -23,44 +23,11 @@ class GroupingClassesRepository extends ServiceEntityRepository
 
     public function findOneByUai(string $uai): ?GroupingClasses
     {
-        return $this->createQueryBuilder('gc')
-            ->where('gc.uai = :uai')
-            ->setParameter('uai', $uai)
-            ->getQuery()
-            ->getOneOrNullResult();
+        return $this->findOneBy(['uai' => $uai]);
     }
 
     public function findOneBySiren(string $siren): ?GroupingClasses
     {
-        return $this->createQueryBuilder('gc')
-            ->where('gc.siren = :siren')
-            ->setParameter('siren', $siren)
-            ->getQuery()
-            ->getOneOrNullResult();
+        return $this->findOneBy(['siren' => $siren]);
     }
-
-    //    /**
-    //     * @return GroupingClasses[] Returns an array of GroupingClasses objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('g.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?GroupingClasses
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

@@ -23,11 +23,12 @@ class UserRepository extends ServiceEntityRepository
 
     public function findOneByUid(string $uid): ?User
     {
-        return $this->createQueryBuilder('u')
+        return $this->findOneBy(['uid' => $uid]);
+        /*return $this->createQueryBuilder('u')
             ->where('u.uid = :uid')
             ->setParameter('uid', $uid)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getOneOrNullResult();*/
     }
 
     //    /**
