@@ -1,7 +1,13 @@
-{# templates/web/teacher.html.twig #}
+{# templates/web/student.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block body %}
 user: {{ app.user }}<br>
-Est un élève
+Est un élève<br>
+Voici ces classes pour l'établissement {{ app.user.sirenCourant }} :
+<ul>
+{% for class in classes %}
+    <li>{{ class }}</li>
+{% endfor %}
+</ul>
 {% endblock %}

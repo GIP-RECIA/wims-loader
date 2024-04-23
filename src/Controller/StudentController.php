@@ -23,7 +23,10 @@ class StudentController extends AbstractWimsLoaderController
     #[Template('web/student.html.twig')]
     public function indexStudent(Security $security): array
     {
-        //$user = $this->getUserFromSecurity($security);
-        return [];
+        $user = $this->getUserFromSecurity($security);
+        $classes = $this->studentsService->getListClassNameFromSirenAndUidStudent($user);
+        return [
+            'classes' => $classes,
+        ];
     }
 }

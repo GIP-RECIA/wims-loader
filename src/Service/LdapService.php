@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use Symfony\Component\Ldap\Adapter\CollectionInterface;
 use Symfony\Component\Ldap\Ldap;
 
 class LdapService
@@ -20,7 +21,7 @@ class LdapService
         }
     }
 
-    public function search($baseDn, $filter)
+    public function search($baseDn, $filter): CollectionInterface
     {
         try {
             $query = $this->ldap->query($baseDn, $filter);
