@@ -1,6 +1,8 @@
 <?php
 namespace App\Service;
 
+use App\Entity\GroupingClasses;
+use App\Entity\User;
 use App\Exception\BuildIndexException;
 use App\Exception\DirectoryAlreadyExistException;
 use App\Exception\InvalidClassException;
@@ -92,6 +94,23 @@ class WimsFileObjectCreatorService
     }
 
     /**
+     * Permet de créer un nouveau groupement de classes
+     *
+     * @param GroupingClasses $groupingClasses Le groupement de classes à insérer
+     *
+     * @return GroupingClasses Le groupement de classes mit à jour
+     */
+    public function createNewGroupingClassesFromObj(GroupingClasses $groupingClasses): GroupingClasses
+    {
+        $idWims = $this->createNewGroupingClasses(
+            [],
+            $this->fromObjGroupingClassesToDataArray($groupingClasses)
+        );
+
+        return $groupingClasses->setIdWims($idWims);
+    }
+
+    /**
      * Permet de créer un prof dans un groupement de class
      *
      * @param array $dataTeacher Les données du professeur pour l'insertion
@@ -133,6 +152,20 @@ class WimsFileObjectCreatorService
             $dataTeacher,
             'teacher'
         );
+    }
+    
+    /**
+     * Permet de créer un prof dans un groupement de class
+     *
+     * @param User $teacher L'enseignant pour l'insertion
+     * @param GroupingClasses $groupingClasses Le groupement de classes pour l'insertion
+     */
+    public function createTeacherInGroupingClassesFromObj(User $teacher, GroupingClasses $groupingClasses): void
+    {
+        $this->createTeacherInGroupingClasses(
+            $this->fromObjUserToDataArray($teacher),
+            $this->fromObjGroupingClassesToDataArray($groupingClasses),
+            $groupingClasses->getIdWims());
     }
 
     /**
@@ -856,6 +889,24 @@ class WimsFileObjectCreatorService
             file_put_contents($file, $contentWindows1252);
             $this->filesystem->chmod($file, $this->config['file_right']);
         }
+    }
+
+    private function fromObjGroupingClassesToDataArray(GroupingClasses $groupingClasses): array
+    {
+        return [
+            'institution_name' => $groupingClasses->getName(),
+            'description' => $groupingClasses->getUai(),
+        ];
+    }
+
+    private function fromObjUserToDataArray(User $user): array
+    {
+        return [
+            'uid' => $user->getUid(),
+            'first_name' => $user->getFirstName(),
+            'last_name' => $user->getLastName(),
+            'email' => $user->getMail(),
+        ];
     }
 
     static private function comparerNomPrenom($a, $b) {

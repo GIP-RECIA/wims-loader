@@ -37,16 +37,11 @@ class GroupingClassesService
             }
 
             $res = $results[0];
-            $groupingClassesName = $res->getAttribute('ESCOStructureNomCourt')[0];
-            $uai = $res->getAttribute('ENTStructureUAI')[0];
-            $dataGroupingClasses = ['institution_name' => $groupingClassesName, 'description' => $uai];
-            $groupingClassesIdWims = $this->wimsFileObjectCreator->createNewGroupingClasses([], $dataGroupingClasses);
-            $groupingClasses = new GroupingClasses();
-            $groupingClasses
-                ->setUai($uai)
+            $groupingClasses = (new GroupingClasses())
                 ->setSiren($siren)
-                ->setIdWims($groupingClassesIdWims)
-                ->setName($groupingClassesName);
+                ->setUai($res->getAttribute('ENTStructureUAI')[0])
+                ->setName($res->getAttribute('ESCOStructureNomCourt')[0]);
+            $groupingClasses = $this->wimsFileObjectCreator->createNewGroupingClassesFromObj($groupingClasses);
             $this->em->persist($groupingClasses);
             $this->em->flush();
         }

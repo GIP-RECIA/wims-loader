@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\GroupingClasses;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -24,6 +25,23 @@ class GroupingClassesRepository extends ServiceEntityRepository
     public function findOneByUai(string $uai): ?GroupingClasses
     {
         return $this->findOneBy(['uai' => $uai]);
+    }
+
+    public function isTeacherRegistered(GroupingClasses $groupingClasses, User $teacher): bool
+    {
+        $qb = $this->createQueryBuilder('gc');
+        $result = $qb->select('COUNT(gc)')
+            ->innerJoin('gc.registeredTeachers', 'u')
+            ->where($qb->expr()->eq('gc', ':groupingClasses'))
+            ->andWhere($qb->expr()->eq('u', ':teacher'))
+            ->setParameters([
+                'groupingClasses' => $groupingClasses,
+                'teacher' => $teacher,
+            ])
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $result > 0;
     }
 
     public function findOneBySiren(string $siren): ?GroupingClasses

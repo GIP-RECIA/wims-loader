@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Classes;
+use App\Entity\GroupingClasses;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,6 +21,15 @@ class ClassesRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Classes::class);
+    }
+
+    public function getClassByGroupingClassesTeacherAndName(GroupingClasses $groupingClasses, User $teacher, string $name): ?Classes
+    {
+        return $this->findOneBy([
+            'groupingClasses' => $groupingClasses,
+            'teacher' => $teacher,
+            'name' => $name
+        ]);
     }
 
     //    /**

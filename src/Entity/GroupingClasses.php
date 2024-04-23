@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GroupingClassesRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GroupingClassesRepository::class)]
@@ -28,6 +30,17 @@ class GroupingClasses
 
     #[ORM\Column(length: 50)]
     private ?string $name = null;
+
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'groupingClasses')]
+    private Collection $registeredTeachers;
+
+    public function __construct()
+    {
+        $this->registeredTeachers = new ArrayCollection();
+    }
 
     public function __toString()
     {
@@ -91,6 +104,30 @@ class GroupingClasses
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getRegisteredTeachers(): Collection
+    {
+        return $this->registeredTeachers;
+    }
+
+    public function addRegisteredTeacher(User $registeredTeacher): static
+    {
+        if (!$this->registeredTeachers->contains($registeredTeacher)) {
+            $this->registeredTeachers->add($registeredTeacher);
+        }
+
+        return $this;
+    }
+
+    public function removeRegisteredTeacher(User $registeredTeacher): static
+    {
+        $this->registeredTeachers->removeElement($registeredTeacher);
 
         return $this;
     }

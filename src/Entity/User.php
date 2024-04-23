@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -39,6 +41,17 @@ class User implements UserInterface
      * @var list<string> Les classes provenant du ticket cas
      */
     private array $ticketEnsClasses = [];
+
+    /**
+     * @var Collection<int, GroupingClasses>
+     */
+    #[ORM\ManyToMany(targetEntity: GroupingClasses::class, mappedBy: 'registeredTeachers')]
+    private Collection $groupingClasses;
+
+    public function __construct()
+    {
+        $this->groupingClasses = new ArrayCollection();
+    }
 
     public function getId(): ?string
     {
@@ -175,6 +188,33 @@ class User implements UserInterface
     public function setTicketEnsClasses(array $ticketEnsClasses): static
     {
         $this->ticketEnsClasses = $ticketEnsClasses;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupingClasses>
+     */
+    public function getGroupingClasses(): Collection
+    {
+        return $this->groupingClasses;
+    }
+
+    public function addGroupingClass(GroupingClasses $groupingClass): static
+    {
+        if (!$this->groupingClasses->contains($groupingClass)) {
+            $this->groupingClasses->add($groupingClass);
+            $groupingClass->addRegisteredTeacher($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupingClass(GroupingClasses $groupingClass): static
+    {
+        if ($this->groupingClasses->removeElement($groupingClass)) {
+            $groupingClass->removeRegisteredTeacher($this);
+        }
 
         return $this;
     }
