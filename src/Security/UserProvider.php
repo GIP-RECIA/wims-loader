@@ -38,24 +38,26 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
         if ($user === null) {
             // Si l'utilisateur n'existe pas en base, on le créé
             dump('je passe par le new user');
-            $user = new User();
-            $user->setUid($identifier);
-            $user->setFirstName($firstName);
-            $user->setLastName($lastName);
-            $user->setMail($mail);
+            $user = (new User())
+                ->setUid($identifier)
+                ->setFirstName($firstName)
+                ->setLastName($lastName)
+                ->setMail($mail);
             $em->persist($user);
         } else {
             // L'utilisateur a été chargé de la base et on vérifie qu'il n'a pas évolué
             dump('user chargé de la bdd');
-            $user->setFirstName($firstName);
-            $user->setLastName($lastName);
-            $user->setMail($mail);
+            $user
+                ->setFirstName($firstName)
+                ->setLastName($lastName)
+                ->setMail($mail);
         }
 
         $em->flush();
         
-        $user->setSirenCourant($attributs['sirenCourant']);
-        $user->setTicketEnsClasses($attributs['ensClasses']);
+        $user
+            ->setSirenCourant($attributs['sirenCourant'])
+            ->setTicketEnsClasses($attributs['ensClasses']);
         $roles = [];
 
         if ($identifier === '__NO_USER__') {

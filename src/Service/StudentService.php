@@ -3,12 +3,11 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Exception\LdapResultException;
-use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Service qui va gérer les étudiants
  */
-class StudentsService
+class StudentService
 {
     public function __construct(
         private LdapService $ldapService

@@ -7,7 +7,9 @@ Est un enseignant<br>
 {{ groupingClasses }}<br>
 <ul>
 {% for class in ticketEnsClasses %}
-    <li>{{ class.className }}</li>
+    <li><a href="{{ url('teacherCreateClass', {'className': class.className}) }}">
+        {{ class.className }}
+    </a></li>
     <ol>
     {% for uid in class.listUidStudent %}
         <li>{{ uid }}</li>
