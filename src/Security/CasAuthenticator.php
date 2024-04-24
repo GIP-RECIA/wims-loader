@@ -52,7 +52,7 @@ class CasAuthenticator extends SecurityCasAuthenticator
             
             if($this->getParameter('force')) {
                 \phpCAS::forceAuthentication();
-                $user = \phpCAS::getUser();
+                $user = strtolower(\phpCAS::getUser());
                 //$force = true;
             } else {
                 //$force = false;
@@ -83,7 +83,7 @@ class CasAuthenticator extends SecurityCasAuthenticator
             
             if($this->getParameter('force')) {
                 \phpCAS::forceAuthentication();
-                $user = \phpCAS::getUser();
+                $user = strtolower(\phpCAS::getUser());
             } else {
                 $authenticated = false;                      
                 if($this->getParameter('gateway')) {
