@@ -60,7 +60,7 @@ class CasAuthenticator extends SecurityCasAuthenticator
                     $auth = \phpCAS::checkAuthentication();
                     if($auth) {
                         //$_SESSION['cas_user'] = \phpCAS::getUser();
-                        $user = \phpCAS::getUser();
+                        $user = strtolower(\phpCAS::getUser());
                         //$_SESSION['cas_attributes'] = \phpCAS::getAttributes();
                     } else {
                         //$_SESSION['cas_user'] = false;
