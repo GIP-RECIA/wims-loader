@@ -2,6 +2,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\ClassesRepository;
+use App\Repository\UserRepository;
 use App\Service\GroupingClassesService;
 use App\Service\StudentService;
 use Symfony\Bridge\Twig\Attribute\Template;
@@ -16,12 +18,27 @@ class StudentController extends AbstractWimsLoaderController
     public function __construct(
         private AuthorizationCheckerInterface $authorizationChecker,
         private GroupingClassesService $groupingClassesService,
-        private StudentService $StudentService
+        private StudentService $StudentService,
+        private ClassesRepository $classRepo,
     ) {}
 
     #[Route(path:"/eleve/", name:"student")]
     #[Template('web/student.html.twig')]
     public function indexStudent(Security $security): array
+    {
+        $user = $this->getUserFromSecurity($security);
+        $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
+        $classes = $this->classRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
+
+        return [
+            'groupingClasses' => $groupingClasses,
+            'classes' => $classes,
+        ];
+    }
+
+    #[Route(path:"/eleve/old/", name:"studentOld")]
+    #[Template('web/studentOld.html.twig')]
+    public function indexStudentOld(Security $security): array
     {
         $user = $this->getUserFromSecurity($security);
         $classes = $this->StudentService->getListClassNameFromSirenAndUidStudent($user);

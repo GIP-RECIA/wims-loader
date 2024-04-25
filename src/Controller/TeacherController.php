@@ -49,8 +49,6 @@ class TeacherController extends AbstractWimsLoaderController
         ];
     }
 
-
-
     #[Route(path:"/enseignant/createClass/{className}", name:"teacherCreateClass")]
     public function createClass(Request $request, Security $security): Response
     {

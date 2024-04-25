@@ -4,10 +4,15 @@
 {% block body %}
 user: {{ app.user }}<br>
 Est un élève<br>
-Voici ces classes pour l'établissement {{ app.user.sirenCourant }} :
+Voici ces classes pour l'établissement {{ groupingClasses }} :
+{% if classes|length > 0 %}
 <ul>
-{% for class in classes %}
-    <li>{{ class }}</li>
-{% endfor %}
+    {% for class in classes %}
+        <li><a href="../wims/wims.cgi?module=adm/class/classes&type=authparticipant&class={{ groupingClasses.idWims }}/{{ class.idWims }}&subclass=yes">{{ class }}</a></li>
+    {% endfor %}
 </ul>
+{% else %}
+<br>
+Vous n'êtes actuellement inscrit dans aucune classe wims, merci de voir avec votre enseignant.
+{% endif %}
 {% endblock %}

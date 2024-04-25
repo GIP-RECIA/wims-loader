@@ -3,6 +3,9 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Exception\LdapResultException;
+use App\Repository\ClassesRepository;
+use App\Repository\GroupingClassesRepository;
+use App\Repository\UserRepository;
 
 /**
  * Service qui va gérer les étudiants
@@ -10,7 +13,8 @@ use App\Exception\LdapResultException;
 class StudentService
 {
     public function __construct(
-        private LdapService $ldapService
+        private LdapService $ldapService,
+        private ClassesRepository $classRepo,
     ) {}
 
     /**

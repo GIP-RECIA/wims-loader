@@ -26,7 +26,7 @@ class TeacherService
     public function createClass(User $teacher, string $className): Classes
     {
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($teacher->getSirenCourant());
-        $class = $this->classRepository->getClassByGroupingClassesTeacherAndName($groupingClasses, $teacher, $className);
+        $class = $this->classRepository->findOneByGroupingClassesTeacherAndName($groupingClasses, $teacher, $className);
 
         if ($class === null) {
             $isTeacherRegistered = $this->groupingClassesRepo->isTeacherRegistered($groupingClasses, $teacher);
