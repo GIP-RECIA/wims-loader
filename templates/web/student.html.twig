@@ -8,7 +8,7 @@ Voici ces classes pour l'établissement {{ groupingClasses }} :
 {% if classes|length > 0 %}
 <ul>
     {% for class in classes %}
-        <li><a href="../wims/wims.cgi?module=adm/class/classes&type=authparticipant&class={{ groupingClasses.idWims }}/{{ class.idWims }}&subclass=yes">{{ class }}</a></li>
+        <li><a href="{{ class|wims_url_class_for_student }}">{{ class }}</a></li>
     {% endfor %}
 </ul>
 {% else %}

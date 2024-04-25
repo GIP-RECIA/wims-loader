@@ -51,6 +51,11 @@ class Classes
             $this->id . ', ' . $this->idWims . ')';
     }
 
+    public function getFullIdWims(): string
+    {
+        return $this->groupingClasses->getIdWims() . '/' . $this->idWims;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

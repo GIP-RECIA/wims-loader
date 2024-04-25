@@ -71,6 +71,16 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    App\Twig\AppExtension:
+        arguments:
+            $config:
+                cas: '%env(resolve:CAS)%'
+                params_url_class_for_student:
+                    module: 'adm/class/classes'
+                    type: 'authparticipant'
+                    subclass: 'yes'
+                    class: ''
+
     App\Service\WimsFileObjectCreatorService:
         arguments:
             $config:
