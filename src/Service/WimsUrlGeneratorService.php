@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Entity\Classes;
+use App\Entity\GroupingClasses;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -21,7 +22,7 @@ class WimsUrlGeneratorService
      */
     public function wimsUrlClassForStudent($class): string
     {
-        $params = $this->config['params_url_class_for_student'];
+        $params = $this->config['params_url'];
         $params['class'] = $class->getFullIdWims();
         $wimsUrl = $this->generateWimsUrl($params);
 
@@ -29,18 +30,19 @@ class WimsUrlGeneratorService
     }
 
     /**
-     * Génère l'url élève d'une classe a partir de l'objet de la classe
+     * Génère l'url enseignant d'un établissement a partir de l'objet de l'établissement
      *
-     * @param Classes $class La classe
-     * @return string L'url élève de la classe
+     * @param GroupingClasses $groupingClass L'établissement
+     * @return string L'url enseignant de l'établissement
      */
-    public function wimsUrlClassForTeacher($class): string
+    public function wimsUrlGroupingClassesForTeacher(GroupingClasses $groupingClass): string
     {
-        $params = $this->config['params_url_class_for_teacher'];
-        $params['class'] = $class->getFullIdWims();
-        return $this->generateWimsUrl($params);
-    }
+        $params = $this->config['params_url'];
+        $params['class'] = $groupingClass->getIdWims();
+        $wimsUrl = $this->generateWimsUrl($params);
 
+        return $this->config['cas'] . '/login?service=' . urlencode($wimsUrl);
+    }
 
     /**
      * Génère une url wims avec le bon domaine automatiquement

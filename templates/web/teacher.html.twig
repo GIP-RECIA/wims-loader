@@ -25,12 +25,11 @@ Est un enseignant<br>
 {% endif %}
 <br>
 {% if classes|length > 0 %}
+    <a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">Accéder aux classes</a><br>
     Liste des classes importées :
     <ul>
     {% for class in classes %}
-        <li><a href="{{ class|wims_url_class_for_teacher }}">
-            {{ class.name }} - {{ class.fullIdWims }}
-        </a>
+        <li>{{ class.name }} - {{ class.fullIdWims }}</li>
     {% endfor %}
     </ul>
 {% else %}

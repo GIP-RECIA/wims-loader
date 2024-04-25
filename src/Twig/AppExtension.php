@@ -2,6 +2,7 @@
 namespace App\Twig;
 
 use App\Entity\Classes;
+use App\Entity\GroupingClasses;
 use App\Service\WimsUrlGeneratorService;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -20,7 +21,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('wims_date', [$this, 'wimsDate']),
             new TwigFilter('wims_log_date_time', [$this, 'wimsLogDateTime']),
             new TwigFilter('wims_url_class_for_student', [$this, 'wimsUrlClassForStudent']),
-            new TwigFilter('wims_url_class_for_teacher', [$this, 'wimsUrlClassForTeacher']),
+            new TwigFilter('wims_url_grouping_classes_for_teacher', [$this, 'wimsUrlGroupingClassesForTeacher']),
         ];
     }
 
@@ -97,13 +98,13 @@ class AppExtension extends AbstractExtension
     }
 
     /**
-     * Génère l'url élève d'une classe a partir de l'objet de la classe
+     * Génère l'url élève d'une classe a partir de l'objet de l'établissement
      *
-     * @param Classes $class La classe
-     * @return string L'url élève de la classe
+     * @param GroupingClasses $groupingClass L'établissement
+     * @return string L'url enseignant de l'établissement
      */
-    public function wimsUrlClassForTeacher($class): string
+    public function wimsUrlGroupingClassesForTeacher($class): string
     {
-        return $this->wimsUrlGenerator->wimsUrlClassForTeacher($class);
+        return $this->wimsUrlGenerator->wimsUrlGroupingClassesForTeacher($class);
     }
 }

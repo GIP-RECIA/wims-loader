@@ -77,18 +77,11 @@ services:
         arguments:
             $config:
                 cas: '%env(resolve:CAS)%'
-                params_url_class: &params_url_class
+                params_url: &params_url_class
                     module: 'adm/class/classes'
-                    type: ''
-                    class: ''
-                params_url_class_for_student:
-                    <<: *params_url_class
                     type: 'authparticipant'
+                    class: ''
                     subclass: 'yes'
-                params_url_class_for_teacher:
-                    <<: *params_url_class
-                    lang: 'fr'
-                    type: 'authsupervisor'
 
     App\Service\WimsFileObjectCreatorService:
         arguments:
