@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use App\Entity\Classes;
 use App\Entity\GroupingClasses;
 use App\Entity\User;
 use App\Exception\BuildIndexException;
@@ -252,6 +253,23 @@ class WimsFileObjectCreatorService
     }
 
     /**
+     * Créé une nouvelle classe dans le groupement de classes
+     *
+     * @param Classes $class La class a créer
+     * @return Classes La classe mise à jour
+     */
+    public function createClassInGroupingClassesFromObj(Classes $class): Classes
+    {
+        $idWims = $this->createClassInGroupingClasses(
+            $this->fromObjUserToDataArray($class->getTeacher()),
+            $this->fromObjClassesToDataArray($class),
+            $class->getGroupingClasses()->getIdWims(),
+            $class->getTeacher()->getUid(),
+        );
+        return $class->setIdWims($idWims);
+    }
+
+    /**
      * Permet d'insérer un élève dans une classe d'un groupement de classes
      *
      * @param array $dataUser   Les données de l'élève
@@ -347,6 +365,22 @@ class WimsFileObjectCreatorService
 
         file_put_contents($classFolder . '/.usernextlist', $userNextList);
         file_put_contents($classFolder . '/.userprevlist', $userPrevList);
+    }
+
+    /**
+     * Permet d'insérer un élève dans une classe d'un groupement de classes
+     *
+     * @param User    $student L'étudiant a inscrire
+     * @param Classes $class   La classe dans laquelle inscrire l'étudiant
+     * @return void
+     */
+    public function addUserInClassFromObj(User $student, Classes $class): void
+    {
+        $this->addUserInClass(
+            $this->fromObjUserToDataArray($student),
+            $class->getGroupingClasses()->getIdWims(),
+            $class->getIdWims()
+        );
     }
 
     /**************************************************************************
@@ -906,6 +940,14 @@ class WimsFileObjectCreatorService
             'first_name' => $user->getFirstName(),
             'last_name' => $user->getLastName(),
             'email' => $user->getMail(),
+        ];
+    }
+
+    private function fromObjClassesToDataArray(Classes $class): array
+    {
+        return [
+            'description' => substr($class->getName().' - '.$class->getTeacher(), 0, 50),
+            'institution_name' => $class->getGroupingClasses()->getName(),
         ];
     }
 

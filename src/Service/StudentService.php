@@ -63,4 +63,33 @@ class StudentService
         return $res;
     }
 
+    /**
+     * Retourne un tableau des données des élèves dont les uid ont été fournit
+     *
+     * @param string[] $arrUid Les uid des élèves que l'on recherche
+     * @return User[] Les élèves sous forme d'User non persisté
+     */
+    public function getListStudentFromUidList(array $arrUid): array
+    {
+        $strSearch = '';
+
+        foreach ($arrUid as $uid) {
+            $strSearch .= "(uid=$uid)";
+        }
+
+        $strSearch = "(|" . $strSearch . ")";
+        $results = ($this->ldapService->search('ou=people,dc=esco-centre,dc=fr', $strSearch))->toArray();
+        $users = [];
+
+        foreach ($results as $result) {
+            $users[] = (new User())
+                ->setUid(strtolower($result->getAttribute('uid')[0]))
+                ->setFirstName($result->getAttribute('givenName')[0])
+                ->setLastName($result->getAttribute('sn')[0])
+                ->setMail($result->getAttribute('mail')[0]);
+        }
+
+        return $users;
+    }
+
 }

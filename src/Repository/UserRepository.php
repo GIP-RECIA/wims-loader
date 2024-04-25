@@ -31,6 +31,17 @@ class UserRepository extends ServiceEntityRepository
             ->getOneOrNullResult();*/
     }
 
+    /**
+     * Récupère un ensemble d'utilisateur par leur uid
+     *
+     * @param string[] $arrUid Les uid des utilisateurs recherchés
+     * @return User[] Les utilisateurs trouvés
+     */
+    public function findByUid(array $arrUid): array
+    {
+        return $this->findBy(['uid' => $arrUid]);
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */
