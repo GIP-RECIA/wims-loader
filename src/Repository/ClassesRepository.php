@@ -42,19 +42,36 @@ class ClassesRepository extends ServiceEntityRepository
      */
     public function findByGroupingClassesAndStudent(GroupingClasses $groupingClasses, User $student): array
     {
-        $res =  $this->createQueryBuilder('c')
+        return $this->createQueryBuilder('c')
             ->innerJoin('c.students', 's')
             ->where('c.groupingClasses = :groupingClasses')
             ->andWhere('s = :student')
-            ->setParameter('groupingClasses', $groupingClasses)
             ->setParameters([
                 'groupingClasses' => $groupingClasses,
                 'student' => $student,
             ])
-            ->getQuery();
-            $res = $res
+            ->getQuery()
             ->getResult();
+    }
 
-        return $res;
+    /**
+     * Retourne la liste de toutes les classes que possède l'enseignant dans
+     * l'établissement spécifié.
+     *
+     * @param GroupingClasses $groupingClasses L'établissement dans lequel rechercher les classes
+     * @param User $teacher L'enseignant dont on cherche les classes
+     * @return array La liste des classes de l'enseignant dans l'établissement courant
+     */
+    public function findByGroupingClassesAndTeacher(GroupingClasses $groupingClasses, User $teacher): array
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.groupingClasses = :groupingClasses')
+            ->andWhere('c.teacher = :teacher')
+            ->setParameters([
+                'groupingClasses' => $groupingClasses,
+                'teacher' => $teacher,
+            ])
+            ->getQuery()
+            ->getResult();
     }
 }

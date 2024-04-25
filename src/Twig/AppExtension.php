@@ -24,6 +24,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('wims_date', [$this, 'wimsDate']),
             new TwigFilter('wims_log_date_time', [$this, 'wimsLogDateTime']),
             new TwigFilter('wims_url_class_for_student', [$this, 'wimsUrlClassForStudent']),
+            new TwigFilter('wims_url_class_for_teacher', [$this, 'wimsUrlClassForTeacher']),
         ];
     }
 
@@ -101,6 +102,19 @@ class AppExtension extends AbstractExtension
         $wimsUrl = $this->generateWimsUrl($params);
 
         return $this->config['cas'] . '/login?service=' . urlencode($wimsUrl);
+    }
+
+    /**
+     * Génère l'url élève d'une classe a partir de l'objet de la classe
+     *
+     * @param Classes $class La classe
+     * @return string L'url élève de la classe
+     */
+    public function wimsUrlClassForTeacher($class): string
+    {
+        $params = $this->config['params_url_class_for_teacher'];
+        $params['class'] = $class->getFullIdWims();
+        return $this->generateWimsUrl($params);
     }
 
     /**

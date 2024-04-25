@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\ClassesRepository;
 use App\Service\GroupingClassesService;
 use App\Service\StudentService;
 use App\Service\TeacherService;
@@ -21,6 +22,7 @@ class TeacherController extends AbstractWimsLoaderController
         private GroupingClassesService $groupingClassesService,
         private StudentService $StudentService,
         private TeacherService $teacherService,
+        private ClassesRepository $classRepo,
     ) {}
 
     #[Route(path:"/enseignant/", name:"teacher")]
@@ -43,9 +45,12 @@ class TeacherController extends AbstractWimsLoaderController
             ];
         }
 
+        $classes = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
+
         return [
             'groupingClasses' => $groupingClasses,
             'ticketEnsClasses' => $ticketEnsClasses,
+            'classes' => $classes,
         ];
     }
 

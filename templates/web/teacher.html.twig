@@ -5,16 +5,35 @@
 user: {{ app.user }}<br>
 Est un enseignant<br>
 {{ groupingClasses }}<br>
-<ul>
-{% for class in ticketEnsClasses %}
-    <li><a href="{{ url('teacherCreateClass', {'className': class.className}) }}">
-        {{ class.className }}
-    </a></li>
-    <ol>
-    {% for uid in class.listUidStudent %}
-        <li>{{ uid }}</li>
+<br>
+{% if ticketEnsClasses|length > 0 %}
+    Liste des classes disponibles :
+    <ul>
+    {% for class in ticketEnsClasses %}
+        <li><a href="{{ url('teacherCreateClass', {'className': class.className}) }}">
+            {{ class.className }}
+        </a>{#} - <a href="{{ '7384243/1'|wims_url_class_for_teacher }}">admin class</a>#}</li>
+        <ol>
+        {% for uid in class.listUidStudent %}
+            <li>{{ uid }}</li>
+        {% endfor %}
+        </ol>
     {% endfor %}
-    </ol>
-{% endfor %}
-</ul>
+    </ul>
+{% else %}
+    Vous n'avez aucune classe disponible.
+{% endif %}
+<br>
+{% if classes|length > 0 %}
+    Liste des classes importées :
+    <ul>
+    {% for class in classes %}
+        <li><a href="{{ class|wims_url_class_for_teacher }}">
+            {{ class.name }}
+        </a>
+    {% endfor %}
+    </ul>
+{% else %}
+    Vous n'avez aucune classe importée.
+{% endif %}
 {% endblock %}
