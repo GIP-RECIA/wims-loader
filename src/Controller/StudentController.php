@@ -1,13 +1,12 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Repository\ClassesRepository;
-use App\Repository\UserRepository;
 use App\Service\GroupingClassesService;
 use App\Service\StudentService;
-use Symfony\Bridge\Twig\Attribute\Template;
+use App\Service\WimsUrlGeneratorService;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -20,30 +19,24 @@ class StudentController extends AbstractWimsLoaderController
         private GroupingClassesService $groupingClassesService,
         private StudentService $StudentService,
         private ClassesRepository $classRepo,
+        private WimsUrlGeneratorService $wimsUrlGeneratorService
     ) {}
 
     #[Route(path:"/eleve/", name:"student")]
-    #[Template('web/student.html.twig')]
-    public function indexStudent(Security $security): array
+    public function indexStudent(Security $security): Response
     {
         $user = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
         $classes = $this->classRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
+        $autoRedirectStudent = $this->getParameter('app.autoRedirectStudent');
 
-        return [
+        if ($autoRedirectStudent && count($classes) === 1) {
+            return $this->redirect($this->wimsUrlGeneratorService->wimsUrlClassForStudent($classes[0]));
+        }
+
+        return $this->render('web/student.html.twig', [
             'groupingClasses' => $groupingClasses,
             'classes' => $classes,
-        ];
-    }
-
-    #[Route(path:"/eleve/old/", name:"studentOld")]
-    #[Template('web/studentOld.html.twig')]
-    public function indexStudentOld(Security $security): array
-    {
-        $user = $this->getUserFromSecurity($security);
-        $classes = $this->StudentService->getListClassNameFromSirenAndUidStudent($user);
-        return [
-            'classes' => $classes,
-        ];
+        ]);
     }
 }
