@@ -2,19 +2,15 @@
 namespace App\Twig;
 
 use App\Entity\Classes;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Service\WimsUrlGeneratorService;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
 class AppExtension extends AbstractExtension
 {
     public function __construct(
-        private array $config,
-        private RequestStack $requestStack,
-        private UrlGeneratorInterface $urlGenerator,
-    ) {
-    }
+        private WimsUrlGeneratorService $wimsUrlGenerator,
+    ) {}
 
     public function getFilters(): array
     {
@@ -97,11 +93,7 @@ class AppExtension extends AbstractExtension
      */
     public function wimsUrlClassForStudent($class): string
     {
-        $params = $this->config['params_url_class_for_student'];
-        $params['class'] = $class->getFullIdWims();
-        $wimsUrl = $this->generateWimsUrl($params);
-
-        return $this->config['cas'] . '/login?service=' . urlencode($wimsUrl);
+        return $this->wimsUrlGenerator->wimsUrlClassForStudent($class);
     }
 
     /**
@@ -112,34 +104,6 @@ class AppExtension extends AbstractExtension
      */
     public function wimsUrlClassForTeacher($class): string
     {
-        $params = $this->config['params_url_class_for_teacher'];
-        $params['class'] = $class->getFullIdWims();
-        return $this->generateWimsUrl($params);
-    }
-
-    /**
-     * Génère une url wims avec le bon domaine automatiquement
-     *
-     * @param string[] $params Le tableau des paramètres
-     * @return string L'url wims
-     */
-    private function generateWimsUrl(array $params): string
-    {
-        $url = $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost()
-            . "/wims/wims.cgi";
-        $firstParam = true;
-
-        foreach ($params as $key => $value) {
-            if ($firstParam) {
-                $firstParam = false;
-                $url .= "?";
-            } else {
-                $url .= "&";
-            }
-
-            $url .= $key . "=" . $value;
-        }
-
-        return $url;
+        return $this->wimsUrlGenerator->wimsUrlClassForTeacher($class);
     }
 }

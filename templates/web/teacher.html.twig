@@ -29,7 +29,7 @@ Est un enseignant<br>
     <ul>
     {% for class in classes %}
         <li><a href="{{ class|wims_url_class_for_teacher }}">
-            {{ class.name }}
+            {{ class.name }} - {{ class.fullIdWims }}
         </a>
     {% endfor %}
     </ul>
