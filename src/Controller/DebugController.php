@@ -12,6 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
+#[IsGranted('IS_DEV_ENV')]
 class DebugController extends AbstractWimsLoaderController
 {
     public function __construct(
