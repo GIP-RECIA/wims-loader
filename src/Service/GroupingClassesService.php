@@ -2,7 +2,6 @@
 namespace App\Service;
 
 use App\Entity\GroupingClasses;
-use App\Exception\InvalidGroupingClassesException;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**

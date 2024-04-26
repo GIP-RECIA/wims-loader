@@ -4,7 +4,7 @@
 {% block body %}
 <h1>Page de debug</h1>
 
-<2>Menu</h2>
+<h2>Menu</h2>
 <ul>
     <li><a href="{{ url('debug_infos') }}">test infos sur l'utilisateur</a></li>
     <li><a href="{{ url('debug_phpinfo') }}">test page phpinfo</a></li>
@@ -13,10 +13,6 @@
 
 {% if content is defined %}
     {{ content|raw }}
-{% endif %}
-
-{% if dump is defined %}
-    {{ dump(dump) }}
 {% endif %}
 
 {% if dumpArray is defined %}
