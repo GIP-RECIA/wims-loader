@@ -27,16 +27,7 @@ class GroupingClassesService
         $groupingClasses = $this->em->getRepository(GroupingClasses::class)->findOneBySiren($siren);
 
         if ($groupingClasses === null) {
-            $data = $this->ldapService->search('ou=structures,dc=esco-centre,dc=fr', "(&(ObjectClass=ENTEtablissement)(ENTStructureSiren=$siren))");
-            $results = $data->toArray();
-
-            if (count($results) === 0) {
-                throw new InvalidGroupingClassesException(
-                    "Le groupement de classes (établissement) avec le siren '$siren' n'existe pas dans le ldap"
-                );
-            }
-
-            $res = $results[0];
+            $res = $this->ldapService->findOneGroupingClassesBySiren($siren);
             $groupingClasses = (new GroupingClasses())
                 ->setSiren($siren)
                 ->setUai($res->getAttribute('ENTStructureUAI')[0])

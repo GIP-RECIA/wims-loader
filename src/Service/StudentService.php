@@ -2,10 +2,7 @@
 namespace App\Service;
 
 use App\Entity\User;
-use App\Exception\LdapResultException;
 use App\Repository\ClassesRepository;
-use App\Repository\GroupingClassesRepository;
-use App\Repository\UserRepository;
 
 /**
  * Service qui va gérer les étudiants
@@ -26,9 +23,7 @@ class StudentService
      */
     public function getListUidStudentFromSirenAndClassName(string $siren, string $class): array
     {
-        $data = $this->ldapService->search('ou=people,dc=esco-centre,dc=fr', "(ENTEleveClasses=ENTStructureSIREN=$siren,ou=structures,dc=esco-centre,dc=fr\$$class)");
-        $results = $data->toArray();
-        $res = [];
+        $results = $this->ldapService->findStudentsBySirenAndClassName($siren, $class);
 
         foreach ($results as $result) {
             $res[] = $result->getAttribute('uid')[0];
@@ -45,18 +40,11 @@ class StudentService
      */
     public function getListClassNameFromSirenAndUidStudent(User $user): array
     {
-        $uid = $user->getUid();
         $sirenCourant = $user->getSirenCourant();
-        $results = ($this->ldapService->search('ou=people,dc=esco-centre,dc=fr', "(uid=$uid)"))->toArray();
-        $count = count($results);
-
-        if ($count !== 1) {
-            throw new LdapResultException("Le résultat de la requête ldap devrait contenir les données d'un utilisateur, mais elle en à $count");
-        }
-
+        $attributes = $this->ldapService->findOneStudentByUid($user->getUid())->getAttributes();
         $res = [];
         $startStrClass = "ENTStructureSIREN=$sirenCourant,ou=structures,dc=esco-centre,dc=fr$";
-        $srcClass = $results[0]->getAttribute('ENTEleveClasses');
+        $srcClass = $attributes['ENTEleveClasses'];
 
         foreach ($srcClass as $strClass) {
             if (str_starts_with($strClass, $startStrClass)) {
@@ -75,14 +63,7 @@ class StudentService
      */
     public function getListStudentFromUidList(array $arrUid): array
     {
-        $strSearch = '';
-
-        foreach ($arrUid as $uid) {
-            $strSearch .= "(uid=$uid)";
-        }
-
-        $strSearch = "(|" . $strSearch . ")";
-        $results = ($this->ldapService->search('ou=people,dc=esco-centre,dc=fr', $strSearch))->toArray();
+        $results = $this->ldapService->findUsersByUid($arrUid);
         $users = [];
 
         foreach ($results as $result) {

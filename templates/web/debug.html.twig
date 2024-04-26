@@ -1,0 +1,29 @@
+{# templates/web/debug.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Page de debug</h1>
+
+<2>Menu</h2>
+<ul>
+    <li><a href="{{ url('debug_infos') }}">test infos sur l'utilisateur</a></li>
+    <li><a href="{{ url('debug_phpinfo') }}">test page phpinfo</a></li>
+    <li><a href="{{ url('debug_headers') }}">test page headers</a></li>
+</ul>
+
+{% if content is defined %}
+    {{ content|raw }}
+{% endif %}
+
+{% if dump is defined %}
+    {{ dump(dump) }}
+{% endif %}
+
+{% if dumpArray is defined %}
+    {% for key, value in dumpArray %}
+        <h2>{{ key }}</h2>
+        {{ dump(value) }}
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

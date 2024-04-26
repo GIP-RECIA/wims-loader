@@ -29,6 +29,7 @@ security:
     access_control:
         - { path: ^/enseignant/, roles: ROLE_ENS }
         - { path: ^/eleve/, roles: ROLE_ELV }
+        - { path: ^/debug/, roles: ROLE_USER }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
