@@ -22,11 +22,24 @@ class GroupingClassesRepository extends ServiceEntityRepository
         parent::__construct($registry, GroupingClasses::class);
     }
 
+    /**
+     * Permet de récupérer un établissement à partir de son uai
+     *
+     * @param string $uai L'uai de l'établissement
+     * @return GroupingClasses|null L'établissement s'il existe
+     */
     public function findOneByUai(string $uai): ?GroupingClasses
     {
         return $this->findOneBy(['uai' => $uai]);
     }
 
+    /**
+     * Permet de savoir si un enseignant est déjà enregistré dans un établissement
+     *
+     * @param GroupingClasses $groupingClasses L'établissement
+     * @param User $teacher L'enseignant
+     * @return boolean true si il est enregistré, false sinon
+     */
     public function isTeacherRegistered(GroupingClasses $groupingClasses, User $teacher): bool
     {
         $qb = $this->createQueryBuilder('gc');
@@ -44,6 +57,12 @@ class GroupingClassesRepository extends ServiceEntityRepository
         return $result > 0;
     }
 
+    /**
+     * Permet de récupérer un établissement à partir de son siren
+     *
+     * @param string $siren Le siren
+     * @return GroupingClasses|null L'établissement s'il existe
+     */
     public function findOneBySiren(string $siren): ?GroupingClasses
     {
         return $this->findOneBy(['siren' => $siren]);

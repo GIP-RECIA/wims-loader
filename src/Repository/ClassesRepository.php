@@ -23,6 +23,14 @@ class ClassesRepository extends ServiceEntityRepository
         parent::__construct($registry, Classes::class);
     }
 
+    /**
+     * Retourne la liste de toutes les classes de l'enseignant dans
+     * l'établissement spécifié.
+     *
+     * @param GroupingClasses $groupingClasses L'établissement dans lequel rechercher les classes
+     * @param User $teacher L'enseignant dont on cherche les classes
+     * @return array La liste des classes de l'enseignant dans l'établissement courant
+     */
     public function findOneByGroupingClassesTeacherAndName(GroupingClasses $groupingClasses, User $teacher, string $name): ?Classes
     {
         return $this->findOneBy([
