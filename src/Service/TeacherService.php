@@ -72,7 +72,7 @@ class TeacherService
                 $students[$student->getUid()] = $student;
             }
 
-            foreach ($students as $studentsBdd) {
+            foreach ($students as $student) {
                 $class->addStudent($student);
                 // Inscription des élèves côté wims
                 $this->wims->addUserInClassFromObj($student, $class);
