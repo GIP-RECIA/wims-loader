@@ -10,6 +10,11 @@
 {% endblock %}
 
 {% block body %}
+{% for message in app.flashes('notice') %}
+<div class="flash-notice">
+    {{ message }}
+</div>
+{% endfor %}
 user: {{ app.user }}<br>
 Est un enseignant<br>
 {{ groupingClasses }}<br>

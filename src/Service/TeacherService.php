@@ -7,6 +7,7 @@ use App\Repository\ClassesRepository;
 use App\Repository\GroupingClassesRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Ldap\Exception\AlreadyExistsException;
 
 /**
  * Service qui va gérer les enseignants
@@ -28,65 +29,66 @@ class TeacherService
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($teacher->getSirenCourant());
         $class = $this->classRepository->findOneByGroupingClassesTeacherAndName($groupingClasses, $teacher, $className);
 
-        if ($class === null) {
-            $isTeacherRegistered = $this->groupingClassesRepo->isTeacherRegistered($groupingClasses, $teacher);
-
-            // Si l'enseignant n'est pas enregistré dans l'établissement, on l'enregistre
-            if (!$isTeacherRegistered) {
-                $groupingClasses->addRegisteredTeacher($teacher);
-                $this->wims->createTeacherInGroupingClassesFromObj($teacher, $groupingClasses);
-                // TODO: voir si le flush est utile là
-                $this->em->flush();
-            }
-
-            $class = (new Classes())
-                ->setTeacher($teacher)
-                ->setGroupingClasses($groupingClasses)
-                // On tronque le nom de la classe à 50 char max
-                ->setName(substr($className . " - " . $teacher->getLastName(), 0, 50))
-                ->setLastSyncAt();
-            // Création de la classe côté wims
-            $class = $this->wims->createClassInGroupingClassesFromObj($class);
-            $this->em->persist($class);
-            dump($class);
-
-            // Récupération des élèves dans le ldap
-            $uidStudents = $this->studentService->getListUidStudentFromSirenAndClassName(
-                $groupingClasses->getSiren(),
-                $className);
-            $studentsBdd = $this->userRepo->findByUid($uidStudents);
-            $students = [];
-            $studentsToCreate = [];
-        
-            foreach ($studentsBdd as $student) {
-                $students[$student->getUid()] = $student;
-            }
-        
-            foreach ($uidStudents as $uidStudent) {
-                if (!array_key_exists($uidStudent, $students)) {
-                    $studentsToCreate[] = $uidStudent;
-                }
-            }
-
-            $studentsToCreate = $this->studentService->getListStudentFromUidList($studentsToCreate);
-
-            foreach ($studentsToCreate as $student) {
-                $this->em->persist($student);
-                $students[$student->getUid()] = $student;
-            }
-
-            foreach ($students as $student) {
-                $class->addStudent($student);
-                // Inscription des élèves côté wims
-                $this->wims->addUserInClassFromObj($student, $class);
-                dump($student);
-            }
-    
-            $this->em->persist($class);
-            $this->em->flush();
+        if ($class !== null) {
+            throw new AlreadyExistsException(
+                "La classe \"" . $className . "\" pour l'enseignant \"" .
+                $teacher->getFullName() . "\" existe déjà."
+            );
         }
 
-        dump($class);
+        $isTeacherRegistered = $this->groupingClassesRepo->isTeacherRegistered($groupingClasses, $teacher);
+
+        // Si l'enseignant n'est pas enregistré dans l'établissement, on l'enregistre
+        if (!$isTeacherRegistered) {
+            $groupingClasses->addRegisteredTeacher($teacher);
+            $this->wims->createTeacherInGroupingClassesFromObj($teacher, $groupingClasses);
+            // TODO: voir si le flush est utile là
+            //$this->em->flush();
+        }
+
+        $class = (new Classes())
+            ->setTeacher($teacher)
+            ->setGroupingClasses($groupingClasses)
+            // On tronque le nom de la classe à 50 char max
+            ->setName(substr($className . " - " . $teacher->getLastName(), 0, 50))
+            ->setLastSyncAt();
+        // Création de la classe côté wims
+        $class = $this->wims->createClassInGroupingClassesFromObj($class);
+        $this->em->persist($class);
+
+        // Récupération des élèves dans le ldap
+        $uidStudents = $this->studentService->getListUidStudentFromSirenAndClassName(
+            $groupingClasses->getSiren(),
+            $className);
+        $studentsBdd = $this->userRepo->findByUid($uidStudents);
+        $students = [];
+        $studentsToCreate = [];
+    
+        foreach ($studentsBdd as $student) {
+            $students[$student->getUid()] = $student;
+        }
+    
+        foreach ($uidStudents as $uidStudent) {
+            if (!array_key_exists($uidStudent, $students)) {
+                $studentsToCreate[] = $uidStudent;
+            }
+        }
+
+        $studentsToCreate = $this->studentService->getListStudentFromUidList($studentsToCreate);
+
+        foreach ($studentsToCreate as $student) {
+            $this->em->persist($student);
+            $students[$student->getUid()] = $student;
+        }
+
+        foreach ($students as $student) {
+            $class->addStudent($student);
+            // Inscription des élèves côté wims
+            $this->wims->addUserInClassFromObj($student, $class);
+        }
+
+        $this->em->flush();
+
         return $class;
     }
 }

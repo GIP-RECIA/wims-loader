@@ -33,29 +33,6 @@ class StudentService
     }
 
     /**
-     * Retourne la liste des noms de class pour un élève dans son établissement courant
-     *
-     * @param User $user L'élève dont on cherche les classes
-     * @return array La liste des classes
-     */
-    public function getListClassNameFromSirenAndUidStudent(User $user): array
-    {
-        $sirenCourant = $user->getSirenCourant();
-        $attributes = $this->ldapService->findOneStudentByUid($user->getUid())->getAttributes();
-        $res = [];
-        $startStrClass = "ENTStructureSIREN=$sirenCourant,ou=structures,dc=esco-centre,dc=fr$";
-        $srcClass = $attributes['ENTEleveClasses'];
-
-        foreach ($srcClass as $strClass) {
-            if (str_starts_with($strClass, $startStrClass)) {
-                $res[] = substr($strClass, strlen($startStrClass));
-            }
-        }
-
-        return $res;
-    }
-
-    /**
      * Retourne un tableau des données des élèves dont les uid ont été fournit
      *
      * @param string[] $arrUid Les uid des élèves que l'on recherche

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Classes;
 use App\Entity\GroupingClasses;
 use App\Entity\User;
+use App\Service\ClassesService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,7 +19,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ClassesRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        private ManagerRegistry $registry,
+        private ClassesService $classesService,
+        )
     {
         parent::__construct($registry, Classes::class);
     }
@@ -36,7 +40,7 @@ class ClassesRepository extends ServiceEntityRepository
         return $this->findOneBy([
             'groupingClasses' => $groupingClasses,
             'teacher' => $teacher,
-            'name' => $name
+            'name' => $this->classesService->generateName($name, $teacher)
         ]);
     }
 

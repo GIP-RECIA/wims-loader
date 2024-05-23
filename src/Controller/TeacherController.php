@@ -60,6 +60,7 @@ class TeacherController extends AbstractWimsLoaderController
         $user = $this->getUserFromSecurity($security);
         $className = $request->attributes->get('className');
         $class = $this->teacherService->createClass($user, $className);
-        return new Response("<html><body>".$class->getName()."</body></html>");
+        $this->addFlash('notice', 'La classe "' . $class->getName() . '" a bien été importée');
+        return $this->redirectToRoute('teacher');
     }
 }
