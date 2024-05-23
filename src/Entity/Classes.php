@@ -121,9 +121,9 @@ class Classes
         return $this->lastSyncAt;
     }
 
-    public function setLastSyncAt(\DateTimeImmutable $lastSyncAt): static
+    public function setLastSyncAt(): static
     {
-        $this->lastSyncAt = $lastSyncAt;
+        $this->lastSyncAt = new \DateTimeImmutable();
 
         return $this;
     }
