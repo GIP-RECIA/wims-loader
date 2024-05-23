@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\ClassesRepository;
+use App\Service\ClassesService;
 use App\Service\GroupingClassesService;
 use App\Service\StudentService;
 use App\Service\TeacherService;
@@ -23,6 +24,7 @@ class TeacherController extends AbstractWimsLoaderController
         private StudentService $StudentService,
         private TeacherService $teacherService,
         private ClassesRepository $classRepo,
+        private ClassesService $classesService,
     ) {}
 
     #[Route(path:"/enseignant/", name:"teacher")]
@@ -31,26 +33,26 @@ class TeacherController extends AbstractWimsLoaderController
     {
         $user = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
-        $ticketEnsClasses = [];
+        $importedClasses = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
+        $importedClassesName = [];
+        $classesToImport = [];
 
-        foreach ($user->getTicketEnsClasses() as $class) {
-            $listUidStudent = [];
-
-            foreach ($this->StudentService->getListUidStudentFromSirenAndClassName($user->getSirenCourant(), $class) as $uid) {
-                $listUidStudent[] = $uid;
-            }
-            $ticketEnsClasses[] = [
-                'className' => $class,
-                'listUidStudent' => $listUidStudent,
-            ];
+        foreach ($importedClasses as $classes) {
+            $importedClassesName[] = $classes->getName();
         }
 
-        $classes = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
+        foreach ($user->getTicketEnsClasses() as $baseClassName) {
+            if (!in_array($this->classesService->generateName($baseClassName, $user), $importedClassesName)) {
+                $classesToImport[] = $baseClassName;
+            }
+        }
+
+        sort($classesToImport);
 
         return [
             'groupingClasses' => $groupingClasses,
-            'ticketEnsClasses' => $ticketEnsClasses,
-            'classes' => $classes,
+            'classesToImport' => $classesToImport,
+            'importedClasses' => $importedClasses,
         ];
     }
 

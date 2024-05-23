@@ -24,6 +24,7 @@ class StudentService
     public function getListUidStudentFromSirenAndClassName(string $siren, string $class): array
     {
         $results = $this->ldapService->findStudentsBySirenAndClassName($siren, $class);
+        $res = [];
 
         foreach ($results as $result) {
             $res[] = strtolower($result->getAttribute('uid')[0]);

@@ -79,6 +79,7 @@ class ClassesRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->where('c.groupingClasses = :groupingClasses')
             ->andWhere('c.teacher = :teacher')
+            ->orderBy('c.name')
             ->setParameters([
                 'groupingClasses' => $groupingClasses,
                 'teacher' => $teacher,
