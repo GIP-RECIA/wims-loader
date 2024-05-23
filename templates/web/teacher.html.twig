@@ -1,10 +1,46 @@
 {# templates/web/teacher.html.twig #}
 {% extends 'base.html.twig' %}
 
+{% block title %}Page enseignant{% endblock %}
+
+{% block stylesheets %}
+<style>
+{% include "web/include/style.css.twig" %}
+</style>
+{% endblock %}
+
 {% block body %}
 user: {{ app.user }}<br>
 Est un enseignant<br>
 {{ groupingClasses }}<br>
+<br>
+{% if classes|length > 0 %}
+    <a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">Accéder aux classes</a><br><br>
+
+    <table class="wimstable sortable" style="texte-align:center">
+        <caption>Classes importées dans wims</caption>
+        <thead>
+            <tr data-sort-method="thead">
+                <th scope="col" role="columnheader">Nom</th>
+                <th scope="col" role="columnheader">Gestion</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for class in classes %}
+            <tr class="xx">
+                <td>
+                    {{ class.name }}
+                </td>
+                <td>
+                    {{ class.fullIdWims }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    Vous n'avez aucune classe importée.
+{% endif %}
 <br>
 {% if ticketEnsClasses|length > 0 %}
     Liste des classes disponibles :
@@ -22,17 +58,5 @@ Est un enseignant<br>
     </ul>
 {% else %}
     Vous n'avez aucune classe disponible.
-{% endif %}
-<br>
-{% if classes|length > 0 %}
-    <a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">Accéder aux classes</a><br>
-    Liste des classes importées :
-    <ul>
-    {% for class in classes %}
-        <li>{{ class.name }} - {{ class.fullIdWims }}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    Vous n'avez aucune classe importée.
 {% endif %}
 {% endblock %}

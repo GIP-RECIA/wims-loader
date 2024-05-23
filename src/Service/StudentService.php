@@ -26,7 +26,7 @@ class StudentService
         $results = $this->ldapService->findStudentsBySirenAndClassName($siren, $class);
 
         foreach ($results as $result) {
-            $res[] = $result->getAttribute('uid')[0];
+            $res[] = strtolower($result->getAttribute('uid')[0]);
         }
 
         return $res;

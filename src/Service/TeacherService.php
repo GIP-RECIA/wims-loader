@@ -42,7 +42,8 @@ class TeacherService
             $class = (new Classes())
                 ->setTeacher($teacher)
                 ->setGroupingClasses($groupingClasses)
-                ->setName($className . " - " . $teacher->getLastName())
+                // On tronque le nom de la classe à 50 char max
+                ->setName(substr($className . " - " . $teacher->getLastName(), 0, 50))
                 ->setLastSyncAt();
             // Création de la classe côté wims
             $class = $this->wims->createClassInGroupingClassesFromObj($class);

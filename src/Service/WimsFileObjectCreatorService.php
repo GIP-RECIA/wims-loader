@@ -946,7 +946,7 @@ class WimsFileObjectCreatorService
     private function fromObjClassesToDataArray(Classes $class): array
     {
         return [
-            'description' => substr($class->getName().' - '.$class->getTeacher()->getLastName(), 0, 50),
+            'description' => $class->getName(),
             'institution_name' => $class->getGroupingClasses()->getName(),
         ];
     }

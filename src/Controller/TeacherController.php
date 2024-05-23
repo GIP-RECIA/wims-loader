@@ -59,7 +59,7 @@ class TeacherController extends AbstractWimsLoaderController
     {
         $user = $this->getUserFromSecurity($security);
         $className = $request->attributes->get('className');
-        $this->teacherService->createClass($user, $className);
-        return new Response("<html><body>$className</body></html>");
+        $class = $this->teacherService->createClass($user, $className);
+        return new Response("<html><body>".$class->getName()."</body></html>");
     }
 }
