@@ -5,13 +5,30 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
+        <style>
+        {% include "web/include/style.css.twig" %}
+        </style>
         {% endblock %}
 
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
+    <body class="main_body">
+        <div id="wimstopbox">
+            <div class="wimsmenu menu float_left">
+                <span class="menuitem class_home">
+                    <span class="text_item class_home">{% block title_menu %}Page d'accueil{% endblock %} </span>
+                </span>
+            </div>
+            <ul class="wimsmenu dropdown menu">
+                <li class="menuitem aboutw" role="menuitem">
+                    <a href="#"><span class="text_item">{{ app.user.fullName }}</span></a>
+                </li>
+            </ul>
+            <div class="wimsmenu menu"> </div>
+            <br class="clearall">
+        </div>
         {% block body %}{% endblock %}
     </body>
 </html>

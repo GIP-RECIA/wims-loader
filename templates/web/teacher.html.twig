@@ -3,17 +3,13 @@
 
 {% block title %}Page enseignant{% endblock %}
 
-{% block stylesheets %}
-<style>
-{% include "web/include/style.css.twig" %}
-</style>
-{% endblock %}
+{% block title_menu %}Page enseignant{% endblock %}
 
 {% block body %}
 {% for message in app.flashes('notice') %}
 <div class="wims_msg info">{{ message }}</div>
 {% endfor %}
-user: {{ app.user }}<br>
+user: {{ app.user.fullName }}<br>
 Est un enseignant<br>
 {{ groupingClasses }}<br>
 <br>

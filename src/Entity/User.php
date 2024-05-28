@@ -152,7 +152,7 @@ class User implements UserInterface
 
     public function getFullName(): ?string
     {
-        return $this->lastName . " " . $this->firstName;
+        return $this->firstName . " " . $this->lastName;
     }
 
     public function getMail(): ?string
