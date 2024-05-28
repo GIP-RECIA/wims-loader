@@ -1,61 +1,52 @@
 {# templates/web/teacher.html.twig #}
 {% extends 'base.html.twig' %}
-
-{% block title %}Page enseignant{% endblock %}
-
-{% block title_menu %}Page enseignant{% endblock %}
+{% set title_page = 'Page enseignant' %}
 
 {% block body %}
-{% for message in app.flashes('notice') %}
-<div class="wims_msg info">{{ message }}</div>
-{% endfor %}
-user: {{ app.user.fullName }}<br>
-Est un enseignant<br>
-{{ groupingClasses }}<br>
-<br>
-{% if importedClasses|length > 0 %}
-    <a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">Accéder aux classes</a><br><br>
+<details open>
+    <summary>Vos classes importées</summary>
+    {% if importedClasses|length > 0 %}
+        <a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">Accéder aux classes</a><br><br>
 
-    <table class="wimstable sortable" style="texte-align:center">
-        <caption>Classes importées dans wims</caption>
-        <thead>
-            <tr data-sort-method="thead">
-                <th scope="col" role="columnheader">Nom</th>
-                <th scope="col" role="columnheader">Gestion</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for class in importedClasses %}
-            <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
-                <td>
-                    {{ class.name }}
-                </td>
-                <td>
-                    {{ class.fullIdWims }}
-                </td>
-            </tr>
+        <table class="wimstable sortable" style="texte-align:center">
+            <caption>Classes importées dans wims</caption>
+            <thead>
+                <tr data-sort-method="thead">
+                    <th scope="col" role="columnheader">Nom</th>
+                    <th scope="col" role="columnheader">Gestion</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for class in importedClasses %}
+                <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
+                    <td>
+                        {{ class.name }}
+                    </td>
+                    <td>
+                        {{ class.fullIdWims }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        Vous n'avez aucune classe importée.
+    {% endif %}
+</details>
+<details open>
+    <summary>Vos classes à importer</summary>
+    <br>
+    {% if classesToImport|length > 0 %}
+        Liste des classes disponibles à l'import :
+        <ul>
+        {% for className in classesToImport %}
+            <li><a href="{{ url('teacherCreateClass', {'className': className}) }}">
+                {{ className }}
+            </a></li>
         {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    Vous n'avez aucune classe importée.
-{% endif %}
-<br>
-{% if classesToImport|length > 0 %}
-    Liste des classes disponibles à l'import :
-    <ul>
-    {% for className in classesToImport %}
-        <li><a href="{{ url('teacherCreateClass', {'className': className}) }}">
-            {{ className }}
-        </a>{#} - <a href="{{ '7384243/1'|wims_url_class_for_teacher }}">admin class</a>#}</li>
-        <ol>
-        {#{% for uid in class.listUidStudent %}
-            <li>{{ uid }}</li>
-        {% endfor %}#}
-        </ol>
-    {% endfor %}
-    </ul>
-{% else %}
-    Vous n'avez aucune classe disponible à l'import.
-{% endif %}
+        </ul>
+    {% else %}
+        Vous n'avez aucune classe disponible à l'import.
+    {% endif %}
+</details>
 {% endblock %}

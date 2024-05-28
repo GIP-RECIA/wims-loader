@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
+{% if title_page is not defined %}{% set title_page = "Page d'accueil" %}{% endif %}
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{{ title_page }}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
         <style>
@@ -18,7 +19,7 @@
         <div id="wimstopbox">
             <div class="wimsmenu menu float_left">
                 <span class="menuitem class_home">
-                    <span class="text_item class_home">{% block title_menu %}Page d'accueil{% endblock %} </span>
+                    <span class="text_item class_home">{{ title_page }} </span>
                 </span>
             </div>
             <ul class="wimsmenu dropdown menu">
@@ -29,6 +30,57 @@
             <div class="wimsmenu menu"> </div>
             <br class="clearall">
         </div>
-        {% block body %}{% endblock %}
+
+        <nav aria-label="You are here:">
+            <ul class="breadcrumbs">
+                <li class="class_home menuitem">
+                    <span class="text_item class_home">{{ title_page }} </span>
+                    <span class="show-for-sr">(Current)</span>
+                </li>
+            </ul>
+        </nav>
+
+        <div id="wimsbodybox">
+            <div id="wimspagebox">
+                <div class="wimsbody">
+                    {% for message in app.flashes('alert') %}
+                        <div class="wims_msg alert">{{ message }}</div>
+                    {% endfor %}
+
+                    {% for message in app.flashes('info') %}
+                        <div class="wims_msg info">{{ message }}</div>
+                    {% endfor %}
+
+                    <div id="wims_group">
+                        <div id="wims_modu_title1" class="title_box">
+                            <div class="wims_classname">{{ groupingClasses.uai }}</div>
+                            <h1 class="wims_title">{{ groupingClasses.name }}</h1>
+                        </div>
+                    </div>
+
+                    {% block body %}{% endblock %}
+                </div>
+            </div>
+
+            <nav id="wimsmenumodubox">
+                <div class="modubox_content">
+                    <h2 class="menu_title">
+                        <span> Navigation</span>
+                    </h2>
+                </div>
+                <div class="wimsmenu menu">
+                    {% if is_granted('ROLE_ENS') %}
+                    <div class="menuitem">
+                        <a href="{{ url('teacher') }}"><span>Page enseignant </span></a>
+                    </div>
+                    {% endif %}
+                    {% if is_granted('ROLE_ELV') %}
+                    <div class="menuitem">
+                        <a href="{{ url('student') }}"><span>Page élève </span></a>
+                    </div>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
     </body>
 </html>

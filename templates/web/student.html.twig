@@ -1,18 +1,19 @@
 {# templates/web/student.html.twig #}
 {% extends 'base.html.twig' %}
+{% set title_page = 'Page élève' %}
 
 {% block body %}
-user: {{ app.user }}<br>
-Est un élève<br>
-Voici ces classes pour l'établissement {{ groupingClasses }} :
-{% if classes|length > 0 %}
-<ul>
-    {% for class in classes %}
-        <li><a href="{{ class|wims_url_class_for_student }}">{{ class }}</a></li>
-    {% endfor %}
-</ul>
-{% else %}
-<br>
-Vous n'êtes actuellement inscrit dans aucune classe wims, merci de voir avec votre enseignant.
-{% endif %}
+<details open>
+    <summary>Vos classes</summary>
+    {% if classes|length > 0 %}
+    <ul class="wims_subclasses">
+        {% for class in classes %}
+        <li><span class="wims_classes_direct_class"><a href="{{ class|wims_url_class_for_student }}">{{ class.name }}</a></span></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <br>
+    Vous n'êtes actuellement inscrit dans aucune classe wims, merci de voir avec votre enseignant.
+    {% endif %}
+</details>
 {% endblock %}

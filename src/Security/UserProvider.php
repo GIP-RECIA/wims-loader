@@ -75,6 +75,9 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
                             case 'National_ENS':
                                 $roles[] = 'ROLE_ENS';
                                 break;
+                            case 'National_DOC':
+                                $roles[] = 'ROLE_DOC';
+                                break;
                             case 'National_COL':
                                 $roles[] = 'ROLE_COL';
                                 break;
