@@ -11,9 +11,7 @@
 
 {% block body %}
 {% for message in app.flashes('notice') %}
-<div class="flash-notice">
-    {{ message }}
-</div>
+<div class="wims_msg info">{{ message }}</div>
 {% endfor %}
 user: {{ app.user }}<br>
 Est un enseignant<br>
@@ -32,7 +30,7 @@ Est un enseignant<br>
         </thead>
         <tbody>
         {% for class in importedClasses %}
-            <tr class="xx">
+            <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
                 <td>
                     {{ class.name }}
                 </td>
