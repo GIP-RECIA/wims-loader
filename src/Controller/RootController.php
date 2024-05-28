@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Service\GroupingClassesService;
 use App\Service\LdapService;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +13,7 @@ class RootController extends AbstractWimsLoaderController
     public function __construct(
         private AuthorizationCheckerInterface $authorizationChecker,
         private LdapService $ldapService,
+        private GroupingClassesService $groupingClassesService,
     ) {}
 
     #[Route(path:"/", name:"root")]
@@ -31,6 +33,7 @@ class RootController extends AbstractWimsLoaderController
 
         
         $user = $this->getUserFromSecurity($security);
+        $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
         $isTeacher = $this->authorizationChecker->isGranted('ROLE_ENS');
         $isStudent = $this->authorizationChecker->isGranted('ROLE_ELV');
 
@@ -40,6 +43,8 @@ class RootController extends AbstractWimsLoaderController
             return $this->redirectToRoute('student');
         }*/
 
-        return $this->render('web/root.html.twig');
+        return $this->render('web/root.html.twig', [
+            'groupingClasses' => $groupingClasses,
+        ]);
     }
 }
