@@ -33,16 +33,16 @@
         Vous n'avez aucune classe importée.
     {% endif %}
 </details>
-<details open>
+<details {% if classesToImport|length > 0 %}open{% else %}close{% endif %}>
     <summary>Vos classes à importer</summary>
     <br>
     {% if classesToImport|length > 0 %}
         Liste des classes disponibles à l'import :
-        <ul>
+        <ul class="wims_subclasses">
         {% for className in classesToImport %}
-            <li><a href="{{ url('teacherCreateClass', {'className': className}) }}">
+            <li><span class="wims_classes_direct_class"><a href="{{ url('teacherCreateClass', {'className': className}) }}">
                 {{ className }}
-            </a></li>
+            </a></span></li>
         {% endfor %}
         </ul>
     {% else %}
