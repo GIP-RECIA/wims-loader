@@ -86,8 +86,10 @@ class TeacherController extends AbstractWimsLoaderController
             }
 
             return $this->redirectToRoute('teacher');
+        } else {
+            
         }
-        
+
         return $this->redirectToRoute('teacher');
     }
 }

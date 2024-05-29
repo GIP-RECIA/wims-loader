@@ -22,6 +22,7 @@ class TeacherService
         private GroupingClassesRepository $groupingClassesRepo,
         private ClassesRepository $classRepository,
         private WimsFileObjectCreatorService $wims,
+        private ClassesService $classesService,
     ) {}
 
     public function createClass(User $teacher, string $className): Classes
@@ -42,15 +43,12 @@ class TeacherService
         if (!$isTeacherRegistered) {
             $groupingClasses->addRegisteredTeacher($teacher);
             $this->wims->createTeacherInGroupingClassesFromObj($teacher, $groupingClasses);
-            // TODO: voir si le flush est utile là
-            //$this->em->flush();
         }
 
         $class = (new Classes())
             ->setTeacher($teacher)
             ->setGroupingClasses($groupingClasses)
-            // On tronque le nom de la classe à 50 char max
-            ->setName(substr($className . " - " . $teacher->getLastName(), 0, 50))
+            ->setName($this->classesService->generateName($className, $teacher))
             ->setLastSyncAt();
         // Création de la classe côté wims
         $class = $this->wims->createClassInGroupingClassesFromObj($class);
