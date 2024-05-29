@@ -6,7 +6,7 @@
 <details open>
     <summary>Vos classes importées</summary>
     {% if importedClasses|length > 0 %}
-        <a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">Accéder aux classes</a><br><br>
+        <p><a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">Accéder aux classes</a></p>
 
         <table class="wimstable sortable" style="texte-align:center">
             <caption>Classes importées dans wims</caption>
@@ -30,14 +30,13 @@
             </tbody>
         </table>
     {% else %}
-        Vous n'avez aucune classe importée.
+        <p>Vous n'avez aucune classe importée.</p>
     {% endif %}
 </details>
 <details {% if classesToImport|length > 0 %}open{% else %}close{% endif %}>
     <summary>Vos classes à importer</summary>
-    <br>
     {% if classesToImport|length > 0 %}
-        Liste des classes disponibles à l'import :
+        <p>Liste des classes disponibles à l'import :</p>
         <ul class="wims_subclasses">
         {% for className in classesToImport %}
             <li><span class="wims_classes_direct_class"><a href="{{ url('teacherCreateClass', {'className': className}) }}">
@@ -46,7 +45,7 @@
         {% endfor %}
         </ul>
     {% else %}
-        Vous n'avez aucune classe disponible à l'import.
+        <p>Vous n'avez aucune classe disponible à l'import.</p>
     {% endif %}
 </details>
 {% endblock %}
