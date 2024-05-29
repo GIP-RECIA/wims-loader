@@ -2,11 +2,13 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\ClassNameType;
 use App\Repository\ClassesRepository;
 use App\Service\ClassesService;
 use App\Service\GroupingClassesService;
 use App\Service\StudentService;
 use App\Service\TeacherService;
+use Exception;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,6 +38,7 @@ class TeacherController extends AbstractWimsLoaderController
         $importedClasses = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
         $importedClassesName = [];
         $classesToImport = [];
+        $formsClassesToImport = [];
 
         foreach ($importedClasses as $classes) {
             $importedClassesName[] = $classes->getName();
@@ -43,26 +46,48 @@ class TeacherController extends AbstractWimsLoaderController
 
         foreach ($user->getTicketEnsClasses() as $baseClassName) {
             if (!in_array($this->classesService->generateName($baseClassName, $user), $importedClassesName)) {
-                $classesToImport[] = $baseClassName;
+                $form = $this->createForm(ClassNameType::class, ['className' => $baseClassName], [
+                    'action' => $this->generateUrl('teacherCreateClass', [
+                        'step' => 1,
+                    ]),
+                ]);
+                $formsClassesToImport[$baseClassName] = $form->createView();
             }
         }
 
-        sort($classesToImport);
+        ksort($classesToImport);
 
         return [
             'groupingClasses' => $groupingClasses,
-            'classesToImport' => $classesToImport,
             'importedClasses' => $importedClasses,
+            'formsClassesToImport' => $formsClassesToImport,
         ];
     }
 
-    #[Route(path:"/enseignant/createClass/{className}", name:"teacherCreateClass")]
-    public function createClass(Request $request, Security $security): Response
+    #[Route(path:"/enseignant/createClass/{step}", name:"teacherCreateClass", requirements: ['step' => '1|2'])]
+    public function createClass(Request $request, Security $security, int $step): Response
     {
         $user = $this->getUserFromSecurity($security);
-        $className = $request->attributes->get('className');
-        $class = $this->teacherService->createClass($user, $className);
-        $this->addFlash('info', 'La classe "' . $class->getName() . '" a bien été importée');
+
+        if ($step === 1) {
+            $form = $this->createForm(ClassNameType::class);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                try {
+                    $className = $form->getData()['className'];
+                    $class = $this->teacherService->createClass($user, $className);
+                    $this->addFlash('info', 'La classe "' . $class->getName() . '" a bien été importée');
+                } catch (Exception $e) {
+                    $this->addFlash('alert', 'Erreur lors de la création de la classe');
+                }
+            } else {
+                $this->addFlash('alert', 'Erreur lors de la récupération du nom de la classe');
+            }
+
+            return $this->redirectToRoute('teacher');
+        }
+        
         return $this->redirectToRoute('teacher');
     }
 }

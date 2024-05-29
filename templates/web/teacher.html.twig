@@ -8,7 +8,7 @@
     {% if importedClasses|length > 0 %}
         <p><a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">Accéder aux classes</a></p>
 
-        <table class="wimstable sortable" style="texte-align:center">
+        <table class="wimstable" style="texte-align:center">
             <caption>Classes importées dans wims</caption>
             <thead>
                 <tr data-sort-method="thead">
@@ -33,17 +33,30 @@
         <p>Vous n'avez aucune classe importée.</p>
     {% endif %}
 </details>
-<details {% if classesToImport|length > 0 %}open{% else %}close{% endif %}>
+<details {% if formsClassesToImport|length > 0 %}open{% else %}close{% endif %}>
     <summary>Vos classes à importer</summary>
-    {% if classesToImport|length > 0 %}
-        <p>Liste des classes disponibles à l'import :</p>
-        <ul class="wims_subclasses">
-        {% for className in classesToImport %}
-            <li><span class="wims_classes_direct_class"><a href="{{ url('teacherCreateClass', {'className': className}) }}">
-                {{ className }}
-            </a></span></li>
-        {% endfor %}
-        </ul>
+    {% if formsClassesToImport|length > 0 %}
+        <table class="wimstable" style="texte-align:center">
+            <caption>Classes disponibles à l'import</caption>
+            <thead>
+                <tr data-sort-method="thead">
+                    <th scope="col" role="columnheader">Nom</th>
+                    <th scope="col" role="columnheader">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for key, form in formsClassesToImport %}
+                <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
+                    <td>
+                        {{ key }}
+                    </td>
+                    <td>
+                        {{ form(form) }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     {% else %}
         <p>Vous n'avez aucune classe disponible à l'import.</p>
     {% endif %}

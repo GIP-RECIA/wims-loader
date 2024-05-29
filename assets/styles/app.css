@@ -170,3 +170,12 @@
   .CtxtMenu_SelectionBox {  padding: 0em; max-height:20em; max-width: none;  background-color:#FFFFFF;}
   .CtxtMenu_SelectionDivider {  clear: both; border-top: 2px solid #000000;}
   .CtxtMenu_Menu .CtxtMenu_MenuClose {  top:-10px; left:-10px}
+
+
+
+
+  /* autres ajouts */
+  input[type="submit"],input[type="button"],.main_body .wims_button{
+    background-color:#666666;
+    color:#ffffff;
+}
