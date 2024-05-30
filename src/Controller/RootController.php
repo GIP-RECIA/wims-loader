@@ -49,11 +49,17 @@ class RootController extends AbstractWimsLoaderController
         ]);
     }
 
-    /*#[Route('/logout', name:'logout')]
-    public function logout(SessionInterface $session): Response
+    /**
+     * Permet de se déconnecter et de retourner au portail
+     *
+     * @param Security $security
+     * @return Response
+     */
+    #[Route('/logout', name:'logout')]
+    public function logout(Security $security): Response
     {
-        $session->invalidate();
+        $security->logout(false);
 
-        return $this->redirectToRoute('home');
-    }*/
+        return $this->redirect('/');
+    }
 }

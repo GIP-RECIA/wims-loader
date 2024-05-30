@@ -22,13 +22,13 @@
         <!-- prevents links from apps from opening in mobile safari>
         <script src="scripts/js/external/safari_mobile_links/compressed.js"></script-->
 
-        {#<!-- Librairies JQUERY -->
+        <!-- Librairies JQUERY -->
         <script src="/wims/scripts/js/external/jquery/jquery.min.js"></script>
         <link rel="stylesheet" href="/wims/scripts/js/external/jquery-ui/themes/smoothness/jquery-ui.min.css">
         <script src="/wims/scripts/js/external/jquery-ui/jquery-ui.min.js"></script>
 
         <!-- JQUERY pour autocompletion -->
-        <script src="/wims/scripts/js/interface/autocomplete.js"></script>#}
+        <script src="/wims/scripts/js/interface/autocomplete.js"></script>
 
         <!-- Style pour impression -->
         <link rel="stylesheet" media="print" href="html/themes/_css/print.css">
@@ -44,9 +44,14 @@
                     <span class="text_item class_home">{{ title_page }} </span>
                 </span>
             </div>
-            <ul class="wimsmenu dropdown menu">
-                <li class="menuitem aboutw" role="menuitem">
-                    <a href="#"><span class="text_item">{{ app.user.fullName }}</span></a>
+            <ul class="wimsmenu dropdown menu" data-dropdown-menu="isxrsk-dropdown-menu" data-options="data-autoclose:true;" role="menubar">
+                <li class="menuitem is-dropdown-submenu-parent opens-right" role="menuitem" aria-haspopup="true" aria-label="{{ app.user.fullName }}" data-is-click="false">
+                    <a id="#user_links" class="account"><span class="text_item">{{ app.user.fullName }}</span></a>
+                    <ul id="user_links" class="menu submenu is-dropdown-submenu first-sub vertical" data-submenu="" role="menubar" style="">
+                        <li class="menuitem visitor is-submenu-item is-dropdown-submenu-item" role="menuitem">
+                            <a href="{{ url('logout') }}" class="visitor"><span>Déconnexion </span></a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
             <div class="wimsmenu menu"> </div>
@@ -104,5 +109,29 @@
                 </div>
             </nav>
         </div>
+
+        <!-- Foundation for Sites 6 footer template (see http://foundation.zurb.com/sites/docs/)  -->
+
+        <script src="/wims/scripts/js/external/what-input/what-input.min.js"></script>
+
+        <script src="/wims/html/themes/_inc/foundation/foundation.core.js"></script>
+        <script src="/wims/html/themes/_inc/foundation/foundation.util.mediaQuery.js"></script>
+
+        <script src="/wims/html/themes/_inc/foundation/foundation.util.keyboard.js"></script>
+        <script src="/wims/html/themes/_inc/foundation/foundation.util.box.js"></script>
+        <script src="/wims/html/themes/_inc/foundation/foundation.util.nest.js"></script>
+        <script src="/wims/html/themes/_inc/foundation/foundation.util.touch.min.js"></script>
+
+        <script src="/wims/html/themes/_inc/basic_triggers.js"></script>
+
+
+        <script src="/wims/html/themes/_inc/foundation/foundation.util.motion.js"></script>
+        <script src="/wims/html/themes/_inc/foundation/foundation.reveal.js"></script>
+
+        <script src="/wims/html/themes/_inc/foundation/foundation.dropdownMenu.js"></script>
+
+        <script src="/wims/html/themes/_inc/foundation/foundation.accordion.min.js"></script>
+
+        <script>jQuery(function($) {$(document).foundation();});</script>
     </body>
 </html>
