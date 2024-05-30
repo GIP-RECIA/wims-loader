@@ -37,7 +37,6 @@ class TeacherController extends AbstractWimsLoaderController
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
         $importedClasses = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
         $importedClassesName = [];
-        $classesToImport = [];
         $formsClassesToImport = [];
 
         foreach ($importedClasses as $classes) {

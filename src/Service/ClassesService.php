@@ -12,6 +12,6 @@ class ClassesService
 {
     public function generateName(string $baseClassName, User $teacher): string
     {
-        return substr($baseClassName . " - " . $teacher->getLastName(), 0, 50);
+        return substr($baseClassName, 0, 50);
     }
 }
