@@ -23,12 +23,14 @@ class TeacherService
         private ClassesRepository $classRepository,
         private WimsFileObjectCreatorService $wims,
         private ClassesService $classesService,
+        private LdapService $ldapService,
     ) {}
 
     public function createClass(User $teacher, string $className): Classes
     {
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($teacher->getSirenCourant());
         $class = $this->classRepository->findOneByGroupingClassesTeacherAndName($groupingClasses, $teacher, $className);
+        $structure = "ENTStructureSIREN=" . $teacher->getSirenCourant() . ",ou=structures,dc=esco-centre,dc=fr";
 
         if ($class !== null) {
             throw new AlreadyExistsException(
@@ -45,10 +47,31 @@ class TeacherService
             $this->wims->createTeacherInGroupingClassesFromObj($teacher, $groupingClasses);
         }
 
+        // On récupère les matières de cet enseignant pour cette classe
+        $res = $this->ldapService->findOneUserByUid($teacher->getUid());
+        $resCodeSubjects = $res->getAttribute("ENTAuxEnsClassesMatieres");
+        $resSubjects = $res->getAttribute("ESCOAuxEnsCodeMatiereEnseignEtab");
+        $subjects = [];
+        $fullClassName = $structure . "$" . $className . "$";
+
+        foreach ($resCodeSubjects as $codeSubject) {
+            if (str_starts_with($codeSubject, $fullClassName)) {
+                $codeSubjects = substr($codeSubject, strlen($fullClassName));
+                $startWith = $structure . "$" . $codeSubjects . "$";
+
+                foreach ($resSubjects as $subject) {
+                    if (str_starts_with($subject, $startWith)) {
+                        $subjects[] = substr($subject, strlen($startWith));
+                    }
+                }
+            }
+        }
+
         $class = (new Classes())
             ->setTeacher($teacher)
             ->setGroupingClasses($groupingClasses)
             ->setName($this->classesService->generateName($className, $teacher))
+            ->setSubjects(substr(implode(', ', $subjects), 0, 255))
             ->setLastSyncAt();
         // Création de la classe côté wims
         $class = $this->wims->createClassInGroupingClassesFromObj($class);

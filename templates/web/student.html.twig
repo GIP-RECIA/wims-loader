@@ -11,6 +11,7 @@
         <thead>
             <tr data-sort-method="thead">
                 <th scope="col" role="columnheader">Nom</th>
+                <th scope="col" role="columnheader">Matières</th>
                 <th scope="col" role="columnheader">Enseignant</th>
                 <th scope="col" role="columnheader">Action</th>
             </tr>
@@ -20,6 +21,9 @@
             <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
                 <td>
                     {{ class.name }}
+                </td>
+                <td>
+                    {{ class.subjects }}
                 </td>
                 <td>
                     {{ class.teacher.lastName }}

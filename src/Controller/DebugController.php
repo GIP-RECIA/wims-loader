@@ -37,7 +37,7 @@ class DebugController extends AbstractWimsLoaderController
     public function infos(Security $security): array
     {
         $user = $this->getUserFromSecurity($security);
-        $userLdap = $this->ldapService->findOneStudentByUid($user->getUid());
+        $userLdap = $this->ldapService->findOneUserByUid($user->getUid());
         $userBdd = $this->userRepo->findOneByUid($user->getUid());
         $groupingClasses = $this->groupingClassesRepo->findOneBySiren($user->getSirenCourant());
         $classesStudentBdd = $this->classesRepo->findByGroupingClassesAndStudent($groupingClasses, $user);

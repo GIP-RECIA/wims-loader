@@ -26,22 +26,7 @@ class LdapService
         }
     }
 
-    /**
-     * Retourne un tableau d'Entry représentant les données des utilisateurs
-     * d'une classe d'un établissement
-     *
-     * @param string $siren Le siren de l'établissement courant
-     * @param string $class Le nom de la classe
-     * @return Entry[]
-     */
-    /*public function findFake(): array
-    {
-        return $this
-            ->search(self::USER, "(&(ENTPersonJointure=AC-DEMO\$FICTIF*))")
-            ->toArray();
-    }*/
-
-    public function findOneStudentByUid(string $uid): Entry
+    public function findOneUserByUid(string $uid): Entry
     {
         $results = $this
             ->search(self::USER, "(uid=$uid)")

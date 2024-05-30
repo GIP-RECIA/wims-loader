@@ -40,6 +40,14 @@ class Classes
     #[ORM\ManyToMany(targetEntity: User::class)]
     private Collection $students;
 
+    /**
+     * La ou les matières de cette classe
+     *
+     * @var string|null
+     */
+    #[ORM\Column(length: 255)]
+    private ?string $subjects = null;
+
     public function __construct()
     {
         $this->students = new ArrayCollection();
@@ -148,6 +156,18 @@ class Classes
     public function removeStudent(User $student): static
     {
         $this->students->removeElement($student);
+
+        return $this;
+    }
+
+    public function getSubjects(): ?string
+    {
+        return $this->subjects;
+    }
+
+    public function setSubjects(string $subjects): static
+    {
+        $this->subjects = $subjects;
 
         return $this;
     }
