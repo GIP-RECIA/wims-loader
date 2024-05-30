@@ -37,7 +37,6 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
 
         if ($user === null) {
             // Si l'utilisateur n'existe pas en base, on le créé
-            dump('je passe par le new user');
             $user = (new User())
                 ->setUid($identifier)
                 ->setFirstName($firstName)
@@ -46,7 +45,6 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
             $em->persist($user);
         } else {
             // L'utilisateur a été chargé de la base et on vérifie qu'il n'a pas évolué
-            dump('user chargé de la bdd');
             $user
                 ->setFirstName($firstName)
                 ->setLastName($lastName)
