@@ -34,6 +34,8 @@ class StudentController extends AbstractWimsLoaderController
             return $this->redirect($this->wimsUrlGeneratorService->wimsUrlClassForStudent($classes[0]));
         }
 
+        dump($classes);
+
         return $this->render('web/student.html.twig', [
             'groupingClasses' => $groupingClasses,
             'classes' => $classes,

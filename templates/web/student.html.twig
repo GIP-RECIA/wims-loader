@@ -6,11 +6,31 @@
 <details open>
     <summary>Vos classes</summary>
     {% if classes|length > 0 %}
-    <ul class="wims_subclasses">
+    <table class="wimstable" style="text-align:center">
+        <caption>Mes classes</caption>
+        <thead>
+            <tr data-sort-method="thead">
+                <th scope="col" role="columnheader">Nom</th>
+                <th scope="col" role="columnheader">Enseignant</th>
+                <th scope="col" role="columnheader">Action</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for class in classes %}
-        <li><span class="wims_classes_direct_class"><a href="{{ class|wims_url_class_for_student }}">{{ class.name }}</a></span></li>
+            <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
+                <td>
+                    {{ class.name }}
+                </td>
+                <td>
+                    {{ class.teacher.lastName }}
+                </td>
+                <td>
+                    <a href="{{ class|wims_url_class_for_student }}" class="wims_button" role="button">Entrer</a>
+                </td>
+            </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
     {% else %}
     <br>
     Vous n'êtes actuellement inscrit dans aucune classe wims, merci de voir avec votre enseignant.
