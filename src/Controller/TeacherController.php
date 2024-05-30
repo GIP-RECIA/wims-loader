@@ -64,30 +64,23 @@ class TeacherController extends AbstractWimsLoaderController
         ];
     }
 
-    #[Route(path:"/enseignant/createClass/{step}", name:"teacherCreateClass", requirements: ['step' => '1|2'])]
-    public function createClass(Request $request, Security $security, int $step): Response
+    #[Route(path:"/enseignant/createClass", name:"teacherCreateClass")]
+    public function createClass(Request $request, Security $security): Response
     {
         $user = $this->getUserFromSecurity($security);
+        $form = $this->createForm(ClassNameType::class);
+        $form->handleRequest($request);
 
-        if ($step === 1) {
-            $form = $this->createForm(ClassNameType::class);
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                try {
-                    $className = $form->getData()['className'];
-                    $class = $this->teacherService->createClass($user, $className);
-                    $this->addFlash('info', 'La classe "' . $class->getName() . '" a bien été importée');
-                } catch (Exception $e) {
-                    $this->addFlash('alert', 'Erreur lors de la création de la classe');
-                }
-            } else {
-                $this->addFlash('alert', 'Erreur lors de la récupération du nom de la classe');
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $className = $form->getData()['className'];
+                $class = $this->teacherService->createClass($user, $className);
+                $this->addFlash('info', 'La classe "' . $class->getName() . '" a bien été importée');
+            } catch (Exception $e) {
+                $this->addFlash('alert', 'Erreur lors de la création de la classe');
             }
-
-            return $this->redirectToRoute('teacher');
         } else {
-            
+            $this->addFlash('alert', 'Erreur lors de la récupération du nom de la classe');
         }
 
         return $this->redirectToRoute('teacher');
