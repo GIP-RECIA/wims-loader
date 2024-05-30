@@ -5,6 +5,7 @@ use App\Service\GroupingClassesService;
 use App\Service\LdapService;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -16,8 +17,8 @@ class RootController extends AbstractWimsLoaderController
         private GroupingClassesService $groupingClassesService,
     ) {}
 
-    #[Route(path:"/", name:"root")]
-    public function root(Security $security): Response
+    #[Route(path:"/home", name:"home")]
+    public function home(Security $security): Response
     {
         /*$results = $this->ldapService->findFake();
         $res = [];
@@ -43,8 +44,16 @@ class RootController extends AbstractWimsLoaderController
             return $this->redirectToRoute('student');
         }*/
 
-        return $this->render('web/root.html.twig', [
+        return $this->render('web/home.html.twig', [
             'groupingClasses' => $groupingClasses,
         ]);
     }
+
+    /*#[Route('/logout', name:'logout')]
+    public function logout(SessionInterface $session): Response
+    {
+        $session->invalidate();
+
+        return $this->redirectToRoute('home');
+    }*/
 }

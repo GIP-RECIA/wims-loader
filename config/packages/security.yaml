@@ -18,6 +18,10 @@ security:
             security: true
             custom_authenticator: App\Security\CasAuthenticator
 
+            logout:
+                path: /
+                target: /home
+
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
