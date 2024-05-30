@@ -55,7 +55,7 @@ class TeacherController extends AbstractWimsLoaderController
             }
         }
 
-        ksort($classesToImport);
+        ksort($formsClassesToImport);
 
         return [
             'groupingClasses' => $groupingClasses,
