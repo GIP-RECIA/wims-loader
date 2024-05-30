@@ -8,12 +8,14 @@
     {% if importedClasses|length > 0 %}
         <p><a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">Accéder aux classes</a></p>
 
-        <table class="wimstable" style="text-align:center">
+        <table id="importedClasses" class="wimstable" style="text-align:center">
             <caption>Classes importées dans wims</caption>
             <thead>
                 <tr data-sort-method="thead">
                     <th scope="col" role="columnheader">Nom</th>
-                    <th scope="col" role="columnheader">Gestion</th>
+                    <th scope="col" role="columnheader">Matières</th>
+                    <th scope="col" role="columnheader">Id Wims</th>
+                    <th scope="col" role="columnheader">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -23,7 +25,14 @@
                         {{ class.name }}
                     </td>
                     <td>
+                        {{ class.subjects }}
+                    </td>
+                    <td>
                         {{ class.fullIdWims }}
+                    </td>
+                    <td>
+                        {#<a href="{{ class|wims_url_class_for_student }}" class="wims_button" role="button">Entrer</a>#}
+                        <a href="#" class="wims_button" role="button">Détails</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -36,7 +45,7 @@
 <details {% if formsClassesToImport|length > 0 %}open{% else %}close{% endif %}>
     <summary>Vos classes à importer</summary>
     {% if formsClassesToImport|length > 0 %}
-        <table class="wimstable" style="text-align:center">
+        <table id="classToImport" class="wimstable" style="text-align:center">
             <caption>Classes disponibles à l'import</caption>
             <thead>
                 <tr data-sort-method="thead">
@@ -61,4 +70,14 @@
         <p>Vous n'avez aucune classe disponible à l'import.</p>
     {% endif %}
 </details>
+{% endblock %}
+
+{% block endjs %}
+    <script src="/wims/scripts/js/tablesort.js"></script>
+    <script src="/wims/scripts/js/tablesort.number.js"></script>
+
+    <script>
+    new Tablesort(document.getElementById("importedClasses"));
+    new Tablesort(document.getElementById("classToImport"));
+    </script>
 {% endblock %}

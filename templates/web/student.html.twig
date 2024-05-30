@@ -6,7 +6,7 @@
 <details open>
     <summary>Vos classes</summary>
     {% if classes|length > 0 %}
-    <table class="wimstable" style="text-align:center">
+    <table id="myClasses" class="wimstable" style="text-align:center">
         <caption>Mes classes</caption>
         <thead>
             <tr data-sort-method="thead">
@@ -40,4 +40,13 @@
     Vous n'êtes actuellement inscrit dans aucune classe wims, merci de voir avec votre enseignant.
     {% endif %}
 </details>
+{% endblock %}
+
+{% block endjs %}
+    <script src="/wims/scripts/js/tablesort.js"></script>
+    <script src="/wims/scripts/js/tablesort.number.js"></script>
+
+    <script>
+    new Tablesort(document.getElementById("myClasses"));
+    </script>
 {% endblock %}
