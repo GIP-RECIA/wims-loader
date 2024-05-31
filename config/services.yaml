@@ -54,6 +54,7 @@ services:
     App\Security\UserProvider:
         arguments:
             $entityClass: 'App\Entity\User'
+            $uidAdmin: '%env(string:ADMIN_UID)%'
 
     # ldap
     #Symfony\Component\Ldap\Ldap:

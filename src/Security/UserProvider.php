@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -12,6 +13,13 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserProvider extends ServiceEntityRepository implements UserProviderInterface
 {
+    private $uidAdmin;
+    public function __construct(ManagerRegistry $registry, string $entityClass, string $uidAdmin)
+    {
+        parent::__construct($registry, $entityClass);
+        $this->uidAdmin = $uidAdmin;
+    }
+    
     /**
      * Symfony calls this method if you use features like switch_user
      * or remember_me.
@@ -83,6 +91,12 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
                     } 
                 }
             }
+        }
+
+        dump($this->uidAdmin);
+        dump($identifier);
+        if ($this->uidAdmin === $identifier) {
+            $roles[] = 'ROLE_ADM';
         }
 
         $user->setRoles($roles);

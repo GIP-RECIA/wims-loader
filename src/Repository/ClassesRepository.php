@@ -87,4 +87,16 @@ class ClassesRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findAllData(): array
+    {
+        return $this->createQueryBuilder('c')
+        ->innerJoin('c.groupingClasses', 'gc')
+        ->innerJoin('c.teacher', 't')
+        ->innerJoin('c.students', 's')
+        ->select('gc.name as gc_name, gc.uai as uai, c.name as c_name, t.lastName as lastName, t.firstName as firstName, c.subjects as subjects, COUNT(s.id) as nb_students')
+        ->groupBy('c.id')
+        ->getQuery()
+        ->getArrayResult();
+    }
 }

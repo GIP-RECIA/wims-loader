@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page d'admin</title>
+    <style>
+    table {
+        border: 1px solid black;
+        border-collapse: collapse; /* Fusionne les bordures adjacentes des cellules */
+    }
+
+    /* Ajoute une bordure à chaque cellule (td et th) */
+    table td, table th {
+        border: 1px solid black;
+        padding: 8px; /* Ajoute un peu d'espace à l'intérieur des cellules */
+    }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Établissement</th>
+                <th>UAI</th>
+                <th>Classe</th>
+                <th>Enseignant</th>
+                <th>Matières</th>
+                <th>Nombre d'étudiants</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for line in data %}
+            <tr>
+                <td>{{ line.gc_name }}</td>
+                <td>{{ line.uai }}</td>
+                <td>{{ line.c_name }}</td>
+                <td>{{ line.lastName }} {{ line.firstName }}</td>
+                <td>{{ line.subjects }}</td>
+                <td>{{ line.nb_students }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

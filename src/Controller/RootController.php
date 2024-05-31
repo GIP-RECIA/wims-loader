@@ -20,6 +20,10 @@ class RootController extends AbstractWimsLoaderController
     #[Route(path:"/home", name:"home")]
     public function home(Security $security): Response
     {
+        if ($this->authorizationChecker->isGranted('ROLE_ADM')) {
+            return $this->redirectToRoute('admin');
+        }
+        
         /*$results = $this->ldapService->findFake();
         $res = [];
         $resTxt = "";
