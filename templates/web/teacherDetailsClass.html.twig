@@ -94,10 +94,14 @@
         </ul>
     </div>
 </fieldset>
-{% if usersInWims|length == uidCommon|length and usersInLdap|length == uidCommon|length %}
-<div class="wims_msg info">Les élèves sont bien synghronisés</div>
+{% if usersInLdap|length == uidCommon|length %}
+    {% if usersInWims|length == uidCommon|length %}
+    <div class="wims_msg info">Les élèves sont bien synghronisés.</div>
+    {% else %}
+    <div class="wims_msg info">Certains élèves sont présent dans wims mais plus dans n'annuaire. Ce n'est pas génant.</div>
+    {% endif %}
 {% else %}
-<div class="wims_msg alert">Certains élèves ne sont pas synchronisés</div>
+<div class="wims_msg alert">Certains élèves ne sont pas synchronisés.</div>
 {% endif %}
 <div class="wimscenter actions">
     {#<a href="{{ url('teacher') }}" class="wims_button" role="button">Synchroniser</a>#}
