@@ -31,8 +31,7 @@
                         {{ class.fullIdWims }}
                     </td>
                     <td>
-                        {#<a href="{{ class|wims_url_class_for_student }}" class="wims_button" role="button">Entrer</a>#}
-                        <a href="#" class="wims_button" role="button">Détails</a>
+                        <a href="{{ url('teacherDetailsClass', {idClass: class.id}) }}" class="wims_button" role="button">Détails</a>
                     </td>
                 </tr>
             {% endfor %}

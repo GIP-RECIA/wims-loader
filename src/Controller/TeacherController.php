@@ -1,18 +1,23 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\Classes;
 use App\Entity\User;
 use App\Form\ClassNameType;
 use App\Repository\ClassesRepository;
+use App\Repository\UserRepository;
 use App\Service\ClassesService;
 use App\Service\GroupingClassesService;
+use App\Service\LdapService;
 use App\Service\StudentService;
 use App\Service\TeacherService;
 use Exception;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Ldap\Entry;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -27,6 +32,8 @@ class TeacherController extends AbstractWimsLoaderController
         private TeacherService $teacherService,
         private ClassesRepository $classRepo,
         private ClassesService $classesService,
+        private UserRepository $userRepo,
+        private LdapService $ldapService,
     ) {}
 
     #[Route(path:"/enseignant/", name:"teacher")]
@@ -83,5 +90,66 @@ class TeacherController extends AbstractWimsLoaderController
         }
 
         return $this->redirectToRoute('teacher');
+    }
+
+    #[Route(path:"/enseignant/detailsClass/{idClass}", name:"teacherDetailsClass")]
+    #[Template('web/teacherDetailsClass.html.twig')]
+    public function detailsClass(
+        Request $request,
+        Security $security,
+        #[MapEntity(id: 'idClass')] Classes $classes,
+        string $idClass,
+        ): array
+    {
+        $user = $this->getUserFromSecurity($security);
+        $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
+        $srcUsersInWims = $this->userRepo->findByClass($classes);
+        $usersInWims = [];
+
+        foreach ($srcUsersInWims as $currentUser) {
+            $usersInWims[$currentUser->getUid()] = $currentUser;
+        }
+
+        $uidInWims = array_map(function(User $currentUser) {
+            return $currentUser->getUid();
+        }, $usersInWims);
+
+        dump($user);
+
+        $srcUsersInLdap = $this->ldapService->findStudentsBySirenAndClassName($user->getSirenCourant(), $classes->getName());
+        $usersInLdap = [];
+
+        usort($srcUsersInLdap, function(Entry $a, Entry $b) {
+            $lastNameComparison = strcmp($a->getAttribute('sn')[0], $b->getAttribute('sn')[0]);
+
+            if ($lastNameComparison === 0) {
+                return strcmp($a->getAttribute('givenName')[0], $b->getAttribute('givenName')[0]);
+            }
+
+            return $lastNameComparison;
+        });
+
+        foreach ($srcUsersInLdap as $currentUser) {
+            $usersInLdap[strtolower($currentUser->getAttribute('uid')[0])] = $currentUser;
+        }
+
+        $uidInLdap = array_map(function(Entry $entry) {
+            return strtolower($entry->getAttribute('uid')[0]);
+        }, $usersInLdap);
+        $uidCommon = array_intersect($uidInWims, $uidInLdap);
+
+        dump($classes->getStudents());
+        dump($this->userRepo->findByClass($classes));
+        dump($uidInWims);
+        dump($usersInLdap);
+        dump($uidCommon);
+
+        return [
+            'groupingClasses' => $groupingClasses,
+            'class' => $classes,
+            'usersInWims' => $usersInWims,
+            'usersInLdap' => $usersInLdap,
+            'uidCommon' => $uidCommon,
+        ];
     }
 }

@@ -33,6 +33,9 @@
         <!-- Style pour impression -->
         <link rel="stylesheet" media="print" href="html/themes/_css/print.css">
 
+        {% block style %}
+        {% endblock %}
+
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}

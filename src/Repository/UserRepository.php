@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Classes;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -41,5 +42,23 @@ class UserRepository extends ServiceEntityRepository
     public function findByUid(array $arrUid): array
     {
         return $this->findBy(['uid' => $arrUid]);
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param Classes $classes
+     * @return array
+     */
+    public function findByClass(Classes $class): array
+    {
+        return $this->createQueryBuilder('u')
+            ->innerJoin('u.classes', 'c')
+            ->where('c = :class')
+            ->orderBy('u.lastName')
+            ->addOrderBy('u.firstName')
+            ->setParameter('class', $class)
+            ->getQuery()
+            ->getResult();
     }
 }
