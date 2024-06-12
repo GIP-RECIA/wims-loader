@@ -142,8 +142,12 @@ class TeacherController extends AbstractWimsLoaderController
         $diffStudents = $this->StudentService->diffStudentFromTeacherAndClass($teacher, $classes);
 
         try {
-            $this->teacherService->addStudentsInClass($diffStudents['ldapUnsync'], $classes);
-            $this->addFlash('info', 'La synchronisation des élèves a été effectuée correctement');
+            if (sizeof($diffStudents['ldapUnsync']) > 0) {
+                $this->teacherService->addStudentsInClass($diffStudents['ldapUnsync'], $classes);
+                $this->addFlash('info', 'La synchronisation des élèves a été effectuée correctement');
+            } else {
+                $this->addFlash('info', 'Aucun nouvel élève a synchroniser');
+            }
         } catch (Exception $e) {
             $this->addFlash('alert', 'Erreur lors de la synchronisation des élèves');
         }

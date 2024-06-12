@@ -96,7 +96,7 @@
     </div>
 </fieldset>
 {% if diffStudents.wimsUnsync|length == 0 and diffStudents.ldapUnsync|length == 0 %}
-    <div class="wims_msg info">Les élèves sont bien synghronisés.</div>
+    <div class="wims_msg info">Les élèves sont bien synchronisés.</div>
 {% else %}
     {% if diffStudents.wimsUnsync|length != 0 %}
         <div class="wims_msg info">Certains élèves sont présent dans wims mais plus dans n'annuaire. Ce n'est pas génant.</div>
