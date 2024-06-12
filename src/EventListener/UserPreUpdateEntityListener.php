@@ -20,7 +20,6 @@ class UserPreUpdateEntityListener
     {
         $dataChange = $args->getEntityChangeSet();
         // je récupère un tableau du genre ['firstName' => ['ancien', 'nouveau']]
-        dump($dataChange);
         // TODO: écrire les traitements
     }
 }

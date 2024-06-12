@@ -93,8 +93,6 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
             }
         }
 
-        dump($this->uidAdmin);
-        dump($identifier);
         if ($this->uidAdmin === $identifier) {
             $roles[] = 'ROLE_ADM';
         }

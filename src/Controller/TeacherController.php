@@ -114,8 +114,6 @@ class TeacherController extends AbstractWimsLoaderController
             return $currentUser->getUid();
         }, $usersInWims);
 
-        dump($user);
-
         $srcUsersInLdap = $this->ldapService->findStudentsBySirenAndClassName($user->getSirenCourant(), $classes->getName());
         $usersInLdap = [];
 
@@ -137,12 +135,6 @@ class TeacherController extends AbstractWimsLoaderController
             return strtolower($entry->getAttribute('uid')[0]);
         }, $usersInLdap);
         $uidCommon = array_intersect($uidInWims, $uidInLdap);
-
-        dump($classes->getStudents());
-        dump($this->userRepo->findByClass($classes));
-        dump($uidInWims);
-        dump($usersInLdap);
-        dump($uidCommon);
 
         return [
             'groupingClasses' => $groupingClasses,
