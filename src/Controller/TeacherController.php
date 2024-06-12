@@ -17,7 +17,6 @@ use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Ldap\Entry;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -36,6 +35,13 @@ class TeacherController extends AbstractWimsLoaderController
         private LdapService $ldapService,
     ) {}
 
+    /**
+     * Écran de base pour les enseignants, on y liste les classes déjà importées
+     * et les classes disponibles à l'import.
+     *
+     * @param Security $security
+     * @return array
+     */
     #[Route(path:"/enseignant/", name:"teacher")]
     #[Template('web/teacher.html.twig')]
     public function indexTeacher(Security $security): array
@@ -70,6 +76,14 @@ class TeacherController extends AbstractWimsLoaderController
         ];
     }
 
+    /**
+     * Route permettant de réaliser l'import d'une classe. Cette route n'affiche
+     * rien car elle fait directement une redirection vers la page de l'enseignant
+     *
+     * @param Request $request
+     * @param Security $security
+     * @return Response
+     */
     #[Route(path:"/enseignant/createClass", name:"teacherCreateClass")]
     public function createClass(Request $request, Security $security): Response
     {
@@ -92,56 +106,50 @@ class TeacherController extends AbstractWimsLoaderController
         return $this->redirectToRoute('teacher');
     }
 
+    /**
+     * Route affichant les détails d'une classe importée pour pouvoir contrôler
+     * les élèves importés dans la classe et déclencher une synchro au besoin.
+     */
     #[Route(path:"/enseignant/detailsClass/{idClass}", name:"teacherDetailsClass")]
     #[Template('web/teacherDetailsClass.html.twig')]
     public function detailsClass(
-        Request $request,
         Security $security,
-        #[MapEntity(id: 'idClass')] Classes $classes,
-        string $idClass,
+        #[MapEntity(id: 'idClass')] Classes $classes
         ): array
     {
-        $user = $this->getUserFromSecurity($security);
-        $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
-        $srcUsersInWims = $this->userRepo->findByClass($classes);
-        $usersInWims = [];
-
-        foreach ($srcUsersInWims as $currentUser) {
-            $usersInWims[$currentUser->getUid()] = $currentUser;
-        }
-
-        $uidInWims = array_map(function(User $currentUser) {
-            return $currentUser->getUid();
-        }, $usersInWims);
-
-        $srcUsersInLdap = $this->ldapService->findStudentsBySirenAndClassName($user->getSirenCourant(), $classes->getName());
-        $usersInLdap = [];
-
-        usort($srcUsersInLdap, function(Entry $a, Entry $b) {
-            $lastNameComparison = strcmp($a->getAttribute('sn')[0], $b->getAttribute('sn')[0]);
-
-            if ($lastNameComparison === 0) {
-                return strcmp($a->getAttribute('givenName')[0], $b->getAttribute('givenName')[0]);
-            }
-
-            return $lastNameComparison;
-        });
-
-        foreach ($srcUsersInLdap as $currentUser) {
-            $usersInLdap[strtolower($currentUser->getAttribute('uid')[0])] = $currentUser;
-        }
-
-        $uidInLdap = array_map(function(Entry $entry) {
-            return strtolower($entry->getAttribute('uid')[0]);
-        }, $usersInLdap);
-        $uidCommon = array_intersect($uidInWims, $uidInLdap);
+        $teacher = $this->getUserFromSecurity($security);
+        $groupingClasses = $this->groupingClassesService->loadGroupingClasses($teacher->getSirenCourant());
+        $diffStudents = $this->StudentService->diffStudentFromTeacherAndClass($teacher, $classes);
 
         return [
             'groupingClasses' => $groupingClasses,
             'class' => $classes,
-            'usersInWims' => $usersInWims,
-            'usersInLdap' => $usersInLdap,
-            'uidCommon' => $uidCommon,
+            'diffStudents' => $diffStudents,
         ];
+    }
+
+    /**
+     * Route affichant les détails d'une classe importée pour pouvoir contrôler
+     * les élèves importés dans la classe et déclencher une synchro au besoin.
+     */
+    #[Route(path:"/enseignant/syncClass/{idClass}", name:"teacherSyncClass")]
+    public function syncClass(
+        Security $security,
+        #[MapEntity(id: 'idClass')] Classes $classes
+        ): Response
+    {
+        $teacher = $this->getUserFromSecurity($security);
+        $diffStudents = $this->StudentService->diffStudentFromTeacherAndClass($teacher, $classes);
+
+        try {
+            $this->teacherService->addStudentsInClass($diffStudents['ldapUnsync'], $classes);
+            $this->addFlash('info', 'La synchronisation des élèves a été effectuée correctement');
+        } catch (Exception $e) {
+            $this->addFlash('alert', 'Erreur lors de la synchronisation des élèves');
+        }
+
+        return $this->redirectToRoute('teacherDetailsClass', [
+            'idClass' => $classes->getId(),
+        ]);
     }
 }

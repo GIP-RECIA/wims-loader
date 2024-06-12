@@ -81,6 +81,36 @@ class TeacherService
         $uidStudents = $this->studentService->getListUidStudentFromSirenAndClassName(
             $groupingClasses->getSiren(),
             $className);
+        // Ajout des élèves dans la classe
+        $this->commonAddStudentsInClass($uidStudents, $class);
+
+        $this->em->flush();
+
+        return $class;
+    }
+
+    /**
+     * Ajoute les élèves dans la classe
+     *
+     * @param array $uidStudents La liste des uid des élèves à ajouter
+     * @param Classes $class La classe dans laquelle ajouter les élèves
+     * @return void
+     */
+    public function addStudentsInClass(array $uidStudents, Classes $class): void
+    {
+        $this->commonAddStudentsInClass($uidStudents, $class);
+        $this->em->flush();
+    }
+
+    /**
+     * Partie commune des fonctions permettant d'ajouter des élèves dans une classe
+     *
+     * @param array $uidStudents La liste des uid des élèves à ajouter
+     * @param Classes $class La classe dans laquelle ajouter les élèves
+     * @return void
+     */
+    private function commonAddStudentsInClass(array $uidStudents, Classes $class): void
+    {
         $studentsBdd = $this->userRepo->findByUid($uidStudents);
         $students = [];
         $studentsToCreate = [];
@@ -107,9 +137,5 @@ class TeacherService
             // Inscription des élèves côté wims
             $this->wims->addUserInClassFromObj($student, $class);
         }
-
-        $this->em->flush();
-
-        return $class;
     }
 }

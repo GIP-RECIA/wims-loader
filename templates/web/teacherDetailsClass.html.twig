@@ -1,6 +1,7 @@
 {# templates/web/teacher.html.twig #}
 {% extends 'base.html.twig' %}
 {% set title_page = 'Détails de la classe' %}
+{% set can_sync = false %}
 
 {% block style %}
 <style>
@@ -80,31 +81,34 @@
     <div class="two-col">
         <p>Dans wims :</p>
         <ul>
-        {% for key, user in usersInWims %}
-            <li class="{% if key in uidCommon %}ok{% else %}nok-warn{% endif %}">{{ user.lastName }} {{ user.firstName }}</li>
+        {% for uid, userData in diffStudents.wims %}
+            <li class="{% if uid in diffStudents.wimsUnsync %}nok-warn{% else %}ok{% endif %}">{{ userData.fullName }}</li>
         {% endfor %}
         </ul>
     </div>
     <div class="two-col">
         <p>Dans l'annuaire :</p>
         <ul>
-        {% for key, user in usersInLdap %}
-            <li class="{% if key in uidCommon %}ok{% else %}nok-error{% endif %}">{{ user.getAttribute('sn')|first }} {{ user.getAttribute('givenName')|first }}</li>
+        {% for uid, userData in diffStudents.ldap %}
+            <li class="{% if uid in diffStudents.ldapUnsync %}nok-error{% else %}ok{% endif %}">{{ userData.fullName }}</li>
         {% endfor %}
         </ul>
     </div>
 </fieldset>
-{% if usersInLdap|length == uidCommon|length %}
-    {% if usersInWims|length == uidCommon|length %}
+{% if diffStudents.wimsUnsync|length == 0 and diffStudents.ldapUnsync|length == 0 %}
     <div class="wims_msg info">Les élèves sont bien synghronisés.</div>
-    {% else %}
-    <div class="wims_msg info">Certains élèves sont présent dans wims mais plus dans n'annuaire. Ce n'est pas génant.</div>
-    {% endif %}
 {% else %}
-<div class="wims_msg alert">Certains élèves ne sont pas synchronisés.</div>
+    {% if diffStudents.wimsUnsync|length != 0 %}
+        <div class="wims_msg info">Certains élèves sont présent dans wims mais plus dans n'annuaire. Ce n'est pas génant.</div>
+    {% endif %}
+
+    {% if diffStudents.ldapUnsync|length != 0 %}
+        {% set can_sync = true %}
+        <div class="wims_msg alert">Certains élèves ne sont pas synchronisés avec wims. Veuillez synchroniser pour corriger le problème.</div>
+    {% endif %}
 {% endif %}
 <div class="wimscenter actions">
-    {#<a href="{{ url('teacher') }}" class="wims_button" role="button">Synchroniser</a>#}
+    {% if can_sync %}<a href="{{ url('teacherSyncClass', { 'idClass': class.id }) }}" class="wims_button" role="button">Synchroniser</a>{% endif %}
     <a href="{{ url('teacher') }}" class="wims_button wims_secondary_button" role="button">Retour</a>
 </div>
 
