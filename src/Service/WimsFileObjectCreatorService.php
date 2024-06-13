@@ -383,6 +383,84 @@ class WimsFileObjectCreatorService
         );
     }
 
+    /**
+     * Permet de remplacer le prénom et le nom d'un élève dans le fichier
+     * .userlist d'un établissement
+     *
+     * @param string $idWims L'identifiant wims de l'établissement/la classe
+     * @param string $uid L'uid de l'élève
+     * @param string $firstName Le prénom de l'élève
+     * @param string $lastName Le nom de l'élève
+     * @return void
+     */
+    public function replaceFirstNameAndLastNameInUserList(string $idWims, string $uid, string $firstName, string $lastName): void
+    {
+        $this->replaceFirstNameAndLastNameInFileList(
+            $idWims . '/.userlist',
+            $uid,
+            $firstName,
+            $lastName,
+            ':'
+        );
+    }
+
+    /**
+     * Permet de remplacer le prénom et le nom d'un enseignant dans le fichier
+     * .teacherlist d'un établissement
+     *
+     * @param string $idWims L'identifiant wims de l'établissement
+     * @param string $uid L'uid de l'enseignant
+     * @param string $firstName Le prénom de l'enseignant
+     * @param string $lastName Le nom de l'enseignant
+     * @return void
+     */
+    public function replaceFirstNameAndLastNameInTeacherList(string $idWims, string $uid, string $firstName, string $lastName): void
+    {
+        $this->replaceFirstNameAndLastNameInFileList(
+            $idWims . '/.teacherlist',
+            $uid,
+            $firstName,
+            $lastName
+        );
+    }
+
+    /**
+     * Permet de remplacer le prénom, le nom et le mail de l'utilisateur dans le
+     * fichier spécifié
+     *
+     * @param string $fileName Le fichier a traiter
+     * @param string $firstName Le prénom de l'utilisateur
+     * @param string $lastName Le nom de l'utilisateur
+     * @param string $mail Le mail de l'utilisateur
+     * @return void
+     */
+    public function replaceDataInUidFile(string $fileName, string $firstName, string $lastName, string $mail): void
+    {
+        $filename = $this->getRootFolder() . '/' . $fileName;
+
+        if (!$this->filesystem->exists($filename)) {
+            throw new \Exception("Le fichier '$fileName' n'existe pas.");
+        }
+
+        $fileContents = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $searchLastName = '!set user_lastname=';
+        $searchFirstName = '!set user_firstname=';
+        $searchMail = '!set user_email=';
+
+        // Parcourir chaque ligne et remplacer la ligne cible
+        foreach ($fileContents as $key => $line) {
+            if (str_starts_with($line, $searchLastName)) {
+                $fileContents[$key] = $this->utf8ToWindows1252($searchLastName . $lastName);
+            } else if (str_starts_with($line, $searchFirstName)) {
+                $fileContents[$key] = $this->utf8ToWindows1252($searchFirstName . $firstName);
+            } else if (str_starts_with($line, $searchMail)) {
+                $fileContents[$key] = $this->utf8ToWindows1252($searchMail . $mail);
+            }
+        }
+
+        $this->filesystem->dumpFile($filename, implode(PHP_EOL, $fileContents) . PHP_EOL);
+    }
+
     /**************************************************************************
      * Encodage                                                               *
      **************************************************************************/
@@ -490,6 +568,39 @@ class WimsFileObjectCreatorService
                 $this->filesystem->chmod($file, $this->config['file_right']);
             }
         }
+     }
+
+     /**
+      * Permet de remplacer le prénom et le nom d'un utilisateur dans le fichier
+      * .teacherlist ou .userlist d'un établissement ou d'une classe
+      *
+      * @param string $fileName Le fichier de liste a éditer
+      * @param string $uid L'uid de l'utilisateur
+      * @param string $firstName Le prénom de l'utilisateur
+      * @param string $lastName Le nom de l'utilisateur
+      * @param string $start Le début de la ligne, vide par défaut
+      * @return void
+      */
+     private function replaceFirstNameAndLastNameInFileList(string $fileName, string $uid, string $firstName, string $lastName, string $start = ""): void
+     {
+         $filename = $this->getRootFolder() . '/' . $fileName;
+ 
+         if (!$this->filesystem->exists($filename)) {
+             throw new \Exception("Le fichier '$fileName' n'existe pas.");
+         }
+ 
+         $fileContents = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+         $search = ',' . $uid;
+ 
+         // Parcourir chaque ligne et remplacer la ligne cible
+         foreach ($fileContents as $key => $line) {
+            if (str_ends_with($line, $search)) {
+                $newLine = $start . $lastName . ',' . $firstName . ',' . $uid;
+                $fileContents[$key] = $this->utf8ToWindows1252($newLine);
+            }
+         }
+ 
+         $this->filesystem->dumpFile($filename, implode(PHP_EOL, $fileContents) . PHP_EOL);
      }
 
 

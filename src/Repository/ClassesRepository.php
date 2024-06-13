@@ -88,6 +88,26 @@ class ClassesRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Retourne la liste des idWims complet des classes dans lesquelles est
+     * présent l'étudiant.
+     *
+     * @param User $student L'étudiant dont on recherche les classes
+     * @return string[] Les idWims complet des classes de l'étudiant
+     */
+    public function findFullWimsIdOfStudentClass(User $student): array
+    {
+        return $this->createQueryBuilder('c')
+        ->innerJoin('c.groupingClasses', 'gc')
+        ->innerJoin('c.students', 's')
+        ->where('s = :student')
+        ->select('gc.idWims as idWimsGroupingClasses, c.idWims as idWimsClasses')
+        ->orderBy('gc.idWims')
+        ->setParameter('student', $student)
+        ->getQuery()
+        ->getArrayResult();
+    }
+
     public function findAllData(): array
     {
         return $this->createQueryBuilder('c')

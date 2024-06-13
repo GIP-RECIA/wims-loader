@@ -67,4 +67,24 @@ class GroupingClassesRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['siren' => $siren]);
     }
+
+    /**
+     * Permet de récupérer les identifiants de groupingClasses dans lesquels
+     * est présent l'enseignant
+     *
+     * @param User $teacher
+     * @return string[] La liste des id de groupingClasses
+     */
+    public function findIdWimsGroupingClassesByTeacher(User $teacher): array
+    {
+        
+        $qb = $this->createQueryBuilder('gc');
+        $result = $qb->select('gc.idWims')
+            ->innerJoin('gc.registeredTeachers', 'u')
+            ->where($qb->expr()->eq('u', ':teacher'))
+            ->setParameter('teacher', $teacher)
+            ->getQuery()
+            ->getSingleColumnResult();
+        return $result;
+    }
 }
