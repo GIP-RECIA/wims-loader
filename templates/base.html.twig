@@ -33,6 +33,28 @@
         <!-- Style pour impression -->
         <link rel="stylesheet" media="print" href="html/themes/_css/print.css">
 
+        {# début ajout bandeau et footer ENT #}
+        <style>
+            body{
+                padding-top:38px;
+                padding-bottom:55px;
+            }
+            extended-uportal-header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 1001;
+            }
+            extended-uportal-footer {
+                position: fixed;
+                width: 100%;
+                bottom: 0;
+                left: 0;
+            }
+        </style>
+        {# fin ajout bandeau et footer ENT #}
+
         {% block style %}
         {% endblock %}
 
@@ -41,6 +63,23 @@
         {% endblock %}
     </head>
     <body class="main_body">
+        {# début ajout bandeau ENT #}
+        <extended-uportal-header messages='[{"locales": ["fr", "fr-FR"], "messages": { "message": {"header": {"login": "Connexion ENT" } }}}]'
+            domain="{{ app.request.host }}" height="38px"
+            service-name="Wims" context-api-url="/portail" sign-out-url="/portail/Logout"
+            default-org-logo-path="/annuaire_images/default_banner_v1.jpg" default-avatar-path="/images/icones/noPictureUser.svg"
+            default-org-icon-path="/images/partners/netocentre-simple.svg" favorite-api-url="/portail/api/layout"
+            layout-api-url="/portail/api/v4-3/dlm/layout.json" organization-api-url="/change-etablissement/rest/v2/structures/structs/"
+            portlet-api-url="/portail/api/v4-3/dlm/portletRegistry.json?category=All%20categories"
+            user-info-api-url="/portail/api/v5-1/userinfo?claims=private,name,ESCOSIRENCourant,ESCOSIREN,picture&groups="
+            session-api-url="/portail/api/session.json"
+            user-info-portlet-url="/portail/api/ExternalURLStats?fname=ESCO-MCE&amp;service=/MCE"
+            template-api-path="/commun/portal_template_api.tpl.json" switch-org-portlet-url="/portail/p/etablissement-swapper"
+            favorites-portlet-card-size="small" grid-portlet-card-size="auto" hide-action-mode="never"
+            show-favorites-in-slider="true" return-home-title="Aller à l\'accueil" return-home-target="_self"
+            icon-type="nine-square" sign-in-url="/portail/Login" >
+        </extended-uportal-header>
+        {# fin ajout bandeau ENT #}
         <div id="wimstopbox">
             <div class="wimsmenu menu float_left">
                 <span class="menuitem class_home">
@@ -112,6 +151,13 @@
             </nav>
         </div>
 
+        {# début ajout footer ENT #}
+        <extended-uportal-footer domain="{{ app.request.host }}"
+            template-api-path="/commun/portal_template_api.tpl.json"
+            links=\'[{"title":"Accessibilité : partiellement conforme"},{"title":"CGU","href":"/files/textes/droits_usage.html"},{"title":"Apereo.org","href":"https://www.apereo.org/"},{"title":"ESUP-Portail","href":"https://www.esup-portail.org/"}]\' >
+        </extended-uportal-footer>
+        {# fin ajout footer ENT #}
+
         <!-- Foundation for Sites 6 footer template (see http://foundation.zurb.com/sites/docs/)  -->
 
         <script src="/wims/scripts/js/external/what-input/what-input.min.js"></script>
@@ -135,6 +181,13 @@
         <script src="/wims/html/themes/_inc/foundation/foundation.accordion.min.js"></script>
 
         <script>jQuery(function($) {$(document).foundation();});</script>
+
+        {# début ajout bandeau ENT #}
+        <script type="text/javascript" src="/commun/extended-uportal-header.min.js"></script>
+        {# fin ajout bandeau ENT #}
+        {# début ajout footer ENT #}
+        <script type="text/javascript" src="/commun/extended-uportal-footer.min.js"></script>
+        {# fin ajout footer ENT #}
 
         {% block endjs %}
         {% endblock %}
