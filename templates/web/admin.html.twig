@@ -2,44 +2,43 @@
 {% extends 'base.html.twig' %}
 {% set title_page = 'Page d\'admin' %}
 
-{% block style %}
-<style>
-    table {
-        border: 1px solid black;
-        border-collapse: collapse; /* Fusionne les bordures adjacentes des cellules */
-    }
-
-    /* Ajoute une bordure à chaque cellule (td et th) */
-    table td, table th {
-        border: 1px solid black;
-        padding: 8px; /* Ajoute un peu d'espace à l'intérieur des cellules */
-    }
-</style>
-{% endblock %}
-
 {% block general_body %}
-    <table>
+<details open>
+    <summary>Les classes importées</summary>
+    <table id="importedClasses" class="wimstable" style="text-align:center">
+        <caption>Classes importées dans wims</caption>
         <thead>
-            <tr>
-                <th>Établissement</th>
-                <th>UAI</th>
-                <th>Classe</th>
-                <th>Enseignant</th>
-                <th>Matières</th>
-                <th>Nombre d'étudiants</th>
+            <tr data-sort-method="thead">
+                <th scope="col" role="columnheader">Établissement</th>
+                <th scope="col" role="columnheader">UAI</th>
+                <th scope="col" role="columnheader">Classe</th>
+                <th scope="col" role="columnheader">Enseignant</th>
+                <th scope="col" role="columnheader">Matières</th>
+                <th scope="col" role="columnheader">Nombre d'étudiants</th>
+                <th scope="col" role="columnheader">Id wims</th>
             </tr>
         </thead>
         <tbody>
         {% for line in data %}
-            <tr>
+            <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
                 <td>{{ line.gc_name }}</td>
                 <td>{{ line.uai }}</td>
                 <td>{{ line.c_name }}</td>
                 <td>{{ line.lastName }} {{ line.firstName }}</td>
                 <td>{{ line.subjects }}</td>
                 <td>{{ line.nb_students }}</td>
+                <td>{{ line.id_wims }}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+{% endblock %}
+
+{% block endjs %}
+    <script src="/wims/scripts/js/tablesort.js"></script>
+    <script src="/wims/scripts/js/tablesort.number.js"></script>
+
+    <script>
+    new Tablesort(document.getElementById("importedClasses"));
+    </script>
 {% endblock %}

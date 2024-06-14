@@ -114,7 +114,7 @@ class ClassesRepository extends ServiceEntityRepository
         ->innerJoin('c.groupingClasses', 'gc')
         ->innerJoin('c.teacher', 't')
         ->innerJoin('c.students', 's')
-        ->select('gc.name as gc_name, gc.uai as uai, c.name as c_name, t.lastName as lastName, t.firstName as firstName, c.subjects as subjects, COUNT(s.id) as nb_students')
+        ->select('gc.name as gc_name, gc.uai as uai, c.name as c_name, t.lastName as lastName, t.firstName as firstName, c.subjects as subjects, COUNT(s.id) as nb_students, CONCAT(gc.idWims, \'/\', c.idWims) as id_wims')
         ->groupBy('c.id')
         ->getQuery()
         ->getArrayResult();
