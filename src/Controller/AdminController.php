@@ -7,7 +7,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_ADM')]
+#[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractWimsLoaderController
 {
     public function __construct(

@@ -1,8 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Page d'admin</title>
-    <style>
+{# templates/web/admin.html.twig #}
+{% extends 'base.html.twig' %}
+{% set title_page = 'Page d\'admin' %}
+
+{% block style %}
+<style>
     table {
         border: 1px solid black;
         border-collapse: collapse; /* Fusionne les bordures adjacentes des cellules */
@@ -13,9 +14,10 @@
         border: 1px solid black;
         padding: 8px; /* Ajoute un peu d'espace à l'intérieur des cellules */
     }
-    </style>
-</head>
-<body>
+</style>
+{% endblock %}
+
+{% block general_body %}
     <table>
         <thead>
             <tr>
@@ -40,5 +42,4 @@
         {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+{% endblock %}

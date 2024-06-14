@@ -20,7 +20,7 @@ class RootController extends AbstractWimsLoaderController
     #[Route(path:"/home", name:"home")]
     public function home(Security $security): Response
     {
-        if ($this->authorizationChecker->isGranted('ROLE_ADM')) {
+        if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('admin');
         }
         

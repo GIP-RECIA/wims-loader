@@ -81,14 +81,8 @@
                         <div class="wims_msg info">{{ message }}</div>
                     {% endfor %}
 
-                    <div id="wims_group">
-                        <div id="wims_modu_title1" class="title_box">
-                            <div class="wims_classname">{{ groupingClasses.uai }}</div>
-                            <h1 class="wims_title">{{ groupingClasses.name }}</h1>
-                        </div>
-                    </div>
-
-                    {% block body %}{% endblock %}
+                    {% block general_body %}
+                    {% endblock %}
                 </div>
             </div>
 
@@ -107,6 +101,11 @@
                     {% if is_granted('ROLE_ELV') %}
                     <div class="menuitem">
                         <a href="{{ url('student') }}"><span>Page élève </span></a>
+                    </div>
+                    {% endif %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <div class="menuitem">
+                        <a href="{{ url('admin') }}"><span>Page admin </span></a>
                     </div>
                     {% endif %}
                 </div>
