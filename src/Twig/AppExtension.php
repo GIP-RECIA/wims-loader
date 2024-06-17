@@ -5,13 +5,22 @@ use App\Entity\Classes;
 use App\Entity\GroupingClasses;
 use App\Service\WimsUrlGeneratorService;
 use Twig\Extension\AbstractExtension;
+use Twig\Extension\GlobalsInterface;
 use Twig\TwigFilter;
 
-class AppExtension extends AbstractExtension
+class AppExtension extends AbstractExtension implements GlobalsInterface
 {
     public function __construct(
+        private bool $entNetocentre,
         private WimsUrlGeneratorService $wimsUrlGenerator,
     ) {}
+
+    public function getGlobals(): array
+    {
+        return [
+            'entNetocentre' => $this->entNetocentre,
+        ];
+    }
 
     public function getFilters(): array
     {

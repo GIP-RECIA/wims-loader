@@ -228,6 +228,11 @@ services:
                         - '.log'
                         - '.userlist'
                         - '.userlist_external'
+    
+    App\Twig\AppExtension:
+        arguments:
+            $entNetocentre: '%env(bool:ENT_NETOCENTRE)%'
+        tags: ['twig.extension']
                     
 
                 
