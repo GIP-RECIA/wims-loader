@@ -3,10 +3,10 @@
 
 {% block body %}
 <details open>
-    <summary>Vos pages</summary>
+    <summary>{{ "home.title"|trans }}</summary>
     <p>
-        Accès à la partie élève : <a href="{{ path('student') }}">Page élève</a><br>
-        Accès à la partie enseignant : <a href="{{ path('teacher') }}">Page enseignant</a>
+        {{ "home.accessToStudentZone"|trans }} : <a href="{{ path('student') }}">{{ "menu.studentZone"|trans }}</a><br>
+        {{ "home.accessToTeacherZone"|trans }} : <a href="{{ path('teacher') }}">{{ "menu.teacherZone"|trans }}</a>
     </p>
 </details>
 {% endblock %}

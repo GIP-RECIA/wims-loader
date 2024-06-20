@@ -1,21 +1,21 @@
 {# templates/web/teacher.html.twig #}
 {% extends 'web/baseWithGroupingClasses.html.twig' %}
-{% set title_page = 'Page enseignant' %}
+{% set title_page = "menu.teacherZone"|trans %}
 
 {% block body %}
 <details open>
     <summary>Vos classes importées</summary>
     {% if importedClasses|length > 0 %}
-        <p><a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">Accéder aux classes</a></p>
+        <p><a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">{{ "teacherZone.accessToClasses"|trans }}</a></p>
 
         <table id="importedClasses" class="wimstable" style="text-align:center">
-            <caption>Classes importées dans wims</caption>
+            <caption>{{ "teacherZone.classesImported"|trans }}</caption>
             <thead>
                 <tr data-sort-method="thead">
-                    <th scope="col" role="columnheader">Nom</th>
-                    <th scope="col" role="columnheader">Matières</th>
-                    <th scope="col" role="columnheader">Id Wims</th>
-                    <th scope="col" role="columnheader">Action</th>
+                    <th scope="col" role="columnheader">{{ "tableHeader.name"|trans }}</th>
+                    <th scope="col" role="columnheader">{{ "tableHeader.subjects"|trans }}</th>
+                    <th scope="col" role="columnheader">{{ "tableHeader.idWims"|trans }}</th>
+                    <th scope="col" role="columnheader">{{ "tableHeader.action"|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,25 +31,25 @@
                         {{ class.fullIdWims }}
                     </td>
                     <td>
-                        <a href="{{ url('teacherDetailsClass', {idClass: class.id}) }}" class="wims_button" role="button">Détails</a>
+                        <a href="{{ url('teacherDetailsClass', {idClass: class.id}) }}" class="wims_button" role="button">{{ "button.details"|trans }}</a>
                     </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     {% else %}
-        <p>Vous n'avez aucune classe importée.</p>
+        <p>{{ "teacherZone.noImportedClasses"|trans }}</p>
     {% endif %}
 </details>
 <details {% if formsClassesToImport|length > 0 %}open{% else %}close{% endif %}>
-    <summary>Vos classes à importer</summary>
+    <summary>{{ "teacherZone.classesToImport"|trans }}</summary>
     {% if formsClassesToImport|length > 0 %}
         <table id="classToImport" class="wimstable" style="text-align:center">
-            <caption>Classes disponibles à l'import</caption>
+            <caption>{{ "teacherZone.classesAvailableForImport"|trans }}</caption>
             <thead>
                 <tr data-sort-method="thead">
-                    <th scope="col" role="columnheader">Nom</th>
-                    <th scope="col" role="columnheader">Action</th>
+                    <th scope="col" role="columnheader">{{ "tableHeader.name"|trans }}</th>
+                    <th scope="col" role="columnheader">{{ "tableHeader.action"|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -66,7 +66,7 @@
             </tbody>
         </table>
     {% else %}
-        <p>Vous n'avez aucune classe disponible à l'import.</p>
+        <p>{{ "teacherZone.noClassesAvailableForImport"|trans }}</p>
     {% endif %}
 </details>
 {% endblock %}

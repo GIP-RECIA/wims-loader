@@ -1,6 +1,6 @@
 {# templates/web/student.html.twig #}
 {% extends 'web/baseWithGroupingClasses.html.twig' %}
-{% set title_page = 'Page élève' %}
+{% set title_page = "menu.studentZone"|trans %}
 
 {% block body %}
 <details open>
@@ -10,10 +10,10 @@
         <caption>Mes classes</caption>
         <thead>
             <tr data-sort-method="thead">
-                <th scope="col" role="columnheader">Nom</th>
-                <th scope="col" role="columnheader">Matières</th>
-                <th scope="col" role="columnheader">Enseignant</th>
-                <th scope="col" role="columnheader">Action</th>
+                <th scope="col" role="columnheader">{{ "tableaHeader.name"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableaHeader.subjects"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableaHeader.teacher"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableaHeader.action"|trans }}</th>
             </tr>
         </thead>
         <tbody>
@@ -29,7 +29,7 @@
                     {{ class.teacher.lastName }}
                 </td>
                 <td>
-                    <a href="{{ class|wims_url_class_for_student }}" class="wims_button" role="button">Entrer</a>
+                    <a href="{{ class|wims_url_class_for_student }}" class="wims_button" role="button">{{ "button.enter"|trans }}</a>
                 </td>
             </tr>
         {% endfor %}
@@ -37,7 +37,7 @@
     </table>
     {% else %}
     <br>
-    Vous n'êtes actuellement inscrit dans aucune classe wims, merci de voir avec votre enseignant.
+    {{ "studentZone.notRegisteredInWimsClass"|trans }}
     {% endif %}
 </details>
 {% endblock %}

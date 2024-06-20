@@ -1,0 +1,36 @@
+button:
+  logout: Déconnexion
+  enter: Entrer
+  details: Détails
+  uportalHeader:
+    connexionEnt: Connexion 
+    gotToHome: Aller à l'accueil
+
+menu:
+  navigation: Navigation
+  teacherZone: Zone Enseignant
+  studentZone: Zone Élève
+  adminZone: Administration
+
+tableHeader:
+  name: Nom
+  subjects: Matières
+  teacher: Enseignant
+  idWims: Id Wims
+  action: Action
+
+home:
+  title: Sur ce site
+  accessToStudentZone: Accès à la zone Élève
+  accessToTeacherZone: Accès à la zone Enseignant
+
+studentZone:
+  notRegisteredInWimsClass: Vous n'êtes actuellement inscrit dans aucune classe Wims, merci de voir avec votre enseignant.
+
+teacherZone:
+  accessToClasses: Accéder aux classes
+  classesImported: Classes importées dans Wims
+  noImportedClasses: Vous n'avez aucune classe importée.
+  classesToImport: Vos classes à importer
+  classesAvailableForImport: Classes disponibles à l'import
+  noClassesAvailableForImport: Vous n'avez aucune classe disponible à l'import.

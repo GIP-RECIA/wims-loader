@@ -37,7 +37,7 @@
         {# début ajout bandeau et footer ENT #}
         <style>
             body{
-                padding-top:38px;
+                /*padding-top:38px;*/
                 padding-bottom:55px;
             }
             extended-uportal-header {
@@ -67,7 +67,7 @@
     <body class="main_body">
         {% if entNetocentre %}
         {# début ajout bandeau ENT #}
-        <extended-uportal-header messages='[{"locales": ["fr", "fr-FR"], "messages": { "message": {"header": {"login": "Connexion ENT" } }}}]'
+        <extended-uportal-header messages='[{"locales": ["fr", "fr-FR"], "messages": { "message": {"header": {"login": "{{ "button.uportalHeader.connexionEnt"|trans }}" } }}}]'
             domain="{{ app.request.host }}" height="38px"
             service-name="Wims" context-api-url="/portail" sign-out-url="/portail/Logout"
             default-org-logo-path="/annuaire_images/default_banner_v1.jpg" default-avatar-path="/images/icones/noPictureUser.svg"
@@ -79,7 +79,7 @@
             user-info-portlet-url="/portail/api/ExternalURLStats?fname=ESCO-MCE&amp;service=/MCE"
             template-api-path="/commun/portal_template_api.tpl.json" switch-org-portlet-url="/portail/p/etablissement-swapper"
             favorites-portlet-card-size="small" grid-portlet-card-size="auto" hide-action-mode="never"
-            show-favorites-in-slider="true" return-home-title="Aller à l'accueil" return-home-target="_self"
+            show-favorites-in-slider="true" return-home-title="{{ "button.uportalHeader.gotToHome"|trans }}" return-home-target="_self"
             icon-type="nine-square" sign-in-url="/portail/Login" >
         </extended-uportal-header>
         {# fin ajout bandeau ENT #}
@@ -95,7 +95,7 @@
                     <a id="#user_links" class="account"><span class="text_item">{{ app.user.fullName }}</span></a>
                     <ul id="user_links" class="menu submenu is-dropdown-submenu first-sub vertical" data-submenu="" role="menubar" style="">
                         <li class="menuitem visitor is-submenu-item is-dropdown-submenu-item" role="menuitem">
-                            <a href="{{ url('logout') }}" class="visitor"><span>Déconnexion </span></a>
+                            <a href="{{ url('logout') }}" class="visitor"><span>{{ "button.logout"|trans }} </span></a>
                         </li>
                     </ul>
                 </li>
@@ -132,23 +132,23 @@
             <nav id="wimsmenumodubox">
                 <div class="modubox_content">
                     <h2 class="menu_title">
-                        <span> Navigation</span>
+                        <span> {{ "menu.navigation"|trans }}</span>
                     </h2>
                 </div>
                 <div class="wimsmenu menu">
                     {% if is_granted('ROLE_ENS') %}
                     <div class="menuitem">
-                        <a href="{{ url('teacher') }}"><span>Page enseignant </span></a>
+                        <a href="{{ url('teacher') }}"><span>{{ "menu.teacherZone"|trans }} </span></a>
                     </div>
                     {% endif %}
                     {% if is_granted('ROLE_ELV') %}
                     <div class="menuitem">
-                        <a href="{{ url('student') }}"><span>Page élève </span></a>
+                        <a href="{{ url('student') }}"><span>{{ "menu.studentZone"|trans }} </span></a>
                     </div>
                     {% endif %}
                     {% if is_granted('ROLE_ADMIN') %}
                     <div class="menuitem">
-                        <a href="{{ url('admin') }}"><span>Page admin </span></a>
+                        <a href="{{ url('admin') }}"><span>{{ "menu.adminZone"|trans }} </span></a>
                     </div>
                     {% endif %}
                 </div>
