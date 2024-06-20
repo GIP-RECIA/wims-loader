@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-</head>
-<body>
+{# templates/web/baseWithGroupingClasses.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block general_body %}
 
 <h1>Page de debug</h1>
-
-<h2>Menu</h2>
-<ul>
-    <li><a href="{{ url('debug_infos') }}">test infos sur l'utilisateur</a></li>
-    <li><a href="{{ url('debug_phpinfo') }}">test page phpinfo</a></li>
-    <li><a href="{{ url('debug_headers') }}">test page headers</a></li>
-</ul>
 
 {% if content is defined %}
     {{ content|raw }}
@@ -24,4 +16,4 @@
     {% endfor %}
 {% endif %}
 
-</body>
+{% endblock %}

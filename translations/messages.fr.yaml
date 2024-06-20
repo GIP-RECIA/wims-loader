@@ -11,6 +11,12 @@ menu:
   teacherZone: Zone Enseignant
   studentZone: Zone Élève
   adminZone: Administration
+  home: Accueil
+  debug: Debug
+  debugSub:
+    userInfo: Infos utilisateur
+    phpinfo: Phpinfo
+    headers: Headers
 
 tableHeader:
   name: Nom
@@ -25,7 +31,7 @@ home:
   accessToTeacherZone: Accès à la zone Enseignant
 
 studentZone:
-  notRegisteredInWimsClass: Vous n'êtes actuellement inscrit dans aucune classe Wims, merci de voir avec votre enseignant.
+  notRegisteredInWimsClass: "Vous n'êtes actuellement inscrit dans aucune classe Wims, merci de voir avec votre enseignant."
 
 teacherZone:
   accessToClasses: Accéder aux classes
@@ -34,3 +40,6 @@ teacherZone:
   classesToImport: Vos classes à importer
   classesAvailableForImport: Classes disponibles à l'import
   noClassesAvailableForImport: Vous n'avez aucune classe disponible à l'import.
+
+classDetails:
+  title: Détails de la classe

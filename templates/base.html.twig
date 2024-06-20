@@ -106,10 +106,21 @@
 
         <nav aria-label="You are here:">
             <ul class="breadcrumbs">
+                {% for elem in navigationBar %}
                 <li class="class_home menuitem">
-                    <span class="text_item class_home">{{ title_page }} </span>
-                    <span class="show-for-sr">(Current)</span>
+                    {% set url = elem.url|default(null) %}
+
+                    {% if url is not null %}
+                        <a href="{{ elem.url}}"><span>{{ elem.name }}</span></a>
+                    {% else %}
+                        <span class="text_item class_home">{{ elem.name }} </span>
+                    {% endif %}
+
+                    {% if loop.last %}
+                        <span class="show-for-sr">(Current)</span>
+                    {% endif %}
                 </li>
+                {% endfor %}
             </ul>
         </nav>
 
@@ -151,7 +162,30 @@
                         <a href="{{ url('admin') }}"><span>{{ "menu.adminZone"|trans }} </span></a>
                     </div>
                     {% endif %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <div class="menuitem">
+                        <a href="{{ url('admin') }}"><span>{{ "menu.adminZone"|trans }} </span></a>
+                    </div>
+                    {% endif %}
                 </div>
+                {% if is_granted('IS_DEV_ENV') %}
+                <div class="modubox_content">
+                    <h2 class="menu_title">
+                        <span> {{ "menu.debug"|trans }}</span>
+                    </h2>
+                </div>
+                <div class="wimsmenu menu">
+                    <div class="menuitem">
+                        <a href="{{ url('debug_user') }}"><span>{{ "menu.debugSub.userInfo"|trans }} </span></a>
+                    </div>
+                    <div class="menuitem">
+                        <a href="{{ url('debug_phpinfo') }}"><span>{{ "menu.debugSub.phpinfo"|trans }} </span></a>
+                    </div>
+                    <div class="menuitem">
+                        <a href="{{ url('debug_headers') }}"><span>{{ "menu.debugSub.headers"|trans }} </span></a>
+                    </div>
+                </div>
+                {% endif %}
             </nav>
         </div>
 

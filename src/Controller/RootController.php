@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RootController extends AbstractWimsLoaderController
 {
@@ -15,41 +16,30 @@ class RootController extends AbstractWimsLoaderController
         private AuthorizationCheckerInterface $authorizationChecker,
         private LdapService $ldapService,
         private GroupingClassesService $groupingClassesService,
+        private TranslatorInterface $translator,
     ) {}
 
     #[Route(path:"/home", name:"home")]
     public function home(Security $security): Response
     {
-        if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
-            return $this->redirectToRoute('admin');
-        }
-        
-        /*$results = $this->ldapService->findFake();
-        $res = [];
-        $resTxt = "";
-
-        foreach ($results as $result) {
-            $uid = strtolower($result->getAttribute('uid')[0]);
-            $res[] = $uid;
-            $resTxt .= $uid."\n";
-        }
-
-        return new Response($resTxt);*/
-
-        
         $user = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
         $isTeacher = $this->authorizationChecker->isGranted('ROLE_ENS');
         $isStudent = $this->authorizationChecker->isGranted('ROLE_ELV');
+        $isAdmin = $this->authorizationChecker->isGranted('ROLE_ADMIN');
+        $navigationBar = [['name' => $this->translator->trans('menu.home')]];
 
         if ($isTeacher && !$isStudent) {
             return $this->redirectToRoute('teacher');
-        }/* else if ($isStudent && !$isTeacher) {
+        } else if ($isStudent) {
             return $this->redirectToRoute('student');
-        }*/
+        } else if ($isAdmin) {
+            return $this->redirectToRoute('admin');
+        }
 
         return $this->render('web/home.html.twig', [
             'groupingClasses' => $groupingClasses,
+            'navigationBar' => $navigationBar,
         ]);
     }
 

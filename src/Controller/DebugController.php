@@ -10,6 +10,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_USER')]
 #[IsGranted('IS_DEV_ENV')]
@@ -20,9 +21,10 @@ class DebugController extends AbstractWimsLoaderController
         private UserRepository $userRepo,
         private GroupingClassesRepository $groupingClassesRepo,
         private ClassesRepository $classesRepo,
+        private TranslatorInterface $translator,
     ) {}
 
-    #[Route(path:"/debug/", name:"accueil")]
+    #[Route(path:"/debug/", name:"debug")]
     #[Template('web/debug.html.twig')]
     public function debug(): array
     {
@@ -32,7 +34,7 @@ class DebugController extends AbstractWimsLoaderController
     /**
      * Affichage des headers
      */
-    #[Route(path:"/debug/infos", name:"debug_infos")]
+    #[Route(path:"/debug/infos", name:"debug_user")]
     #[Template('web/debug.html.twig')]
     public function infos(Security $security): array
     {
@@ -42,8 +44,10 @@ class DebugController extends AbstractWimsLoaderController
         $groupingClasses = $this->groupingClassesRepo->findOneBySiren($user->getSirenCourant());
         $classesStudentBdd = $this->classesRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
         $classesTeacherBdd = $this->classesRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
+        $navigationBar = [['name' => $this->translator->trans('menu.debug')]];
         
         return [
+            'navigationBar' => $navigationBar,
             'dumpArray' => [
                 'Utilisateur' => $user,
                 'Données du ldap sur l\'utilisateur' => $userLdap,
@@ -59,16 +63,19 @@ class DebugController extends AbstractWimsLoaderController
      * Affichage du phpinfo
      */
     #[Route(path:"/debug/phpinfo", name:"debug_phpinfo")]
-    public function phpinfo(): Response
+    #[Template('web/debug.html.twig')]
+    public function phpinfo(): array
     {
+        $navigationBar = [['name' => $this->translator->trans('menu.debug')]];
         ob_start();
         phpinfo();
         $phpinfo = ob_get_contents ();
         ob_end_clean();
 
-        return new Response(
-            $phpinfo
-        );
+        return [
+            'navigationBar' => $navigationBar,
+            'content' => $phpinfo,
+        ];
     }
 
     /**
@@ -78,7 +85,10 @@ class DebugController extends AbstractWimsLoaderController
     #[Template('web/debug.html.twig')]
     public function headers(): array
     {
+        $navigationBar = [['name' => $this->translator->trans('menu.debug')]];
+
         return [
+            'navigationBar' => $navigationBar,
             'dumpArray' => [
                 'headers' => $_SERVER,
             ]

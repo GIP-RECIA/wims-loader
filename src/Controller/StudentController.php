@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_ELV')]
 class StudentController extends AbstractWimsLoaderController
@@ -19,7 +20,8 @@ class StudentController extends AbstractWimsLoaderController
         private GroupingClassesService $groupingClassesService,
         private StudentService $StudentService,
         private ClassesRepository $classRepo,
-        private WimsUrlGeneratorService $wimsUrlGeneratorService
+        private WimsUrlGeneratorService $wimsUrlGeneratorService,
+        private TranslatorInterface $translator,
     ) {}
 
     #[Route(path:"/eleve/", name:"student")]
@@ -29,6 +31,7 @@ class StudentController extends AbstractWimsLoaderController
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
         $classes = $this->classRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
         $autoRedirectStudent = $this->getParameter('app.autoRedirectStudent');
+        $navigationBar = [['name' => $this->translator->trans('menu.studentZone')]];
 
         if ($autoRedirectStudent && count($classes) === 1) {
             return $this->redirect($this->wimsUrlGeneratorService->wimsUrlClassForStudent($classes[0]));
@@ -36,6 +39,7 @@ class StudentController extends AbstractWimsLoaderController
 
         return $this->render('web/student.html.twig', [
             'groupingClasses' => $groupingClasses,
+            'navigationBat' => $navigationBar,
             'classes' => $classes,
         ]);
     }

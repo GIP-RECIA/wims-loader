@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_ENS')]
 class TeacherController extends AbstractWimsLoaderController
@@ -33,6 +34,7 @@ class TeacherController extends AbstractWimsLoaderController
         private ClassesService $classesService,
         private UserRepository $userRepo,
         private LdapService $ldapService,
+        private TranslatorInterface $translator,
     ) {}
 
     /**
@@ -51,6 +53,11 @@ class TeacherController extends AbstractWimsLoaderController
         $importedClasses = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
         $importedClassesName = [];
         $formsClassesToImport = [];
+        $navigationBar = [
+            [
+                'name' => $this->translator->trans('menu.teacherZone'),
+            ]
+        ];
 
         foreach ($importedClasses as $classes) {
             $importedClassesName[] = $classes->getName();
@@ -71,6 +78,7 @@ class TeacherController extends AbstractWimsLoaderController
 
         return [
             'groupingClasses' => $groupingClasses,
+            'navigationBar' => $navigationBar,
             'importedClasses' => $importedClasses,
             'formsClassesToImport' => $formsClassesToImport,
         ];
@@ -120,9 +128,18 @@ class TeacherController extends AbstractWimsLoaderController
         $teacher = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($teacher->getSirenCourant());
         $diffStudents = $this->StudentService->diffStudentFromTeacherAndClass($teacher, $classes);
+        $navigationBar = [
+            [
+                'name' => $this->translator->trans('menu.teacherZone'),
+                'url' => $this->generateUrl('teacher'),
+            ], [
+                'name' => $this->translator->trans('classDetails.title'),
+            ]
+        ];
 
         return [
             'groupingClasses' => $groupingClasses,
+            'navigationBar' => $navigationBar,
             'class' => $classes,
             'diffStudents' => $diffStudents,
         ];
