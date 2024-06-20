@@ -2,6 +2,8 @@ button:
   logout: Déconnexion
   enter: Entrer
   details: Détails
+  synchronise: Synchroniser
+  back: Retour
   uportalHeader:
     connexionEnt: Connexion 
     gotToHome: Aller à l'accueil
@@ -23,6 +25,10 @@ tableHeader:
   subjects: Matières
   teacher: Enseignant
   idWims: Id Wims
+  groupingClasses: Établissement
+  uai: UAI
+  classes: Classe
+  nbStudents: Nombre d'étudiants
   action: Action
 
 home:
@@ -31,7 +37,7 @@ home:
   accessToTeacherZone: Accès à la zone Enseignant
 
 studentZone:
-  notRegisteredInWimsClass: "Vous n'êtes actuellement inscrit dans aucune classe Wims, merci de voir avec votre enseignant."
+  notRegisteredInWimsClass: Vous n'êtes actuellement inscrit dans aucune classe Wims, merci de voir avec votre enseignant.
 
 teacherZone:
   accessToClasses: Accéder aux classes
@@ -43,3 +49,30 @@ teacherZone:
 
 classDetails:
   title: Détails de la classe
+  blockGroupingClasses: Établissement
+  fieldsBlockGroupingClasses:
+    uai: UAI de l'établissement
+    name: Nom de l'établissement
+  blockClasses: Classe
+  fieldsBlockClasses:
+    className: Nom de la classe
+    teacherName: Nom de l'enseignant
+    subjects: Matière(s)
+    idWims: ID wims
+    lastSync: Dernière synchro
+  blockStudents: Élèves
+  fieldsBlockStudents:
+    studentsInWims: Dans wims
+    studentsInLdap: Dans l'annuaire ENT
+  messages:
+    allSync: Les élèves sont bien synchronisés.
+    studentsAbsentFromLdap: Certains élèves sont présent dans Wims mais plus dans n'annuaire. Ce n'est pas gênant.
+    studentsAbsentFromWims: Certains élèves ne sont pas synchronisés avec Wims. Veuillez synchroniser pour corriger le problème.
+
+admin:
+  classesImportedTitle: Les classes importées
+  classesImported: Classes importées dans Wims
+
+
+debug:
+  title: Page de debug

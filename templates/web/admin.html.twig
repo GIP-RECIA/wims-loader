@@ -1,21 +1,21 @@
 {# templates/web/admin.html.twig #}
 {% extends 'base.html.twig' %}
-{% set title_page = 'Page d\'admin' %}
+{% set title_page = 'menu.adminZone'|trans %}
 
 {% block general_body %}
 <details open>
-    <summary>Les classes importées</summary>
+    <summary>{{ "admin.classesImportedTitle"|trans }}</summary>
     <table id="importedClasses" class="wimstable" style="text-align:center">
-        <caption>Classes importées dans wims</caption>
+        <caption>{{ "admin.classesImported"|trans }}</caption>
         <thead>
             <tr data-sort-method="thead">
-                <th scope="col" role="columnheader">Établissement</th>
-                <th scope="col" role="columnheader">UAI</th>
-                <th scope="col" role="columnheader">Classe</th>
-                <th scope="col" role="columnheader">Enseignant</th>
-                <th scope="col" role="columnheader">Matières</th>
-                <th scope="col" role="columnheader">Nombre d'étudiants</th>
-                <th scope="col" role="columnheader">Id wims</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.groupingClasses"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.uai"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.classes"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.teacher"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.subjects"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.nbStudents"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.idWims"|trans }}</th>
             </tr>
         </thead>
         <tbody>

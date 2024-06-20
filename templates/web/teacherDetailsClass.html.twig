@@ -46,40 +46,40 @@
 
 {% block body %}
 <fieldset class="property_fields blockcenter">
-    <legend>Établissement</legend>
+    <legend>{{ "classDetails.blockGroupingClasses"|trans }}</legend>
     <ul class="flex_box wims_loader_class_ul">
         <li class="field box halfwidth">
-            <span class="wims_loader_label">UAI de l'établissement :</span> {{ groupingClasses.uai }}
+            <span class="wims_loader_label">{{ "classDetails.fieldsBlockGroupingClasses.uai"|trans }} :</span> {{ groupingClasses.uai }}
         </li>
         <li class="field box halfwidth">
-            <span class="wims_loader_label">Nom de l'établissement :</span> {{ groupingClasses.name }}
+            <span class="wims_loader_label">{{ "classDetails.fieldsBlockGroupingClasses.name"|trans }} :</span> {{ groupingClasses.name }}
         </li>
     </ul>
 </fieldset>
 <fieldset class="property_fields blockcenter">
-    <legend>Classe</legend>
+    <legend>{{ "classDetails.blockClasses"|trans }}</legend>
     <ul class="flex_box wims_loader_class_ul">
         <li class="field box halfwidth">
-            <span class="wims_loader_label">Nom de la classe :</span> {{ class.name }}
+            <span class="wims_loader_label">{{ "classDetails.fieldsBlockClasses.className"|trans }} :</span> {{ class.name }}
         </li>
         <li class="field box halfwidth">
-            <span class="wims_loader_label">Nom de l'enseignant :</span> {{ class.teacher.lastName }} {{ class.teacher.firstName }}
+            <span class="wims_loader_label">{{ "classDetails.fieldsBlockClasses.teacherName"|trans }} :</span> {{ class.teacher.lastName }} {{ class.teacher.firstName }}
         </li>
         <li class="field box halfwidth">
-            <span class="wims_loader_label">Matière(s) :</span> {{ class.subjects }}
+            <span class="wims_loader_label">{{ "classDetails.fieldsBlockClasses.subjects"|trans }} :</span> {{ class.subjects }}
         </li>
         <li class="field box halfwidth">
-            <span class="wims_loader_label">ID wims :</span> {{ class.fullIdWims }}
+            <span class="wims_loader_label">{{ "classDetails.fieldsBlockClasses.idWims"|trans }} :</span> {{ class.fullIdWims }}
         </li>
         <li class="field box halfwidth">
-            <span class="wims_loader_label">Derniére synchro :</span> {{ class.lastSyncAt|date('H:i d/m/y') }}
+            <span class="wims_loader_label">{{ "classDetails.fieldsBlockClasses.lastSync"|trans }} :</span> {{ class.lastSyncAt|date('H:i d/m/y') }}
         </li>
     </ul>
 </fieldset>
 <fieldset class="property_fields blockcenter bloc-students">
-    <legend>Élèves</legend>
+    <legend>{{ "classDetails.blockStudents"|trans }}</legend>
     <div class="two-col">
-        <p>Dans wims :</p>
+        <p>{{ "classDetails.fieldsBlockStudents.studentsInWims"|trans }} :</p>
         <ul>
         {% for uid, userData in diffStudents.wims %}
             <li class="{% if uid in diffStudents.wimsUnsync %}nok-warn{% else %}ok{% endif %}">{{ userData.fullName }}</li>
@@ -87,7 +87,7 @@
         </ul>
     </div>
     <div class="two-col">
-        <p>Dans l'annuaire :</p>
+        <p>{{ "classDetails.fieldsBlockStudents.studentsInLdap"|trans }} :</p>
         <ul>
         {% for uid, userData in diffStudents.ldap %}
             <li class="{% if uid in diffStudents.ldapUnsync %}nok-error{% else %}ok{% endif %}">{{ userData.fullName }}</li>
@@ -96,20 +96,20 @@
     </div>
 </fieldset>
 {% if diffStudents.wimsUnsync|length == 0 and diffStudents.ldapUnsync|length == 0 %}
-    <div class="wims_msg info">Les élèves sont bien synchronisés.</div>
+    <div class="wims_msg info">{{ "classDetails.messages.allSync"|trans }}</div>
 {% else %}
     {% if diffStudents.wimsUnsync|length != 0 %}
-        <div class="wims_msg info">Certains élèves sont présent dans wims mais plus dans n'annuaire. Ce n'est pas génant.</div>
+        <div class="wims_msg info">{{ "classDetails.messages.studentsAbsentFromLdap"|trans }}</div>
     {% endif %}
 
     {% if diffStudents.ldapUnsync|length != 0 %}
         {% set can_sync = true %}
-        <div class="wims_msg alert">Certains élèves ne sont pas synchronisés avec wims. Veuillez synchroniser pour corriger le problème.</div>
+        <div class="wims_msg alert">{{ "classDetails.messages.studentsAbsentFromWims"|trans }}</div>
     {% endif %}
 {% endif %}
 <div class="wimscenter actions">
-    {% if can_sync %}<a href="{{ url('teacherSyncClass', { 'idClass': class.id }) }}" class="wims_button" role="button">Synchroniser</a>{% endif %}
-    <a href="{{ url('teacher') }}" class="wims_button wims_secondary_button" role="button">Retour</a>
+    {% if can_sync %}<a href="{{ url('teacherSyncClass', { 'idClass': class.id }) }}" class="wims_button" role="button">{{ "button.synchronise"|trans }}</a>{% endif %}
+    <a href="{{ url('teacher') }}" class="wims_button wims_secondary_button" role="button">{{ "button.back"|trans }}</a>
 </div>
 
 

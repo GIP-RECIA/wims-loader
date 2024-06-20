@@ -3,7 +3,7 @@
 
 {% block general_body %}
 
-<h1>Page de debug</h1>
+<h1>{{ "debug.title"|trans }}</h1>
 
 {% if content is defined %}
     {{ content|raw }}
