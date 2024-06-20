@@ -52,11 +52,7 @@ class TeacherController extends AbstractWimsLoaderController
         $importedClasses = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
         $importedClassesName = [];
         $formsClassesToImport = [];
-        $navigationBar = [
-            [
-                'name' => $this->translator->trans('menu.teacherZone'),
-            ]
-        ];
+        $navigationBar = [['name' => $this->translator->trans('menu.teacherZone')]];
 
         foreach ($importedClasses as $classes) {
             $importedClassesName[] = $classes->getName();
@@ -102,12 +98,12 @@ class TeacherController extends AbstractWimsLoaderController
             try {
                 $className = $form->getData()['className'];
                 $class = $this->teacherService->createClass($user, $className);
-                $this->addFlash('info', 'La classe "' . $class->getName() . '" a bien été importée');
+                $this->addFlash('info', $this->translator->trans('teacherZone.message.classImported', ['className' => $class->getName()]));
             } catch (Exception $e) {
-                $this->addFlash('alert', 'Erreur lors de la création de la classe');
+                $this->addFlash('alert', $this->translator->trans('teacherZone.message.classCreationError', ['className' => $class->getName()]));
             }
         } else {
-            $this->addFlash('alert', 'Erreur lors de la récupération du nom de la classe');
+            $this->addFlash('alert', $this->translator->trans('teacherZone.message.classCreationError'));
         }
 
         return $this->redirectToRoute('teacher');
@@ -160,12 +156,12 @@ class TeacherController extends AbstractWimsLoaderController
         try {
             if (sizeof($diffStudents['ldapUnsync']) > 0) {
                 $this->teacherService->addStudentsInClass($diffStudents['ldapUnsync'], $classes);
-                $this->addFlash('info', 'La synchronisation des élèves a été effectuée correctement');
+                $this->addFlash('info', $this->translator->trans('teacherZone.message.syncStudentsOk'));
             } else {
-                $this->addFlash('info', 'Aucun nouvel élève a synchroniser');
+                $this->addFlash('info', $this->translator->trans('teacherZone.message.noStudentsToSync'));
             }
         } catch (Exception $e) {
-            $this->addFlash('alert', 'Erreur lors de la synchronisation des élèves');
+            $this->addFlash('alert', $this->translator->trans('teacherZone.message.syncStudentsNok'));
         }
 
         return $this->redirectToRoute('teacherDetailsClass', [

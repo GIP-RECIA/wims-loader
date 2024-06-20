@@ -46,6 +46,13 @@ teacherZone:
   classesToImport: Vos classes à importer
   classesAvailableForImport: Classes disponibles à l'import
   noClassesAvailableForImport: Vous n'avez aucune classe disponible à l'import.
+  message:
+    classImported: La classe "{className}" a bien été importée.
+    classCreationError: Erreur lors de la création de la classe "{className}"
+    classGetNameError: Erreur lors de la récupération du nom de la classe
+    syncStudentsOk: La synchronisation des élèves a été effectuée correctement
+    syncStudentsNok: Erreur lors de la synchronisation des élèves
+    noStudentsToSync: Aucun nouvel élève a synchroniser
 
 classDetails:
   title: Détails de la classe
@@ -76,3 +83,10 @@ admin:
 
 debug:
   title: Page de debug
+  categoryTitle:
+    user: Utilisateur
+    userDataLdap: Données du ldap sur l'utilisateur
+    userDataBdd: Données de la bdd sur l'utilisateur
+    groupingClassesDataBdd: Données de la bdd sur l'établissement
+    classesDataBddForStudent: Données de la bdd sur les classes de l'utilisateur en tant qu'élève
+    classesDataBddForTeacher: Données de la bdd sur les classes de l'utilisateur en tant qu'enseignant

@@ -41,12 +41,12 @@ class DebugController extends AbstractWimsLoaderController
         return [
             'navigationBar' => $navigationBar,
             'dumpArray' => [
-                'Utilisateur' => $user,
-                'Données du ldap sur l\'utilisateur' => $userLdap,
-                'Données de la bdd sur l\'utilisateur' => $userBdd,
-                'Données de la bdd sur l\'établissement' => $groupingClasses,
-                'Données de la bdd sur les classes de l\'utilisateur en tant qu\'élève' => $classesStudentBdd,
-                'Données de la bdd sur les classes de l\'utilisateur en tant qu\'enseignant' => $classesTeacherBdd,
+                $this->translator->trans('debug.categoryTitle.user') => $user,
+                $this->translator->trans('debug.categoryTitle.userDataLdap') => $userLdap,
+                $this->translator->trans('debug.categoryTitle.userDataBdd') => $userBdd,
+                $this->translator->trans('debug.categoryTitle.groupingClassesDataBdd') => $groupingClasses,
+                $this->translator->trans('debug.categoryTitle.classesDataBddForStudent') => $classesStudentBdd,
+                $this->translator->trans('debug.categoryTitle.classesDataBddForTeacher') => $classesTeacherBdd,
             ],
         ];
     }
