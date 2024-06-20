@@ -179,3 +179,41 @@
     background-color:#666666;
     color:#ffffff;
 }
+
+/* intégration du css des pages*/
+.wims_loader_label {
+    font-weight: bold;
+}
+
+.full_width {
+    width: 100%;
+}
+
+ul.wims_loader_class_ul {
+    width: 100%;
+}
+
+ul.wims_loader_class_ul li.field.box {
+    min-height: auto;
+}
+
+.two-col {
+    width: 50%;
+}
+
+.bloc-students li {
+    padding: 2px;
+    margin-bottom: 4px;
+}
+
+.bloc-students .ok {
+    background-color: #BBFFBB;
+}
+
+.bloc-students .nok-warn {
+    background-color: #FFFFBB;
+}
+
+.bloc-students .nok-error {
+    background-color: #FFBBBB;
+}

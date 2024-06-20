@@ -1,48 +1,7 @@
-{# templates/web/teacher.html.twig #}
+{# templates/web/teacherDetailsClass.html.twig #}
 {% extends 'web/baseWithGroupingClasses.html.twig' %}
-{% set title_page = 'Détails de la classe' %}
+{% set title_page = 'classDetails.title'|trans %}
 {% set can_sync = false %}
-
-{% block style %}
-<style>
-    .wims_loader_label {
-        font-weight: bold;
-    }
-
-    .full_width {
-        width: 100%;
-    }
-
-    ul.wims_loader_class_ul {
-        width: 100%;
-    }
-
-    ul.wims_loader_class_ul li.field.box {
-        min-height: auto;
-    }
-
-    .two-col {
-        width: 50%;
-    }
-
-    .bloc-students li {
-        padding: 2px;
-        margin-bottom: 4px;
-    }
-
-    .bloc-students .ok {
-        background-color: #BBFFBB;
-    }
-
-    .bloc-students .nok-warn {
-        background-color: #FFFFBB;
-    }
-
-    .bloc-students .nok-error {
-        background-color: #FFBBBB;
-    }
-</style>
-{% endblock %}
 
 {% block body %}
 <fieldset class="property_fields blockcenter">
