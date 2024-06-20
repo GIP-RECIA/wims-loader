@@ -24,13 +24,6 @@ class DebugController extends AbstractWimsLoaderController
         private TranslatorInterface $translator,
     ) {}
 
-    #[Route(path:"/debug/", name:"debug")]
-    #[Template('web/debug.html.twig')]
-    public function debug(): array
-    {
-        return [];
-    }
-
     /**
      * Affichage des headers
      */
