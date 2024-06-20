@@ -58,11 +58,11 @@ classDetails:
     className: Nom de la classe
     teacherName: Nom de l'enseignant
     subjects: Matière(s)
-    idWims: ID wims
+    idWims: ID Wims
     lastSync: Dernière synchro
   blockStudents: Élèves
   fieldsBlockStudents:
-    studentsInWims: Dans wims
+    studentsInWims: Dans Wims
     studentsInLdap: Dans l'annuaire ENT
   messages:
     allSync: Les élèves sont bien synchronisés.

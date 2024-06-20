@@ -2,7 +2,6 @@
 namespace App\Controller;
 
 use App\Entity\Classes;
-use App\Entity\User;
 use App\Form\ClassNameType;
 use App\Repository\ClassesRepository;
 use App\Repository\UserRepository;

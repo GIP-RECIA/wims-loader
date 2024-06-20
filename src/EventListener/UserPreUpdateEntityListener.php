@@ -9,7 +9,6 @@ use App\Service\WimsFileObjectCreatorService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
-use Symfony\Component\Filesystem\Filesystem;
 
 #[AsEntityListener(event: Events::preUpdate, method: 'preUpdate', entity: User::class)]
 class UserPreUpdateEntityListener
@@ -28,8 +27,6 @@ class UserPreUpdateEntityListener
         $firstName = $this->getValueOrDefault($dataChange, 'firstName', $user->getFirstName());
         $lastName = $this->getValueOrDefault($dataChange, 'lastName', $user->getLastName());
         $mail = $this->getValueOrDefault($dataChange, 'mail', $user->getMail());
-        // je récupère un tableau du genre ['firstName' => ['ancien', 'nouveau']]
-        // TODO: écrire les traitements
 
         // Récupérer les établissements en tant qu'enseignant et boucler
         $idWimsGroupingClasses = $this->groupingClassesRepo->findIdWimsGroupingClassesByTeacher($user);
@@ -85,23 +82,6 @@ class UserPreUpdateEntityListener
                 );
 
         }
-
-        // mettre à jour les fichiers 
-
-        // Récupérer les établissements en tant qu'élève et boucler
-
-            // Récupérer les classes
-            // éditer le fichier .userlist de l'établissement pour remplacer nom et prénom :
-            //  :AVEYRON,Louise,f2060rhb
-            // éditer le fichier .users/{uid} de l'établissement pour remplacer nom, prénom et mail :
-            //  !set user_lastname=AVEYRON
-            //  !set user_firstname=Louise
-            //  !set user_email=louise.aveyron@mon-e-college.loiret.fr
-
-            // Boucler sur les classes
-
-                // éditer le fichier .userlist pour remplacer nom et prénom :
-                //  :AVEYRON,Louise,f2060rhb
     }
 
     private function getValueOrDefault(array $array, string $key, string $default = null): string
