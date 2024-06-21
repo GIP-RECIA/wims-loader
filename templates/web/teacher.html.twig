@@ -76,7 +76,11 @@
     <script src="/wims/scripts/js/tablesort.number.js"></script>
 
     <script>
-    new Tablesort(document.getElementById("importedClasses"));
-    new Tablesort(document.getElementById("classToImport"));
+    for (const id of ["importedClasses", "classToImport"]) {
+        const elem = document.getElementById(id);
+        if (elem != null) {
+            new Tablesort(elem);
+        }
+    }
     </script>
 {% endblock %}
