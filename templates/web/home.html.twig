@@ -1,6 +1,5 @@
 {# templates/web/home.html.twig #}
-{% set parent_template = groupingClasses is null ? 'web/base.html.twig' : 'web/baseWithGroupingClasses.html.twig' %}
-{% extends parent_template %}
+{% extends 'web/base.html.twig' %}
 
 {% block body %}
 <details open>

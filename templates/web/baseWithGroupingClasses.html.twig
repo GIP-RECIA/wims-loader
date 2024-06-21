@@ -4,12 +4,14 @@
 
 {% block general_body %}
 
+{% if groupingClasses is not null %}
 <div id="wims_group">
     <div id="wims_modu_title1" class="title_box">
         <div class="wims_classname">{{ groupingClasses.uai }}</div>
         <h1 class="wims_title">{{ groupingClasses.name }}</h1>
     </div>
 </div>
+{% endif %}
 
 {% block body %}{% endblock %}
 {% endblock %}

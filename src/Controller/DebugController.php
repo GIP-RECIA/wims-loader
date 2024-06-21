@@ -5,6 +5,7 @@ use App\Repository\ClassesRepository;
 use App\Repository\GroupingClassesRepository;
 use App\Repository\UserRepository;
 use App\Service\LdapService;
+use Exception;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,20 +35,24 @@ class DebugController extends AbstractWimsLoaderController
         $userLdap = $this->ldapService->findOneUserByUid($user->getUid());
         $userBdd = $this->userRepo->findOneByUid($user->getUid());
         $groupingClasses = $this->groupingClassesRepo->findOneBySiren($user->getSirenCourant());
-        $classesStudentBdd = $this->classesRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
-        $classesTeacherBdd = $this->classesRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
         $navigationBar = [['name' => $this->translator->trans('menu.debug')]];
+        $dumpArray = [
+            $this->translator->trans('debug.categoryTitle.user') => $user,
+            $this->translator->trans('debug.categoryTitle.userDataLdap') => $userLdap,
+            $this->translator->trans('debug.categoryTitle.userDataBdd') => $userBdd,
+        ];
+
+        if ($groupingClasses !== null) {
+            $dumpArray[$this->translator->trans('debug.categoryTitle.groupingClassesDataBdd')] = $groupingClasses;
+            $classesStudentBdd = $this->classesRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
+            $dumpArray[$this->translator->trans('debug.categoryTitle.classesDataBddForStudent')] = $classesStudentBdd;
+            $classesTeacherBdd = $this->classesRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
+            $dumpArray[$this->translator->trans('debug.categoryTitle.classesDataBddForTeacher')] = $classesTeacherBdd;
+        }
         
         return [
             'navigationBar' => $navigationBar,
-            'dumpArray' => [
-                $this->translator->trans('debug.categoryTitle.user') => $user,
-                $this->translator->trans('debug.categoryTitle.userDataLdap') => $userLdap,
-                $this->translator->trans('debug.categoryTitle.userDataBdd') => $userBdd,
-                $this->translator->trans('debug.categoryTitle.groupingClassesDataBdd') => $groupingClasses,
-                $this->translator->trans('debug.categoryTitle.classesDataBddForStudent') => $classesStudentBdd,
-                $this->translator->trans('debug.categoryTitle.classesDataBddForTeacher') => $classesTeacherBdd,
-            ],
+            'dumpArray' => $dumpArray,
         ];
     }
 
