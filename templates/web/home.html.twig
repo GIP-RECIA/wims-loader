@@ -1,12 +1,20 @@
 {# templates/web/home.html.twig #}
-{% extends 'web/baseWithGroupingClasses.html.twig' %}
+{% set parent_template = groupingClasses is null ? 'web/base.html.twig' : 'web/baseWithGroupingClasses.html.twig' %}
+{% extends parent_template %}
 
 {% block body %}
 <details open>
     <summary>{{ "home.title"|trans }}</summary>
     <p>
+        {% if is_granted('ROLE_ENS') %}
+        {{ "home.accessToTeacherZone"|trans }} : <a href="{{ path('teacher') }}">{{ "menu.teacherZone"|trans }}</a><br>
+        {% endif %}
+        {% if is_granted('ROLE_ELV') %}
         {{ "home.accessToStudentZone"|trans }} : <a href="{{ path('student') }}">{{ "menu.studentZone"|trans }}</a><br>
-        {{ "home.accessToTeacherZone"|trans }} : <a href="{{ path('teacher') }}">{{ "menu.teacherZone"|trans }}</a>
+        {% endif %}
+        {% if is_granted('ROLE_ENS') %}
+        {{ "home.accessToStudentZone"|trans }} : <a href="{{ path('student') }}">{{ "menu.studentZone"|trans }}</a><br>
+        {% endif %}
     </p>
 </details>
 {% endblock %}

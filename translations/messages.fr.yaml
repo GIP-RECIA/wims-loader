@@ -12,7 +12,8 @@ menu:
   navigation: Navigation
   teacherZone: Zone Enseignant
   studentZone: Zone Élève
-  adminZone: Administration
+  admin: Administration
+  adminClasses: Administration des classes
   home: Accueil
   debug: Debug
   debugSub:

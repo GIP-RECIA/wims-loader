@@ -144,6 +144,7 @@
 
             {% block menu %}
             <nav id="wimsmenumodubox">
+                {% if is_granted('ROLE_ENS') or is_granted('ROLE_ELV') %}
                 <div class="modubox_content">
                     <h2 class="menu_title">
                         <span> {{ "menu.navigation"|trans }}</span>
@@ -160,17 +161,22 @@
                         <a href="{{ url('student') }}"><span>{{ "menu.studentZone"|trans }} </span></a>
                     </div>
                     {% endif %}
+                </div>
+                {% endif %}
+                {% if is_granted('ROLE_ADMIN') %}
+                <div class="modubox_content">
+                    <h2 class="menu_title">
+                        <span> {{ "menu.admin"|trans }}</span>
+                    </h2>
+                </div>
+                <div class="wimsmenu menu">
                     {% if is_granted('ROLE_ADMIN') %}
                     <div class="menuitem">
-                        <a href="{{ url('admin') }}"><span>{{ "menu.adminZone"|trans }} </span></a>
-                    </div>
-                    {% endif %}
-                    {% if is_granted('ROLE_ADMIN') %}
-                    <div class="menuitem">
-                        <a href="{{ url('admin') }}"><span>{{ "menu.adminZone"|trans }} </span></a>
+                        <a href="{{ url('adminClasses') }}"><span>{{ "menu.adminClasses"|trans }} </span></a>
                     </div>
                     {% endif %}
                 </div>
+                {% endif %}
                 {% if is_granted('IS_DEV_ENV') %}
                 <div class="modubox_content">
                     <h2 class="menu_title">

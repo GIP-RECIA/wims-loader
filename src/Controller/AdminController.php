@@ -14,7 +14,7 @@ class AdminController extends AbstractWimsLoaderController
         private ClassesRepository $classesRepo,
     ) {}
 
-    #[Route(path:"/admin/", name:"admin")]
+    #[Route(path:"/admin/classes", name:"adminClasses")]
     #[Template('web/admin.html.twig')]
     public function indexAdmin(Security $security): array
     {

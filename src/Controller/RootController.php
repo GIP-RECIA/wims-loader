@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Service\GroupingClassesService;
 use App\Service\LdapService;
+use Exception;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,19 +23,24 @@ class RootController extends AbstractWimsLoaderController
     public function home(Security $security): Response
     {
         $user = $this->getUserFromSecurity($security);
-        $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
         $isTeacher = $this->authorizationChecker->isGranted('ROLE_ENS');
         $isStudent = $this->authorizationChecker->isGranted('ROLE_ELV');
         $isAdmin = $this->authorizationChecker->isGranted('ROLE_ADMIN');
-        $navigationBar = [['name' => $this->translator->trans('menu.home')]];
+        $groupingClasses = null;
 
         if ($isTeacher && !$isStudent) {
             return $this->redirectToRoute('teacher');
         } else if ($isStudent) {
             return $this->redirectToRoute('student');
         } else if ($isAdmin) {
-            return $this->redirectToRoute('admin');
+            return $this->redirectToRoute('adminClasses');
         }
+
+        try {
+            $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
+        } catch (Exception $e) {}
+        
+        $navigationBar = [['name' => $this->translator->trans('menu.home')]];
 
         return $this->render('web/home.html.twig', [
             'groupingClasses' => $groupingClasses,
