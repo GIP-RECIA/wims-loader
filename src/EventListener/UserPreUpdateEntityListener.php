@@ -9,6 +9,7 @@ use App\Service\WimsFileObjectCreatorService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
+use Psr\Log\LoggerInterface;
 
 #[AsEntityListener(event: Events::preUpdate, method: 'preUpdate', entity: User::class)]
 class UserPreUpdateEntityListener
@@ -18,12 +19,13 @@ class UserPreUpdateEntityListener
         private GroupingClassesRepository $groupingClassesRepo,
         private ClassesRepository $classesRepo,
         private WimsFileObjectCreatorService $wimsFileObjectCreatorService,
+        private LoggerInterface $logger,
     ) {
     }
     public function preUpdate(User $user, PreUpdateEventArgs $args): void
     {
         $dataChange = $args->getEntityChangeSet();
-        dump($dataChange);
+        $this->logger->info("Update user data : " . json_encode($dataChange));
         $firstName = $this->getValueOrDefault($dataChange, 'firstName', $user->getFirstName());
         $lastName = $this->getValueOrDefault($dataChange, 'lastName', $user->getLastName());
         $mail = $this->getValueOrDefault($dataChange, 'mail', $user->getMail());

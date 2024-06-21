@@ -11,6 +11,7 @@ use App\Service\LdapService;
 use App\Service\StudentService;
 use App\Service\TeacherService;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -34,6 +35,7 @@ class TeacherController extends AbstractWimsLoaderController
         private UserRepository $userRepo,
         private LdapService $ldapService,
         private TranslatorInterface $translator,
+        private LoggerInterface $logger,
     ) {}
 
     /**
@@ -97,13 +99,18 @@ class TeacherController extends AbstractWimsLoaderController
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $className = $form->getData()['className'];
+                $siren = $user->getSirenCourant();
+                $this->logger->info("Create class '$className' for teacher $user on sire $siren");
                 $class = $this->teacherService->createClass($user, $className);
                 $this->addFlash('info', $this->translator->trans('teacherZone.message.classImported', ['className' => $class->getName()]));
             } catch (Exception $e) {
-                $this->addFlash('alert', $this->translator->trans('teacherZone.message.classCreationError', ['className' => $class->getName()]));
+                $this->logger->error("Error when creating class for user $user");
+                $this->logger->error($e);
+                $this->addFlash('alert', $this->translator->trans('teacherZone.message.classCreationError', ['className' => $className]));
             }
         } else {
-            $this->addFlash('alert', $this->translator->trans('teacherZone.message.classCreationError'));
+            $this->logger->warning("Error when retrieving class name for user $user");
+            $this->addFlash('alert', $this->translator->trans('teacherZone.message.classGetNameError'));
         }
 
         return $this->redirectToRoute('teacher');
@@ -141,8 +148,10 @@ class TeacherController extends AbstractWimsLoaderController
     }
 
     /**
-     * Route affichant les détails d'une classe importée pour pouvoir contrôler
-     * les élèves importés dans la classe et déclencher une synchro au besoin.
+     * Route réalisant une nouvelle synchro sur la classe
+     * 
+     * @param Classes $classes La classe a synchroniser
+     * @return Response La redirection vers la page de détails
      */
     #[Route(path:"/enseignant/syncClass/{idClass}", name:"teacherSyncClass")]
     public function syncClass(
@@ -151,6 +160,7 @@ class TeacherController extends AbstractWimsLoaderController
         ): Response
     {
         $teacher = $this->getUserFromSecurity($security);
+        $this->logger->info("Synchronisation class $classes for teacher $teacher");
         $diffStudents = $this->StudentService->diffStudentFromTeacherAndClass($teacher, $classes);
 
         try {
@@ -161,6 +171,8 @@ class TeacherController extends AbstractWimsLoaderController
                 $this->addFlash('info', $this->translator->trans('teacherZone.message.noStudentsToSync'));
             }
         } catch (Exception $e) {
+            $this->logger->error("Error when synching class $classes for teacher $teacher");
+            $this->logger->error($e);
             $this->addFlash('alert', $this->translator->trans('teacherZone.message.syncStudentsNok'));
         }
 

@@ -56,7 +56,7 @@ class Classes
     public function __toString()
     {
         return (string) $this->name . ' (' .
-            $this->id . ', ' . $this->idWims . ')';
+            $this->id . ', ' . $this->getFullIdWims() . ')';
     }
 
     public function getFullIdWims(): string
