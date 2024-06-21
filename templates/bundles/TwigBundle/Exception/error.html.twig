@@ -1,0 +1,8 @@
+{# templates/bundles/TwigBundle/Exception/error403.html.twig #}
+{% extends 'base.html.twig' %}
+{% set title_page = 'error'|trans ~ ' ' ~ status_code %}
+
+{% block general_body %}
+    <h1>{{ title_page }}</h1>
+    <p>{{ status_text }}</p>
+{% endblock %}

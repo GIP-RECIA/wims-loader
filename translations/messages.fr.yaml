@@ -90,3 +90,16 @@ debug:
     groupingClassesDataBdd: Données de la bdd sur l'établissement
     classesDataBddForStudent: Données de la bdd sur les classes de l'utilisateur en tant qu'élève
     classesDataBddForTeacher: Données de la bdd sur les classes de l'utilisateur en tant qu'enseignant
+
+error404:
+  title: Erreur 404
+  line1: Page introuvable.
+  line2: La page que vous avez demandé n'existe pas.
+  link: Retourner à l'accueil
+
+error403:
+  title: Erreur 403
+  line1: Accès interdit.
+  link: Retourner à l'accueil
+
+error: Erreur

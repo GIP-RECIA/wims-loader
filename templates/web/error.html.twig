@@ -1,0 +1,14 @@
+{# templates/web/error.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block menu %}
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'error404.pageNotFound'|trans }}</h1>
+
+    <p>
+        The requested page couldn't be located. Checkout for any URL
+        misspelling or <a href="{{ path('home') }}">return to the homepage</a>.
+    </p>
+{% endblock %}

@@ -1,0 +1,13 @@
+{# templates/bundles/TwigBundle/Exception/error404.html.twig #}
+{% extends 'base.html.twig' %}
+{% set title_page = 'error404.title'|trans %}
+
+{% block general_body %}
+    <h1>{{ 'error404.title'|trans }}</h1>
+
+    <p>
+        {{ 'error404.line1'|trans }}<br>
+        {{ 'error404.line2'|trans }}<br>
+        <a href="{{ path('home') }}">{{ 'error404.link'|trans }}</a>.
+    </p>
+{% endblock %}
