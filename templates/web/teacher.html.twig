@@ -4,7 +4,7 @@
 
 {% block body %}
 <details open>
-    <summary>Vos classes importées</summary>
+    <summary>{{ "teacherZone.yourClassesImported"|trans }}</summary>
     {% if importedClasses|length > 0 %}
         <p><a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">{{ "teacherZone.accessToClasses"|trans }}</a></p>
 

@@ -4,16 +4,17 @@
 
 {% block body %}
 <details open>
-    <summary>Vos classes</summary>
+    <summary>{{ "studentZone.yourClasses"|trans }}</summary>
+    {# "studentZone.yourClasses"|trans #}
     {% if classes|length > 0 %}
     <table id="myClasses" class="wimstable" style="text-align:center">
-        <caption>Mes classes</caption>
+        <caption>{{ "studentZone.myClasses"|trans }}</caption>
         <thead>
             <tr data-sort-method="thead">
-                <th scope="col" role="columnheader">{{ "tableaHeader.name"|trans }}</th>
-                <th scope="col" role="columnheader">{{ "tableaHeader.subjects"|trans }}</th>
-                <th scope="col" role="columnheader">{{ "tableaHeader.teacher"|trans }}</th>
-                <th scope="col" role="columnheader">{{ "tableaHeader.action"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.name"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.subjects"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.teacher"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.action"|trans }}</th>
             </tr>
         </thead>
         <tbody>

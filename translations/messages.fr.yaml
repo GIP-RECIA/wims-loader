@@ -39,8 +39,11 @@ home:
 
 studentZone:
   notRegisteredInWimsClass: Vous n'êtes actuellement inscrit dans aucune classe Wims, merci de voir avec votre enseignant.
+  yourClasses: Vos classes
+  myClasses: Mes classes
 
 teacherZone:
+  yourClassesImported: Vos classes importées
   accessToClasses: Accéder aux classes
   classesImported: Classes importées dans Wims
   noImportedClasses: Vous n'avez aucune classe importée.
