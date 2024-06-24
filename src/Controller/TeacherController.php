@@ -63,9 +63,7 @@ class TeacherController extends AbstractWimsLoaderController
         foreach ($user->getTicketEnsClasses() as $baseClassName) {
             if (!in_array($this->classesService->generateName($baseClassName, $user), $importedClassesName)) {
                 $form = $this->createForm(ClassNameType::class, ['className' => $baseClassName], [
-                    'action' => $this->generateUrl('teacherCreateClass', [
-                        'step' => 1,
-                    ]),
+                    'action' => $this->generateUrl('teacherCreateClass'),
                 ]);
                 $formsClassesToImport[$baseClassName] = $form->createView();
             }
