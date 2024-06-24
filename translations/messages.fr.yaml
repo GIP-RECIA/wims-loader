@@ -48,8 +48,8 @@ teacherZone:
   classesAvailableForImport: Classes disponibles à l'import
   noClassesAvailableForImport: Vous n'avez aucune classe disponible à l'import.
   message:
-    classImported: La classe "{className}" a bien été importée.
-    classCreationError: Erreur lors de la création de la classe "{className}"
+    classImported: La classe "%className%" a bien été importée.
+    classCreationError: Erreur lors de la création de la classe "%className%"
     classGetNameError: Erreur lors de la récupération du nom de la classe
     syncStudentsOk: La synchronisation des élèves a été effectuée correctement
     syncStudentsNok: Erreur lors de la synchronisation des élèves

@@ -102,11 +102,11 @@ class TeacherController extends AbstractWimsLoaderController
                 $siren = $user->getSirenCourant();
                 $this->logger->info("Create class '$className' for teacher $user on sire $siren");
                 $class = $this->teacherService->createClass($user, $className);
-                $this->addFlash('info', $this->translator->trans('teacherZone.message.classImported', ['className' => $class->getName()]));
+                $this->addFlash('info', $this->translator->trans('teacherZone.message.classImported', ['%className%' => $class->getName()]));
             } catch (Exception $e) {
                 $this->logger->error("Error when creating class for user $user");
                 $this->logger->error($e);
-                $this->addFlash('alert', $this->translator->trans('teacherZone.message.classCreationError', ['className' => $className]));
+                $this->addFlash('alert', $this->translator->trans('teacherZone.message.classCreationError', ['%className%' => $className]));
             }
         } else {
             $this->logger->warning("Error when retrieving class name for user $user");
