@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\ClassOrGroupType;
 use App\Repository\ClassesRepository;
 use App\Repository\GroupingClassesRepository;
 use App\Repository\UserRepository;
@@ -31,6 +32,7 @@ class DebugController extends AbstractWimsLoaderController
     #[Template('web/debug.html.twig')]
     public function infos(Security $security): array
     {
+        // TODO: ajouter les groups ici
         $user = $this->getUserFromSecurity($security);
         $userLdap = $this->ldapService->findOneUserByUid($user->getUid());
         $userBdd = $this->userRepo->findOneByUid($user->getUid());
@@ -46,7 +48,7 @@ class DebugController extends AbstractWimsLoaderController
             $dumpArray[$this->translator->trans('debug.categoryTitle.groupingClassesDataBdd')] = $groupingClasses;
             $classesStudentBdd = $this->classesRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
             $dumpArray[$this->translator->trans('debug.categoryTitle.classesDataBddForStudent')] = $classesStudentBdd;
-            $classesTeacherBdd = $this->classesRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
+            $classesTeacherBdd = $this->classesRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, ClassOrGroupType::CLASSES);
             $dumpArray[$this->translator->trans('debug.categoryTitle.classesDataBddForTeacher')] = $classesTeacherBdd;
         }
         

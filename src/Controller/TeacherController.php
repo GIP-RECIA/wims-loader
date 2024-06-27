@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Entity\Classes;
-use App\Form\ClassNameType;
+use App\Entity\ClassOrGroupType;
+use App\Form\NameType;
 use App\Repository\ClassesRepository;
 use App\Repository\UserRepository;
 use App\Service\ClassesService;
@@ -51,31 +52,53 @@ class TeacherController extends AbstractWimsLoaderController
     {
         $user = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
-        $importedClasses = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
+        $importedClasses = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, ClassOrGroupType::CLASSES);
+        $importedGroups = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, ClassOrGroupType::GROUPS);
         $importedClassesName = [];
+        $importedGroupsName = [];
         $formsClassesToImport = [];
+        $formsGroupsToImport = [];
         $navigationBar = [['name' => $this->translator->trans('menu.teacherZone')]];
+        $classesAndGroups = $this->teacherService->getClassesAndGroupsOfTeacher($user);
 
         foreach ($importedClasses as $classes) {
             $importedClassesName[] = $classes->getName();
         }
 
-        foreach ($user->getTicketEnsClasses() as $baseClassName) {
+        foreach ($classesAndGroups['classes'] as $baseClassName) {
             if (!in_array($this->classesService->generateName($baseClassName, $user), $importedClassesName)) {
-                $form = $this->createForm(ClassNameType::class, ['className' => $baseClassName], [
+                $form = $this->createForm(NameType::class, [
+                    'name' => $baseClassName], [
                     'action' => $this->generateUrl('teacherCreateClass'),
                 ]);
                 $formsClassesToImport[$baseClassName] = $form->createView();
             }
         }
 
+        foreach ($importedGroups as $groups) {
+            $importedGroupsName[] = $groups->getName();
+        }
+
+        foreach ($classesAndGroups['groups'] as $baseGroupName) {
+            if (!in_array($this->classesService->generateName($baseGroupName, $user), $importedGroupsName)) {
+                $form = $this->createForm(NameType::class, [
+                    'name' => $baseGroupName], [
+                    'action' => $this->generateUrl('teacherCreateGroup'),
+                ]);
+                $formsGroupsToImport[$baseGroupName] = $form->createView();
+            }
+        }
+
         krsort($formsClassesToImport);
+        krsort($formsGroupsToImport);
 
         return [
             'groupingClasses' => $groupingClasses,
             'navigationBar' => $navigationBar,
             'importedClasses' => $importedClasses,
             'formsClassesToImport' => $formsClassesToImport,
+            'importedGroups' => $importedGroups,
+            'formsGroupsToImport' => $formsGroupsToImport,
         ];
     }
 
@@ -90,28 +113,21 @@ class TeacherController extends AbstractWimsLoaderController
     #[Route(path:"/enseignant/createClass", name:"teacherCreateClass")]
     public function createClass(Request $request, Security $security): Response
     {
-        $user = $this->getUserFromSecurity($security);
-        $form = $this->createForm(ClassNameType::class);
-        $form->handleRequest($request);
+        return $this->createClassOrGroup($request, $security, ClassOrGroupType::CLASSES);
+    }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $className = $form->getData()['className'];
-                $siren = $user->getSirenCourant();
-                $this->logger->info("Create class '$className' for teacher $user on sire $siren");
-                $class = $this->teacherService->createClass($user, $className);
-                $this->addFlash('info', $this->translator->trans('teacherZone.message.classImported', ['%className%' => $class->getName()]));
-            } catch (Exception $e) {
-                $this->logger->error("Error when creating class for user $user");
-                $this->logger->error($e);
-                $this->addFlash('alert', $this->translator->trans('teacherZone.message.classCreationError', ['%className%' => $className]));
-            }
-        } else {
-            $this->logger->warning("Error when retrieving class name for user $user");
-            $this->addFlash('alert', $this->translator->trans('teacherZone.message.classGetNameError'));
-        }
-
-        return $this->redirectToRoute('teacher');
+    /**
+     * Route permettant de réaliser l'import d'une classe. Cette route n'affiche
+     * rien car elle fait directement une redirection vers la page de l'enseignant
+     *
+     * @param Request $request
+     * @param Security $security
+     * @return Response
+     */
+    #[Route(path:"/enseignant/createGroup", name:"teacherCreateGroup")]
+    public function createGroup(Request $request, Security $security): Response
+    {
+        return $this->createClassOrGroup($request, $security, ClassOrGroupType::GROUPS);
     }
 
     /**
@@ -177,5 +193,32 @@ class TeacherController extends AbstractWimsLoaderController
         return $this->redirectToRoute('teacherDetailsClass', [
             'idClass' => $classes->getId(),
         ]);
+    }
+
+    private function createClassOrGroup(Request $request, Security $security, ClassOrGroupType $type): Response
+    {
+        $user = $this->getUserFromSecurity($security);
+        $form = $this->createForm(NameType::class);
+        $form->handleRequest($request);
+        $key = $type === ClassOrGroupType::CLASSES ? 'class' : 'group';
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $className = $form->getData()['className'];
+                $siren = $user->getSirenCourant();
+                $this->logger->info("Create $key ' '$className' for teacher $user on sire $siren");
+                $class = $this->teacherService->createClass($user, $className, $type);
+                $this->addFlash('info', $this->translator->trans("teacherZone.message.$key.imported", ['%name%' => $class->getName()]));
+            } catch (Exception $e) {
+                $this->logger->error("Error when creating $key for user $user");
+                $this->logger->error($e);
+                $this->addFlash('alert', $this->translator->trans("teacherZone.message.$key.creationError", ['%name%' => $className]));
+            }
+        } else {
+            $this->logger->warning("Error when retrieving $key name for user $user");
+            $this->addFlash('alert', $this->translator->trans("teacherZone.message.$key.getNameError"));
+        }
+
+        return $this->redirectToRoute('teacher');
     }
 }

@@ -7,6 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+enum ClassOrGroupType: int
+{
+    case CLASSES = 1;
+    case GROUPS = 2;
+}
+
 #[ORM\Entity(repositoryClass: ClassesRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_ID', fields: ['id'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_GROUPINGCLASSES_NAME', fields: ['GroupingClasses', 'name', 'teacher'])]
@@ -47,6 +53,9 @@ class Classes
      */
     #[ORM\Column(length: 255)]
     private ?string $subjects = null;
+
+    #[ORM\Column]
+    private ?int $type = null;
 
     public function __construct()
     {
@@ -168,6 +177,18 @@ class Classes
     public function setSubjects(string $subjects): static
     {
         $this->subjects = $subjects;
+
+        return $this;
+    }
+
+    public function getType(): ?int
+    {
+        return $this->type;
+    }
+
+    public function setType(int $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }

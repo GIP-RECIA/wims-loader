@@ -8,12 +8,13 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ClassNameType extends AbstractType
+
+class NameType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('className', HiddenType::class)
+            ->add('name', HiddenType::class)
             ->add('submit', SubmitType::class, [
                 'label' => 'Importer',
                 'attr' => ['class' => 'wims_button'],

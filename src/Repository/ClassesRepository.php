@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Classes;
+use App\Entity\ClassOrGroupType;
 use App\Entity\GroupingClasses;
 use App\Entity\User;
 use App\Service\ClassesService;
@@ -74,15 +75,17 @@ class ClassesRepository extends ServiceEntityRepository
      * @param User $teacher L'enseignant dont on cherche les classes
      * @return array La liste des classes de l'enseignant dans l'établissement courant
      */
-    public function findByGroupingClassesAndTeacher(GroupingClasses $groupingClasses, User $teacher): array
+    public function findByGroupingClassesAndTeacher(GroupingClasses $groupingClasses, User $teacher, ClassOrGroupType $type): array
     {
         return $this->createQueryBuilder('c')
             ->where('c.groupingClasses = :groupingClasses')
             ->andWhere('c.teacher = :teacher')
+            ->andWhere('c.type = :type')
             ->orderBy('c.name')
             ->setParameters([
                 'groupingClasses' => $groupingClasses,
                 'teacher' => $teacher,
+                'type' => $type,
             ])
             ->getQuery()
             ->getResult();

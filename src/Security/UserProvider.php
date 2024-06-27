@@ -38,8 +38,8 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
 
         $em = $this->getEntityManager();
         $user = $em->getRepository(User::class)->findOneByUid($identifier);
-        $firstName = substr($attributs['firstName'], 0, 60);
-        $lastName = substr($attributs['lastName'], 0, 60);
+        $firstName = mb_substr($attributs['firstName'], 0, 60);
+        $lastName = mb_substr($attributs['lastName'], 0, 60);
         $mail = $attributs['mail'];
 
 
@@ -61,9 +61,7 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
 
         $em->flush();
         
-        $user
-            ->setSirenCourant($attributs['sirenCourant'])
-            ->setTicketEnsClasses($attributs['ensClasses']);
+        $user->setSirenCourant($attributs['sirenCourant']);
         $roles = [];
 
         if ($identifier === '__NO_USER__') {

@@ -1059,7 +1059,7 @@ class WimsFileObjectCreatorService
         $teacher = $class->getTeacher();
         
         return [
-            'description' => substr($class->getName() . " - " . $teacher->getLastName(), 0, 50),
+            'description' => mb_substr($class->getName() . " - " . $teacher->getLastName(), 0, 50),
             'institution_name' => $class->getGroupingClasses()->getName(),
         ];
     }

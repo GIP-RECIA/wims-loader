@@ -3,13 +3,13 @@
 {% set title_page = "menu.teacherZone"|trans %}
 
 {% block body %}
+<p><a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">{{ "teacherZone.accessToClassesAndGroups"|trans }}</a></p>
+{# section groupements classes #}
 <details open>
-    <summary>{{ "teacherZone.yourClassesImported"|trans }}</summary>
+    <summary>{{ "teacherZone.classes.yourImported"|trans }}</summary>
     {% if importedClasses|length > 0 %}
-        <p><a href="{{ groupingClasses|wims_url_grouping_classes_for_teacher }}">{{ "teacherZone.accessToClasses"|trans }}</a></p>
-
         <table id="importedClasses" class="wimstable" style="text-align:center">
-            <caption>{{ "teacherZone.classesImported"|trans }}</caption>
+            <caption>{{ "teacherZone.classes.imported"|trans }}</caption>
             <thead>
                 <tr data-sort-method="thead">
                     <th scope="col" role="columnheader">{{ "tableHeader.name"|trans }}</th>
@@ -38,14 +38,14 @@
             </tbody>
         </table>
     {% else %}
-        <p>{{ "teacherZone.noImportedClasses"|trans }}</p>
+        <p>{{ "teacherZone.classes.noImported"|trans }}</p>
     {% endif %}
 </details>
 <details {% if formsClassesToImport|length > 0 %}open{% else %}close{% endif %}>
-    <summary>{{ "teacherZone.classesToImport"|trans }}</summary>
+    <summary>{{ "teacherZone.classes.toImport"|trans }}</summary>
     {% if formsClassesToImport|length > 0 %}
         <table id="classToImport" class="wimstable" style="text-align:center">
-            <caption>{{ "teacherZone.classesAvailableForImport"|trans }}</caption>
+            <caption>{{ "teacherZone.classes.availableForImport"|trans }}</caption>
             <thead>
                 <tr data-sort-method="thead">
                     <th scope="col" role="columnheader">{{ "tableHeader.name"|trans }}</th>
@@ -66,7 +66,72 @@
             </tbody>
         </table>
     {% else %}
-        <p>{{ "teacherZone.noClassesAvailableForImport"|trans }}</p>
+        <p>{{ "teacherZone.classes.noOneAvailableForImport"|trans }}</p>
+    {% endif %}
+</details>
+{# section groupements pédagogique #}
+<details open>
+    <summary>{{ "teacherZone.groups.yourImported"|trans }}</summary>
+    {% if importedGroups|length > 0 %}
+        <table id="importedGroups" class="wimstable" style="text-align:center">
+            <caption>{{ "teacherZone.groups.imported"|trans }}</caption>
+            <thead>
+                <tr data-sort-method="thead">
+                    <th scope="col" role="columnheader">{{ "tableHeader.name"|trans }}</th>
+                    <th scope="col" role="columnheader">{{ "tableHeader.subjects"|trans }}</th>
+                    <th scope="col" role="columnheader">{{ "tableHeader.idWims"|trans }}</th>
+                    <th scope="col" role="columnheader">{{ "tableHeader.action"|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for groups in importedGroups %}
+                <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
+                    <td>
+                        {{ groups.name }}
+                    </td>
+                    <td>
+                        {{ groups.subjects }}
+                    </td>
+                    <td>
+                        {{ groups.fullIdWims }}
+                    </td>
+                    <td>
+                        <a href="{{ url('teacherDetailsClass', {idClass: groups.id}) }}" class="wims_button" role="button">{{ "button.details"|trans }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{{ "teacherZone.groups.noImported"|trans }}</p>
+    {% endif %}
+</details>
+<details {% if formsGroupsToImport|length > 0 %}open{% else %}close{% endif %}>
+    <summary>{{ "teacherZone.groups.toImport"|trans }}</summary>
+    {% if formsGroupsToImport|length > 0 %}
+        <table id="groupToImport" class="wimstable" style="text-align:center">
+            <caption>{{ "teacherZone.groups.availableForImport"|trans }}</caption>
+            <thead>
+                <tr data-sort-method="thead">
+                    <th scope="col" role="columnheader">{{ "tableHeader.name"|trans }}</th>
+                    <th scope="col" role="columnheader">{{ "tableHeader.action"|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for key, form in formsGroupsToImport %}
+                <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
+                    <td>
+                        {{ key }}
+                    </td>
+                    <td>
+                        {{ form(form) }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{{ "teacherZone.groups.noOneAvailableForImport"|trans }}</p>
     {% endif %}
 </details>
 {% endblock %}
@@ -76,11 +141,10 @@
     <script src="/wims/scripts/js/tablesort.number.js"></script>
 
     <script>
-    for (const id of ["importedClasses", "classToImport"]) {
-        const elem = document.getElementById(id);
-        if (elem != null) {
-            new Tablesort(elem);
-        }
+    const elems = document.getElementsByClassName("wimstable");
+    for (const elem of elems) {
+        console.log(elem);
+        new Tablesort(elem);
     }
     </script>
 {% endblock %}

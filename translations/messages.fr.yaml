@@ -43,20 +43,34 @@ studentZone:
   myClasses: Mes classes
 
 teacherZone:
-  yourClassesImported: Vos classes importées
-  accessToClasses: Accéder aux classes
-  classesImported: Classes importées dans Wims
-  noImportedClasses: Vous n'avez aucune classe importée.
-  classesToImport: Vos classes à importer
-  classesAvailableForImport: Classes disponibles à l'import
-  noClassesAvailableForImport: Vous n'avez aucune classe disponible à l'import.
+  accessToClassesAndGroups: Accéder aux classes et aux groupes pédagogiques dans Wims
+  classes:
+    yourImported: Vos classes importées
+    imported: Classes importées dans Wims
+    noImported: Vous n'avez aucune classe importée.
+    toImport: Vos classes à importer
+    availableForImport: Classes disponibles à l'import
+    noOneAvailableForImport: Vous n'avez aucune classe disponible à l'import.
+  groups:
+    yourImported: Vos groupes pédagogiques importés
+    imported: Groupes pédagogiques importés dans Wims
+    noImported: Vous n'avez aucun groupe pédagogique importé.
+    toImport: Vos groupes pédagogiques à importer
+    availableForImport: Groupes pédagogiques disponibles à l'import
+    noOneAvailableForImport: Vous n'avez aucun groupe pédagogique disponible à l'import.
   message:
-    classImported: La classe "%className%" a bien été importée.
-    classCreationError: Erreur lors de la création de la classe "%className%"
-    classGetNameError: Erreur lors de la récupération du nom de la classe
     syncStudentsOk: La synchronisation des élèves a été effectuée correctement
     syncStudentsNok: Erreur lors de la synchronisation des élèves
     noStudentsToSync: Aucun nouvel élève a synchroniser
+    class:
+      imported: La classe "%name%" a bien été importée.
+      creationError: Erreur lors de la création de la classe "%name%"
+      getNameError: Erreur lors de la récupération du nom de la classe
+    group:
+      imported: Le groupe pédagogique "%name%" a bien été importée.
+      creationError: Erreur lors de la création gu groupe "%name%"
+      getNameError: Erreur lors de la récupération du nom du groupe pédagogique
+
 
 classDetails:
   title: Détails de la classe

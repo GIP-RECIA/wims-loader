@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Entity\Classes;
+use App\Entity\ClassOrGroupType;
 use App\Entity\User;
 use App\Repository\ClassesRepository;
 use App\Repository\GroupingClassesRepository;
@@ -26,7 +27,38 @@ class TeacherService
         private LdapService $ldapService,
     ) {}
 
-    public function createClass(User $teacher, string $className): Classes
+    /**
+     * Permet de récupérer les classes et les groupes pédagogiques d'un
+     * enseignant
+     *
+     * @param User $teacher L'enseignant
+     * @return array 'classes' Les classes, 'groups' Les groupes pédagogiques
+     */
+    public function getClassesAndGroupsOfTeacher(User $teacher): array
+    {
+        $res = ['classes' => [], 'groups' => []];
+        $dataLdap = $this->ldapService->findOneUserByUid($teacher->getUid());
+        $src = [
+            'classes' => $dataLdap->getAttribute('ENTAuxEnsClasses'),
+            'groups' => $dataLdap->getAttribute('ENTAuxEnsGroupes'),
+        ];
+        $start = "ENTStructureSIREN=" . $teacher->getSirenCourant() . ",ou=structures,dc=esco-centre,dc=fr$";
+        $lengthStart = mb_strlen($start);
+        
+        foreach ($src as $key => $value) {
+            if (null !== $value) {
+                foreach ($value as $line) {
+                    if (str_starts_with($line, $start)) {
+                        $res[$key][] = mb_substr($line, $lengthStart);
+                    }
+                }
+            }
+        }
+
+        return $res;
+    }
+
+    public function createClass(User $teacher, string $className, ClassOrGroupType $type): Classes
     {
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($teacher->getSirenCourant());
         $class = $this->classRepository->findOneByGroupingClassesTeacherAndName($groupingClasses, $teacher, $className);
@@ -56,12 +88,12 @@ class TeacherService
 
         foreach ($resCodeSubjects as $codeSubject) {
             if (str_starts_with($codeSubject, $fullClassName)) {
-                $codeSubjects = substr($codeSubject, strlen($fullClassName));
+                $codeSubjects = mb_substr($codeSubject, mb_strlen($fullClassName));
                 $startWith = $structure . "$" . $codeSubjects . "$";
 
                 foreach ($resSubjects as $subject) {
                     if (str_starts_with($subject, $startWith)) {
-                        $subjects[] = substr($subject, strlen($startWith));
+                        $subjects[] = mb_substr($subject, mb_strlen($startWith));
                     }
                 }
             }
@@ -71,7 +103,8 @@ class TeacherService
             ->setTeacher($teacher)
             ->setGroupingClasses($groupingClasses)
             ->setName($this->classesService->generateName($className, $teacher))
-            ->setSubjects(substr(implode(', ', $subjects), 0, 255))
+            ->setSubjects(mb_substr(implode(', ', $subjects), 0, 255))
+            ->setType($type->value)
             ->setLastSyncAt();
         // Création de la classe côté wims
         $class = $this->wims->createClassInGroupingClassesFromObj($class);
