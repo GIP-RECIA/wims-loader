@@ -40,8 +40,9 @@ class TeacherController extends AbstractWimsLoaderController
     ) {}
 
     /**
-     * Écran de base pour les enseignants, on y liste les classes déjà importées
-     * et les classes disponibles à l'import.
+     * Écran de base pour les enseignants, on y liste les classes déjà importées,
+     * les classes disponibles à l'import et pareille pour les groupes
+     * pédagogique.
      *
      * @param Security $security
      * @return array
@@ -59,13 +60,13 @@ class TeacherController extends AbstractWimsLoaderController
         $formsClassesToImport = [];
         $formsGroupsToImport = [];
         $navigationBar = [['name' => $this->translator->trans('menu.teacherZone')]];
-        $classesAndGroups = $this->teacherService->getCohortsOfTeacher($user);
+        $cohorts = $this->teacherService->getCohortsOfTeacher($user);
 
         foreach ($importedClasses as $classes) {
             $importedClassesName[] = $classes->getName();
         }
 
-        foreach ($classesAndGroups['classes'] as $baseClassName) {
+        foreach ($cohorts['classes'] as $baseClassName) {
             if (!in_array($this->cohortService->generateName($baseClassName, $user), $importedClassesName)) {
                 $form = $this->createForm(NameType::class, [
                     'name' => $baseClassName], [
@@ -79,7 +80,7 @@ class TeacherController extends AbstractWimsLoaderController
             $importedGroupsName[] = $groups->getName();
         }
 
-        foreach ($classesAndGroups['groups'] as $baseGroupName) {
+        foreach ($cohorts['groups'] as $baseGroupName) {
             if (!in_array($this->cohortService->generateName($baseGroupName, $user), $importedGroupsName)) {
                 $form = $this->createForm(NameType::class, [
                     'name' => $baseGroupName], [
@@ -200,7 +201,7 @@ class TeacherController extends AbstractWimsLoaderController
         $user = $this->getUserFromSecurity($security);
         $form = $this->createForm(NameType::class);
         $form->handleRequest($request);
-        $key = Cohort::typeString($type);
+        $key = Cohort::cohortTypeString($type);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {

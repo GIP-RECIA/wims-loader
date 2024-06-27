@@ -58,6 +58,7 @@ class CohortRepository extends ServiceEntityRepository
             ->innerJoin('c.students', 's')
             ->where('c.groupingClasses = :groupingClasses')
             ->andWhere('s = :student')
+            ->orderBy('c.type')
             ->setParameters([
                 'groupingClasses' => $groupingClasses,
                 'student' => $student,
@@ -72,21 +73,28 @@ class CohortRepository extends ServiceEntityRepository
      *
      * @param GroupingClasses $groupingClasses L'établissement dans lequel rechercher les cohortes
      * @param User $teacher L'enseignant dont on cherche les cohortes
-     * @param CohortType $type Le type des cohortes recherchées
+     * @param CohortType $type Le type des cohortes recherchées, null pour toutes
      * @return array La liste des cohortes de l'enseignant dans l'établissement courant
      */
-    public function findByGroupingClassesAndTeacher(GroupingClasses $groupingClasses, User $teacher, CohortType $type): array
+    public function findByGroupingClassesAndTeacher(GroupingClasses $groupingClasses, User $teacher, CohortType $type = null): array
     {
-        return $this->createQueryBuilder('c')
+        $parameters = [
+            'groupingClasses' => $groupingClasses,
+            'teacher' => $teacher,
+        ];
+
+        $req = $this->createQueryBuilder('c')
             ->where('c.groupingClasses = :groupingClasses')
-            ->andWhere('c.teacher = :teacher')
-            ->andWhere('c.type = :type')
-            ->orderBy('c.name')
-            ->setParameters([
-                'groupingClasses' => $groupingClasses,
-                'teacher' => $teacher,
-                'type' => $type,
-            ])
+            ->andWhere('c.teacher = :teacher');
+            
+
+        if ($type !== null) {
+            $parameters['type'] = $type;
+            $req->andWhere('c.type = :type');
+        }
+
+        return $req->orderBy('c.name')
+            ->setParameters($parameters)
             ->getQuery()
             ->getResult();
     }

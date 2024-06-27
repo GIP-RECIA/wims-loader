@@ -66,7 +66,7 @@ class TeacherService
 
         if ($class !== null) {
             throw new AlreadyExistsException(
-                "La cohorte \"$cohortName\" de type " . Cohort::typeString($type)
+                "La cohorte \"$cohortName\" de type " . Cohort::cohortTypeString($type)
                 . " pour l'enseignant \"" . $teacher->getFullName() . "\" existe déjà."
             );
         }
@@ -79,10 +79,10 @@ class TeacherService
             $this->wims->createTeacherInGroupingClassesFromObj($teacher, $groupingClasses);
         }
 
-        // FIXME: les matiéres c'est pareille pour les groupes ?
         // On récupère les matières de cet enseignant pour cette classe
         $res = $this->ldapService->findOneUserByUid($teacher->getUid());
-        $resCodeSubjects = $res->getAttribute("ENTAuxEnsClassesMatieres");
+        $attrMatiere = $type === CohortType::TYPE_CLASS ? "ENTAuxEnsClassesMatieres" : "ENTAuxEnsGroupesMatieres";
+        $resCodeSubjects = $res->getAttribute($attrMatiere);
         $resSubjects = $res->getAttribute("ESCOAuxEnsCodeMatiereEnseignEtab");
         $subjects = [];
         $fullCohortName = $structure . "$" . $cohortName . "$";
@@ -112,9 +112,11 @@ class TeacherService
         $this->em->persist($cohort);
 
         // Récupération des élèves dans le ldap
-        $uidStudents = $this->studentService->getListUidStudentFromSirenAndClassName(
+        $uidStudents = $this->studentService->getListUidStudentFromSirenAndCohortName(
             $groupingClasses->getSiren(),
-            $cohortName);
+            $cohortName,
+            $type
+        );
         // Ajout des élèves dans la cohorte
         $this->commonAddStudentsInCohort($uidStudents, $cohort);
 

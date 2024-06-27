@@ -38,9 +38,12 @@ home:
   accessToTeacherZone: Accès à la zone Enseignant
 
 studentZone:
-  notRegisteredInWimsClass: Vous n'êtes actuellement inscrit dans aucune classe Wims, merci de voir avec votre enseignant.
-  yourClasses: Vos classes
-  myClasses: Mes classes
+  classes:
+    your: Mes classes
+    notRegistered: Vous n'êtes actuellement inscrit dans aucune classe Wims,
+  groups:
+    your: Mes groupes pédagogiques
+    notRegistered: Vous n'êtes actuellement inscrit dans aucun groupe pédagogique Wims,
 
 teacherZone:
   accessToClassesAndGroups: Accéder aux classes et aux groupes pédagogiques dans Wims
@@ -73,14 +76,15 @@ teacherZone:
 
 
 cohortDetails:
-  title: Détails de la classe
+  title: Détails de la cohorte
   blockGroupingClasses: Établissement
   fieldsBlockGroupingClasses:
     uai: UAI de l'établissement
     name: Nom de l'établissement
-  blockClasses: Classe
-  fieldsBlockClasses:
-    className: Nom de la classe
+  blockCohorte: Cohorte
+  fieldsBlockCohort:
+    cohortType: Type de cohorte
+    cohortName: Nom de la cohorte
     teacherName: Nom de l'enseignant
     subjects: Matière(s)
     idWims: ID Wims
@@ -106,8 +110,8 @@ debug:
     userDataLdap: Données du ldap sur l'utilisateur
     userDataBdd: Données de la bdd sur l'utilisateur
     groupingClassesDataBdd: Données de la bdd sur l'établissement
-    classesDataBddForStudent: Données de la bdd sur les classes de l'utilisateur en tant qu'élève
-    classesDataBddForTeacher: Données de la bdd sur les classes de l'utilisateur en tant qu'enseignant
+    cohortsDataBddForStudent: Données de la bdd sur les cohortes de l'utilisateur en tant qu'élève
+    cohortsDataBddForTeacher: Données de la bdd sur les cohortes de l'utilisateur en tant qu'enseignant
 
 error404:
   title: Erreur 404
@@ -121,3 +125,5 @@ error403:
   link: Retourner à l'accueil
 
 error: Erreur
+group: Groupe pédagogique
+class: Classe

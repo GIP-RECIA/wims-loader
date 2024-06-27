@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\Cohort;
+use App\Enum\CohortType;
 use App\Repository\CohortRepository;
 use App\Service\GroupingClassesService;
 use App\Service\StudentService;
@@ -29,18 +31,28 @@ class StudentController extends AbstractWimsLoaderController
     {
         $user = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
-        $classes = $this->cohortRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
+        $srcCohorts = $this->cohortRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
         $autoRedirectStudent = $this->getParameter('app.autoRedirectStudent');
+        $cohorts = ['classes' => [], 'groups' => []];
         $navigationBar = [['name' => $this->translator->trans('menu.studentZone')]];
 
-        if ($autoRedirectStudent && count($classes) === 1) {
-            return $this->redirect($this->wimsUrlGeneratorService->wimsUrlClassForStudent($classes[0]));
+        if ($autoRedirectStudent && count($srcCohorts) === 1) {
+            return $this->redirect($this->wimsUrlGeneratorService->wimsUrlClassForStudent($srcCohorts[0]));
         }
+
+        foreach ($srcCohorts as $cohort) {
+            if ($cohort->getType() === CohortType::TYPE_CLASS) {
+                $cohorts['classes'][] = $cohort;
+            } else {
+                $cohorts['groups'][] = $cohort;
+            }
+        }
+
 
         return $this->render('web/student.html.twig', [
             'groupingClasses' => $groupingClasses,
             'navigationBat' => $navigationBar,
-            'classes' => $classes,
+            'cohorts' => $cohorts,
         ]);
     }
 }

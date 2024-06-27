@@ -17,7 +17,7 @@ class UserPreUpdateEntityListener
 
     public function __construct(
         private GroupingClassesRepository $groupingClassesRepo,
-        private CohortRepository $classesRepo,
+        private CohortRepository $cohortRepo,
         private WimsFileObjectCreatorService $wimsFileObjectCreatorService,
         private LoggerInterface $logger,
     ) {
@@ -45,7 +45,7 @@ class UserPreUpdateEntityListener
                 );
         }
 
-        $idsWims = $this->classesRepo->findFullWimsIdOfStudentClass($user);
+        $idsWims = $this->cohortRepo->findFullWimsIdOfStudentClass($user);
         $lastIdWimsGroupingClasses = null;
 
         foreach ($idsWims as $idWims) {

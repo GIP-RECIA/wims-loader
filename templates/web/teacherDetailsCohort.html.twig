@@ -8,30 +8,41 @@
     <legend>{{ "cohortDetails.blockGroupingClasses"|trans }}</legend>
     <ul class="flex_box wims_loader_class_ul">
         <li class="field box halfwidth">
-            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockGroupingClasses.uai"|trans }} :</span> {{ groupingClasses.uai }}
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockGroupingClasses.uai"|trans }} :</span>
+            {{ groupingClasses.uai }}
         </li>
         <li class="field box halfwidth">
-            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockGroupingClasses.name"|trans }} :</span> {{ groupingClasses.name }}
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockGroupingClasses.name"|trans }} :</span>
+            {{ groupingClasses.name }}
         </li>
     </ul>
 </fieldset>
 <fieldset class="property_fields blockcenter">
-    <legend>{{ "cohortDetails.blockClasses"|trans }}</legend>
+    <legend>{{ "cohortDetails.blockCohorte"|trans }}</legend>
     <ul class="flex_box wims_loader_class_ul">
         <li class="field box halfwidth">
-            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockClasses.className"|trans }} :</span> {{ cohort.name }}
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockCohort.cohortType"|trans }} :</span>
+            {{ cohort.typeString|trans }}
         </li>
         <li class="field box halfwidth">
-            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockClasses.teacherName"|trans }} :</span> {{ cohort.teacher.lastName }} {{ class.teacher.firstName }}
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockCohort.cohortName"|trans }} :</span>
+            {{ cohort.name }}
         </li>
         <li class="field box halfwidth">
-            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockClasses.subjects"|trans }} :</span> {{ cohort.subjects }}
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockCohort.teacherName"|trans }} :</span>
+            {{ cohort.teacher.lastName }} {{ cohort.teacher.firstName }}
         </li>
         <li class="field box halfwidth">
-            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockClasses.idWims"|trans }} :</span> {{ cohort.fullIdWims }}
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockCohort.subjects"|trans }} :</span>
+            {{ cohort.subjects }}
         </li>
         <li class="field box halfwidth">
-            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockClasses.lastSync"|trans }} :</span> {{ cohort.lastSyncAt|date('H:i d/m/y') }}
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockCohort.idWims"|trans }} :</span>
+            {{ cohort.fullIdWims }}
+        </li>
+        <li class="field box halfwidth">
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockCohort.lastSync"|trans }} :</span>
+            {{ cohort.lastSyncAt|date('H:i d/m/y') }}
         </li>
     </ul>
 </fieldset>

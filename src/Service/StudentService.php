@@ -3,6 +3,7 @@ namespace App\Service;
 
 use App\Entity\Cohort;
 use App\Entity\User;
+use App\Enum\CohortType;
 use App\Repository\CohortRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\Ldap\Entry;
@@ -19,15 +20,17 @@ class StudentService
     ) {}
 
     /**
-     * Donne la liste des uid des élèves a partir d'un siren et d'un nom de class
+     * Donne la liste des uid des élèves a partir d'un siren, d'un nom de cohorte
+     * et du type de cohorte
      *
      * @param string $siren Le siren de l'établissement
      * @param string $class Le nom de la class
+     * @param CohortType $type Le type de la cohorte
      * @return array La liste des uid des élèves de la class
      */
-    public function getListUidStudentFromSirenAndClassName(string $siren, string $class): array
+    public function getListUidStudentFromSirenAndCohortName(string $siren, string $class, CohortType $type): array
     {
-        $results = $this->ldapService->findStudentsBySirenAndClassName($siren, $class);
+        $results = $this->ldapService->findStudentsBySirenAndCohortName($siren, $class, $type);
         $res = [];
 
         foreach ($results as $result) {
@@ -91,8 +94,7 @@ class StudentService
         $uidInWims = array_keys($res['wims']);
 
         // On récupère les étudiants de la cohorte côté ldap
-        // FIXME: code différent si classe ou groupe pédagogique
-        $srcUsersInLdap = $this->ldapService->findStudentsBySirenAndClassName($teacher->getSirenCourant(), $cohort->getName());
+        $srcUsersInLdap = $this->ldapService->findStudentsBySirenAndCohortName($teacher->getSirenCourant(), $cohort->getName(), $cohort->getType());
 
         usort($srcUsersInLdap, function(Entry $a, Entry $b) {
             $lastNameComparison = strcmp($a->getAttribute('sn')[0], $b->getAttribute('sn')[0]);

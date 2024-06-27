@@ -50,7 +50,7 @@ class UserRepository extends ServiceEntityRepository
      * @param Cohort $cohort
      * @return array
      */
-    public function findByClass(Cohort $cohort): array
+    public function findByCohort(Cohort $cohort): array
     {
         return $this->createQueryBuilder('u')
             ->innerJoin('u.cohorts', 'c')

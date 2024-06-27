@@ -31,7 +31,6 @@ class DebugController extends AbstractWimsLoaderController
     #[Template('web/debug.html.twig')]
     public function infos(Security $security): array
     {
-        // TODO: ajouter les groups ici
         $user = $this->getUserFromSecurity($security);
         $userLdap = $this->ldapService->findOneUserByUid($user->getUid());
         $userBdd = $this->userRepo->findOneByUid($user->getUid());
@@ -46,9 +45,9 @@ class DebugController extends AbstractWimsLoaderController
         if ($groupingClasses !== null) {
             $dumpArray[$this->translator->trans('debug.categoryTitle.groupingClassesDataBdd')] = $groupingClasses;
             $classesStudentBdd = $this->cohortRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
-            $dumpArray[$this->translator->trans('debug.categoryTitle.classesDataBddForStudent')] = $classesStudentBdd;
-            $classesTeacherBdd = $this->cohortRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, CohortType::TYPE_CLASS);
-            $dumpArray[$this->translator->trans('debug.categoryTitle.classesDataBddForTeacher')] = $classesTeacherBdd;
+            $dumpArray[$this->translator->trans('debug.categoryTitle.cohortsDataBddForStudent')] = $classesStudentBdd;
+            $classesTeacherBdd = $this->cohortRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
+            $dumpArray[$this->translator->trans('debug.categoryTitle.cohortsDataBddForTeacher')] = $classesTeacherBdd;
         }
         
         return [

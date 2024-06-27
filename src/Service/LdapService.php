@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use App\Enum\CohortType;
 use App\Exception\InvalidGroupingClassesException;
 use App\Exception\LdapResultException;
 use Symfony\Component\Ldap\Adapter\CollectionInterface;
@@ -65,16 +66,19 @@ class LdapService
 
     /**
      * Retourne un tableau d'Entry représentant les données des utilisateurs
-     * d'une classe d'un établissement
+     * d'une cohort d'un établissement
      *
      * @param string $siren Le siren de l'établissement courant
-     * @param string $class Le nom de la classe
+     * @param string $cohort Le nom de la cohort
+     * @param CohortType $type Le type de la cohorte
      * @return Entry[]
      */
-    public function findStudentsBySirenAndClassName(string $siren, string $class): array
+    public function findStudentsBySirenAndCohortName(string $siren, string $class, CohortType $type): array
     {
+        $attr = $type === CohortType::TYPE_CLASS ? "ENTEleveClasses" : "ENTEleveGroupes";
+        
         return $this
-            ->search(self::USER, "(ENTEleveClasses=ENTStructureSIREN=$siren,ou=structures,dc=esco-centre,dc=fr\$$class)")
+            ->search(self::USER, "($attr=ENTStructureSIREN=$siren,ou=structures,dc=esco-centre,dc=fr\$$class)")
             ->toArray();
     }
 

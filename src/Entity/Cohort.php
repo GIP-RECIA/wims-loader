@@ -192,10 +192,10 @@ class Cohort
 
     public function getTypeString(): ?string
     {
-        return Cohort::typeString($this->type);
+        return Cohort::cohortTypeString($this->type);
     }
 
-    static public function typeString(CohortType $type): ?string
+    static public function cohortTypeString(CohortType $type): ?string
     {
         if ($type === CohortType::TYPE_CLASS) {
             return "class";

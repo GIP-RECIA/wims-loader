@@ -1,0 +1,10 @@
+{# templates/web/include/tablesort.html.twig #}
+    <script src="/wims/scripts/js/tablesort.js"></script>
+    <script src="/wims/scripts/js/tablesort.number.js"></script>
+
+    <script>
+    const elems = document.getElementsByClassName("wimstable");
+    for (const elem of elems) {
+        new Tablesort(elem);
+    }
+    </script>

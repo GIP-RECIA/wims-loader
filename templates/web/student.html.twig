@@ -3,11 +3,12 @@
 {% set title_page = "menu.studentZone"|trans %}
 
 {% block body %}
+{% for key, subCohorts in cohorts %}
 <details open>
-    <summary>{{ "studentZone.yourClasses"|trans }}</summary>
-    {% if classes|length > 0 %}
-    <table id="myClasses" class="wimstable" style="text-align:center">
-        <caption>{{ "studentZone.myClasses"|trans }}</caption>
+    <summary>{{ ("studentZone." ~ key ~ ".your")|trans }}</summary>
+    {% if subCohorts|length > 0 %}
+    <table class="wimstable" style="text-align:center">
+        <caption>{{ ("studentZone." ~ key ~ ".your")|trans }}</caption>
         <thead>
             <tr data-sort-method="thead">
                 <th scope="col" role="columnheader">{{ "tableHeader.name"|trans }}</th>
@@ -17,19 +18,19 @@
             </tr>
         </thead>
         <tbody>
-        {% for class in classes %}
+        {% for cohort in subCohorts %}
             <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
                 <td>
-                    {{ class.name }}
+                    {{ cohort.name }}
                 </td>
                 <td>
-                    {{ class.subjects }}
+                    {{ cohort.subjects }}
                 </td>
                 <td>
-                    {{ class.teacher.lastName }}
+                    {{ cohort.teacher.lastName }}
                 </td>
                 <td>
-                    <a href="{{ class|wims_url_class_for_student }}" class="wims_button" role="button">{{ "button.enter"|trans }}</a>
+                    <a href="{{ cohort|wims_url_class_for_student }}" class="wims_button" role="button">{{ "button.enter"|trans }}</a>
                 </td>
             </tr>
         {% endfor %}
@@ -37,16 +38,12 @@
     </table>
     {% else %}
     <br>
-    {{ "studentZone.notRegisteredInWimsClass"|trans }}
+    {{ ("studentZone." ~ key ~ ".notRegistered")|trans }}
     {% endif %}
 </details>
+{% endfor %}
 {% endblock %}
 
 {% block endjs %}
-    <script src="/wims/scripts/js/tablesort.js"></script>
-    <script src="/wims/scripts/js/tablesort.number.js"></script>
-
-    <script>
-    new Tablesort(document.getElementById("myClasses"));
-    </script>
+{% include 'web/include/tablesort.html.twig' %}
 {% endblock %}
