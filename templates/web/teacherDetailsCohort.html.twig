@@ -1,0 +1,75 @@
+{# templates/web/teacherDetailsCohort.html.twig #}
+{% extends 'web/baseWithGroupingClasses.html.twig' %}
+{% set title_page = 'cohortDetails.title'|trans %}
+{% set can_sync = false %}
+
+{% block body %}
+<fieldset class="property_fields blockcenter">
+    <legend>{{ "cohortDetails.blockGroupingClasses"|trans }}</legend>
+    <ul class="flex_box wims_loader_class_ul">
+        <li class="field box halfwidth">
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockGroupingClasses.uai"|trans }} :</span> {{ groupingClasses.uai }}
+        </li>
+        <li class="field box halfwidth">
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockGroupingClasses.name"|trans }} :</span> {{ groupingClasses.name }}
+        </li>
+    </ul>
+</fieldset>
+<fieldset class="property_fields blockcenter">
+    <legend>{{ "cohortDetails.blockClasses"|trans }}</legend>
+    <ul class="flex_box wims_loader_class_ul">
+        <li class="field box halfwidth">
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockClasses.className"|trans }} :</span> {{ cohort.name }}
+        </li>
+        <li class="field box halfwidth">
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockClasses.teacherName"|trans }} :</span> {{ cohort.teacher.lastName }} {{ class.teacher.firstName }}
+        </li>
+        <li class="field box halfwidth">
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockClasses.subjects"|trans }} :</span> {{ cohort.subjects }}
+        </li>
+        <li class="field box halfwidth">
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockClasses.idWims"|trans }} :</span> {{ cohort.fullIdWims }}
+        </li>
+        <li class="field box halfwidth">
+            <span class="wims_loader_label">{{ "cohortDetails.fieldsBlockClasses.lastSync"|trans }} :</span> {{ cohort.lastSyncAt|date('H:i d/m/y') }}
+        </li>
+    </ul>
+</fieldset>
+<fieldset class="property_fields blockcenter bloc-students">
+    <legend>{{ "cohortDetails.blockStudents"|trans }}</legend>
+    <div class="two-col">
+        <p>{{ "cohortDetails.fieldsBlockStudents.studentsInWims"|trans }} :</p>
+        <ul>
+        {% for uid, userData in diffStudents.wims %}
+            <li class="{% if uid in diffStudents.wimsUnsync %}nok-warn{% else %}ok{% endif %}">{{ userData.fullName }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="two-col">
+        <p>{{ "cohortDetails.fieldsBlockStudents.studentsInLdap"|trans }} :</p>
+        <ul>
+        {% for uid, userData in diffStudents.ldap %}
+            <li class="{% if uid in diffStudents.ldapUnsync %}nok-error{% else %}ok{% endif %}">{{ userData.fullName }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+</fieldset>
+{% if diffStudents.wimsUnsync|length == 0 and diffStudents.ldapUnsync|length == 0 %}
+    <div class="wims_msg info">{{ "cohortDetails.messages.allSync"|trans }}</div>
+{% else %}
+    {% if diffStudents.wimsUnsync|length != 0 %}
+        <div class="wims_msg info">{{ "cohortDetails.messages.studentsAbsentFromLdap"|trans }}</div>
+    {% endif %}
+
+    {% if diffStudents.ldapUnsync|length != 0 %}
+        {% set can_sync = true %}
+        <div class="wims_msg alert">{{ "cohortDetails.messages.studentsAbsentFromWims"|trans }}</div>
+    {% endif %}
+{% endif %}
+<div class="wimscenter actions">
+    {% if can_sync %}<a href="{{ url('teacherSyncCohort', { 'idCohort': cohort.id }) }}" class="wims_button" role="button">{{ "button.synchronise"|trans }}</a>{% endif %}
+    <a href="{{ url('teacher') }}" class="wims_button wims_secondary_button" role="button">{{ "button.back"|trans }}</a>
+</div>
+
+
+{% endblock %}

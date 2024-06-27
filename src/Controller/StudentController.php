@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
 
-use App\Repository\ClassesRepository;
+use App\Repository\CohortRepository;
 use App\Service\GroupingClassesService;
 use App\Service\StudentService;
 use App\Service\WimsUrlGeneratorService;
@@ -19,7 +19,7 @@ class StudentController extends AbstractWimsLoaderController
         private AuthorizationCheckerInterface $authorizationChecker,
         private GroupingClassesService $groupingClassesService,
         private StudentService $StudentService,
-        private ClassesRepository $classRepo,
+        private CohortRepository $cohortRepo,
         private WimsUrlGeneratorService $wimsUrlGeneratorService,
         private TranslatorInterface $translator,
     ) {}
@@ -29,7 +29,7 @@ class StudentController extends AbstractWimsLoaderController
     {
         $user = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
-        $classes = $this->classRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
+        $classes = $this->cohortRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
         $autoRedirectStudent = $this->getParameter('app.autoRedirectStudent');
         $navigationBar = [['name' => $this->translator->trans('menu.studentZone')]];
 

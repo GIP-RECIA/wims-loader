@@ -31,7 +31,7 @@
                         {{ class.fullIdWims }}
                     </td>
                     <td>
-                        <a href="{{ url('teacherDetailsClass', {idClass: class.id}) }}" class="wims_button" role="button">{{ "button.details"|trans }}</a>
+                        <a href="{{ url('teacherDetailsCohort', {idCohort: class.id}) }}" class="wims_button" role="button">{{ "button.details"|trans }}</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -96,7 +96,7 @@
                         {{ groups.fullIdWims }}
                     </td>
                     <td>
-                        <a href="{{ url('teacherDetailsClass', {idClass: groups.id}) }}" class="wims_button" role="button">{{ "button.details"|trans }}</a>
+                        <a href="{{ url('teacherDetailsCohort', {idCohort: groups.id}) }}" class="wims_button" role="button">{{ "button.details"|trans }}</a>
                     </td>
                 </tr>
             {% endfor %}

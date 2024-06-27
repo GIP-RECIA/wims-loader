@@ -2,21 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\ClassesRepository;
+use App\Enum\CohortType;
+use App\Repository\CohortRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-enum ClassOrGroupType: int
-{
-    case CLASSES = 1;
-    case GROUPS = 2;
-}
 
-#[ORM\Entity(repositoryClass: ClassesRepository::class)]
+#[ORM\Entity(repositoryClass: CohortRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_ID', fields: ['id'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_GROUPINGCLASSES_NAME', fields: ['GroupingClasses', 'name', 'teacher'])]
-class Classes
+class Cohort
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -43,11 +39,11 @@ class Classes
     /**
      * @var Collection<int, User>
      */
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'classes')]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'cohort')]
     private Collection $students;
 
     /**
-     * La ou les matières de cette classe
+     * La ou les matières de cette cohorte
      *
      * @var string|null
      */
@@ -55,7 +51,7 @@ class Classes
     private ?string $subjects = null;
 
     #[ORM\Column]
-    private ?int $type = null;
+    private ?CohortType $type = null;
 
     public function __construct()
     {
@@ -64,8 +60,9 @@ class Classes
 
     public function __toString()
     {
-        return (string) $this->name . ' (' .
-            $this->id . ', ' . $this->getFullIdWims() . ')';
+        return (string) $this->name . ' (' . $this->id . ', '
+            . $this->getFullIdWims() . ', ' . $this->getTypeString() . ', '
+            . $this->getName() . ')';
     }
 
     public function getFullIdWims(): string
@@ -181,15 +178,31 @@ class Classes
         return $this;
     }
 
-    public function getType(): ?int
+    public function getType(): ?CohortType
     {
         return $this->type;
     }
 
-    public function setType(int $type): static
+    public function setType(CohortType $type): static
     {
         $this->type = $type;
 
         return $this;
+    }
+
+    public function getTypeString(): ?string
+    {
+        return Cohort::typeString($this->type);
+    }
+
+    static public function typeString(CohortType $type): ?string
+    {
+        if ($type === CohortType::TYPE_CLASS) {
+            return "class";
+        } else if ($type === CohortType::TYPE_GROUP) {
+            return "group";
+        }
+
+        return null;
     }
 }

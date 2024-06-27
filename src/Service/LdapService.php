@@ -7,6 +7,9 @@ use Symfony\Component\Ldap\Adapter\CollectionInterface;
 use Symfony\Component\Ldap\Entry;
 use Symfony\Component\Ldap\Ldap;
 
+/**
+ * Class permettant de faire les requêtes ldap
+ */
 class LdapService
 {
     const USER = 'ou=people,dc=esco-centre,dc=fr';
@@ -75,6 +78,12 @@ class LdapService
             ->toArray();
     }
 
+    /**
+     * Permet de récupérer un grouping classes (un établissement) avec son siren
+     *
+     * @param string $siren Le siren a rechercher
+     * @return Entry L'entry du grouping classes
+     */
     public function findOneGroupingClassesBySiren(string $siren): Entry
     {
         $results = $this

@@ -1,12 +1,12 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\Classes;
-use App\Entity\ClassOrGroupType;
+use App\Entity\Cohort;
+use App\Enum\CohortType;
 use App\Form\NameType;
-use App\Repository\ClassesRepository;
+use App\Repository\CohortRepository;
 use App\Repository\UserRepository;
-use App\Service\ClassesService;
+use App\Service\CohortService;
 use App\Service\GroupingClassesService;
 use App\Service\LdapService;
 use App\Service\StudentService;
@@ -31,8 +31,8 @@ class TeacherController extends AbstractWimsLoaderController
         private GroupingClassesService $groupingClassesService,
         private StudentService $StudentService,
         private TeacherService $teacherService,
-        private ClassesRepository $classRepo,
-        private ClassesService $classesService,
+        private CohortRepository $cohortRepo,
+        private CohortService $cohortService,
         private UserRepository $userRepo,
         private LdapService $ldapService,
         private TranslatorInterface $translator,
@@ -52,21 +52,21 @@ class TeacherController extends AbstractWimsLoaderController
     {
         $user = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
-        $importedClasses = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, ClassOrGroupType::CLASSES);
-        $importedGroups = $this->classRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, ClassOrGroupType::GROUPS);
+        $importedClasses = $this->cohortRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, CohortType::TYPE_CLASS);
+        $importedGroups = $this->cohortRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, CohortType::TYPE_GROUP);
         $importedClassesName = [];
         $importedGroupsName = [];
         $formsClassesToImport = [];
         $formsGroupsToImport = [];
         $navigationBar = [['name' => $this->translator->trans('menu.teacherZone')]];
-        $classesAndGroups = $this->teacherService->getClassesAndGroupsOfTeacher($user);
+        $classesAndGroups = $this->teacherService->getCohortsOfTeacher($user);
 
         foreach ($importedClasses as $classes) {
             $importedClassesName[] = $classes->getName();
         }
 
         foreach ($classesAndGroups['classes'] as $baseClassName) {
-            if (!in_array($this->classesService->generateName($baseClassName, $user), $importedClassesName)) {
+            if (!in_array($this->cohortService->generateName($baseClassName, $user), $importedClassesName)) {
                 $form = $this->createForm(NameType::class, [
                     'name' => $baseClassName], [
                     'action' => $this->generateUrl('teacherCreateClass'),
@@ -80,7 +80,7 @@ class TeacherController extends AbstractWimsLoaderController
         }
 
         foreach ($classesAndGroups['groups'] as $baseGroupName) {
-            if (!in_array($this->classesService->generateName($baseGroupName, $user), $importedGroupsName)) {
+            if (!in_array($this->cohortService->generateName($baseGroupName, $user), $importedGroupsName)) {
                 $form = $this->createForm(NameType::class, [
                     'name' => $baseGroupName], [
                     'action' => $this->generateUrl('teacherCreateGroup'),
@@ -113,7 +113,7 @@ class TeacherController extends AbstractWimsLoaderController
     #[Route(path:"/enseignant/createClass", name:"teacherCreateClass")]
     public function createClass(Request $request, Security $security): Response
     {
-        return $this->createClassOrGroup($request, $security, ClassOrGroupType::CLASSES);
+        return $this->createCohort($request, $security, CohortType::TYPE_CLASS);
     }
 
     /**
@@ -127,92 +127,92 @@ class TeacherController extends AbstractWimsLoaderController
     #[Route(path:"/enseignant/createGroup", name:"teacherCreateGroup")]
     public function createGroup(Request $request, Security $security): Response
     {
-        return $this->createClassOrGroup($request, $security, ClassOrGroupType::GROUPS);
+        return $this->createCohort($request, $security, CohortType::TYPE_GROUP);
     }
 
     /**
-     * Route affichant les détails d'une classe importée pour pouvoir contrôler
-     * les élèves importés dans la classe et déclencher une synchro au besoin.
+     * Route affichant les détails d'une cohorte importée pour pouvoir contrôler
+     * les élèves importés dans la cohorte et déclencher une synchro au besoin.
      */
-    #[Route(path:"/enseignant/detailsClass/{idClass}", name:"teacherDetailsClass")]
-    #[Template('web/teacherDetailsClass.html.twig')]
-    public function detailsClass(
+    #[Route(path:"/enseignant/detailsCohort/{idCohort}", name:"teacherDetailsCohort")]
+    #[Template('web/teacherDetailsCohort.html.twig')]
+    public function detailsCohort(
         Security $security,
-        #[MapEntity(id: 'idClass')] Classes $classes
+        #[MapEntity(id: 'idCohort')] Cohort $cohort
         ): array
     {
         $teacher = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($teacher->getSirenCourant());
-        $diffStudents = $this->StudentService->diffStudentFromTeacherAndClass($teacher, $classes);
+        $diffStudents = $this->StudentService->diffStudentFromTeacherAndCohort($teacher, $cohort);
         $navigationBar = [
             [
                 'name' => $this->translator->trans('menu.teacherZone'),
                 'url' => $this->generateUrl('teacher'),
             ], [
-                'name' => $this->translator->trans('classDetails.title'),
+                'name' => $this->translator->trans('cohortDetails.title'),
             ]
         ];
 
         return [
             'groupingClasses' => $groupingClasses,
             'navigationBar' => $navigationBar,
-            'class' => $classes,
+            'cohort' => $cohort,
             'diffStudents' => $diffStudents,
         ];
     }
 
     /**
-     * Route réalisant une nouvelle synchro sur la classe
+     * Route réalisant une nouvelle synchro sur la cohorte
      * 
-     * @param Classes $classes La classe a synchroniser
+     * @param Cohort $cohort La cohorte a synchroniser
      * @return Response La redirection vers la page de détails
      */
-    #[Route(path:"/enseignant/syncClass/{idClass}", name:"teacherSyncClass")]
+    #[Route(path:"/enseignant/syncCohort/{idCohort}", name:"teacherSyncCohort")]
     public function syncClass(
         Security $security,
-        #[MapEntity(id: 'idClass')] Classes $classes
+        #[MapEntity(id: 'idCohort')] Cohort $cohort
         ): Response
     {
         $teacher = $this->getUserFromSecurity($security);
-        $this->logger->info("Synchronisation class $classes for teacher $teacher");
-        $diffStudents = $this->StudentService->diffStudentFromTeacherAndClass($teacher, $classes);
+        $this->logger->info("Synchronisation cohort $cohort for teacher $teacher");
+        $diffStudents = $this->StudentService->diffStudentFromTeacherAndCohort($teacher, $cohort);
 
         try {
             if (sizeof($diffStudents['ldapUnsync']) > 0) {
-                $this->teacherService->addStudentsInClass($diffStudents['ldapUnsync'], $classes);
+                $this->teacherService->addStudentsInCohort($diffStudents['ldapUnsync'], $cohort);
                 $this->addFlash('info', $this->translator->trans('teacherZone.message.syncStudentsOk'));
             } else {
                 $this->addFlash('info', $this->translator->trans('teacherZone.message.noStudentsToSync'));
             }
         } catch (Exception $e) {
-            $this->logger->error("Error when synching class $classes for teacher $teacher");
+            $this->logger->error("Error when synching cohort $cohort for teacher $teacher");
             $this->logger->error($e);
             $this->addFlash('alert', $this->translator->trans('teacherZone.message.syncStudentsNok'));
         }
 
-        return $this->redirectToRoute('teacherDetailsClass', [
-            'idClass' => $classes->getId(),
+        return $this->redirectToRoute('teacherDetailsCohort', [
+            'idCohort' => $cohort->getId(),
         ]);
     }
 
-    private function createClassOrGroup(Request $request, Security $security, ClassOrGroupType $type): Response
+    private function createCohort(Request $request, Security $security, CohortType $type): Response
     {
         $user = $this->getUserFromSecurity($security);
         $form = $this->createForm(NameType::class);
         $form->handleRequest($request);
-        $key = $type === ClassOrGroupType::CLASSES ? 'class' : 'group';
+        $key = Cohort::typeString($type);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $className = $form->getData()['className'];
+                $cohortName = $form->getData()['name'];
                 $siren = $user->getSirenCourant();
-                $this->logger->info("Create $key ' '$className' for teacher $user on sire $siren");
-                $class = $this->teacherService->createClass($user, $className, $type);
-                $this->addFlash('info', $this->translator->trans("teacherZone.message.$key.imported", ['%name%' => $class->getName()]));
+                $this->logger->info("Create $key '$cohortName' for teacher $user on sire $siren");
+                $cohort = $this->teacherService->createCohort($user, $cohortName, $type);
+                $this->addFlash('info', $this->translator->trans("teacherZone.message.$key.imported", ['%name%' => $cohort->getName()]));
             } catch (Exception $e) {
                 $this->logger->error("Error when creating $key for user $user");
                 $this->logger->error($e);
-                $this->addFlash('alert', $this->translator->trans("teacherZone.message.$key.creationError", ['%name%' => $className]));
+                $this->addFlash('alert', $this->translator->trans("teacherZone.message.$key.creationError", ['%name%' => $cohortName]));
             }
         } else {
             $this->logger->warning("Error when retrieving $key name for user $user");

@@ -13,7 +13,7 @@ menu:
   teacherZone: Zone Enseignant
   studentZone: Zone Élève
   admin: Administration
-  adminClasses: Administration des classes
+  adminCohorts: Administration des cohortes
   home: Accueil
   debug: Debug
   debugSub:
@@ -72,7 +72,7 @@ teacherZone:
       getNameError: Erreur lors de la récupération du nom du groupe pédagogique
 
 
-classDetails:
+cohortDetails:
   title: Détails de la classe
   blockGroupingClasses: Établissement
   fieldsBlockGroupingClasses:

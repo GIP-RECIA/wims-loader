@@ -38,21 +38,16 @@ class User implements UserInterface
     private ?string $sirenCourant = null;
 
     /**
-     * @var list<string> Les classes provenant du ticket cas
-     */
-    private array $ticketEnsClasses = [];
-
-    /**
      * @var Collection<int, GroupingClasses>
      */
     #[ORM\ManyToMany(targetEntity: GroupingClasses::class, mappedBy: 'registeredTeachers')]
     private Collection $groupingClasses;
 
     /**
-     * @var Collection<int, Classes>
+     * @var Collection<int, Cohort>
      */
-    #[ORM\ManyToMany(targetEntity: Classes::class, mappedBy: 'students')]
-    private Collection $classes;
+    #[ORM\ManyToMany(targetEntity: Cohort::class, mappedBy: 'students')]
+    private Collection $cohorts;
 
     public function __construct()
     {
@@ -186,24 +181,6 @@ class User implements UserInterface
     }
 
     /**
-     * @return list<string>
-     */
-    public function getTicketEnsClasses(): array
-    {
-        return $this->ticketEnsClasses;
-    }
-
-    /**
-     * @param list<string> $roles
-     */
-    public function setTicketEnsClasses(array $ticketEnsClasses): static
-    {
-        $this->ticketEnsClasses = $ticketEnsClasses;
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, GroupingClasses>
      */
     public function getGroupingClasses(): Collection
@@ -231,25 +208,25 @@ class User implements UserInterface
     }
 
     /**
-     * @return Collection<int, Classes>
+     * @return Collection<int, Cohort>
      */
-    public function getClasses(): Collection
+    public function getCohorts(): Collection
     {
-        return $this->classes;
+        return $this->cohorts;
     }
 
-    public function addClasses(Classes $class): static
+    public function addCohort(Cohort $cohort): static
     {
-        if (!$this->classes->contains($class)) {
-            $this->classes->add($class);
+        if (!$this->cohorts->contains($cohort)) {
+            $this->cohorts->add($cohort);
         }
 
         return $this;
     }
 
-    public function removeClasses(Classes $class): static
+    public function removeCohort(Cohort $cohort): static
     {
-        $this->classes->removeElement($class);
+        $this->cohorts->removeElement($cohort);
 
         return $this;
     }

@@ -1,7 +1,7 @@
 <?php
 namespace App\Service;
 
-use App\Entity\Classes;
+use App\Entity\Cohort;
 use App\Entity\GroupingClasses;
 use App\Entity\User;
 use App\Exception\BuildIndexException;
@@ -253,20 +253,20 @@ class WimsFileObjectCreatorService
     }
 
     /**
-     * Créé une nouvelle classe dans le groupement de classes
+     * Créé une nouvelle classe wims dans le groupement de classes
      *
-     * @param Classes $class La class a créer
-     * @return Classes La classe mise à jour
+     * @param Cohort $cohort La classe wims a créer
+     * @return Cohort La cohorte mise à jour avec les données wims
      */
-    public function createClassInGroupingClassesFromObj(Classes $class): Classes
+    public function createClassInGroupingClassesFromObj(Cohort $cohort): Cohort
     {
         $idWims = $this->createClassInGroupingClasses(
-            $this->fromObjUserToDataArray($class->getTeacher()),
-            $this->fromObjClassesToDataArray($class),
-            $class->getGroupingClasses()->getIdWims(),
-            $class->getTeacher()->getUid(),
+            $this->fromObjUserToDataArray($cohort->getTeacher()),
+            $this->fromObjCohortToDataArray($cohort),
+            $cohort->getGroupingClasses()->getIdWims(),
+            $cohort->getTeacher()->getUid(),
         );
-        return $class->setIdWims($idWims);
+        return $cohort->setIdWims($idWims);
     }
 
     /**
@@ -368,18 +368,18 @@ class WimsFileObjectCreatorService
     }
 
     /**
-     * Permet d'insérer un élève dans une classe d'un groupement de classes
+     * Permet d'insérer un élève dans une cohorte d'un groupement de classes
      *
      * @param User    $student L'étudiant a inscrire
-     * @param Classes $class   La classe dans laquelle inscrire l'étudiant
+     * @param Cohort $cohort   La cohorte dans laquelle inscrire l'étudiant
      * @return void
      */
-    public function addUserInClassFromObj(User $student, Classes $class): void
+    public function addUserInClassFromObj(User $student, Cohort $cohort): void
     {
         $this->addUserInClass(
             $this->fromObjUserToDataArray($student),
-            $class->getGroupingClasses()->getIdWims(),
-            $class->getIdWims()
+            $cohort->getGroupingClasses()->getIdWims(),
+            $cohort->getIdWims()
         );
     }
 
@@ -1054,13 +1054,13 @@ class WimsFileObjectCreatorService
         ];
     }
 
-    private function fromObjClassesToDataArray(Classes $class): array
+    private function fromObjCohortToDataArray(Cohort $cohort): array
     {
-        $teacher = $class->getTeacher();
+        $teacher = $cohort->getTeacher();
         
         return [
-            'description' => mb_substr($class->getName() . " - " . $teacher->getLastName(), 0, 50),
-            'institution_name' => $class->getGroupingClasses()->getName(),
+            'description' => mb_substr($cohort->getName() . " - " . $teacher->getLastName(), 0, 50),
+            'institution_name' => $cohort->getGroupingClasses()->getName(),
         ];
     }
 

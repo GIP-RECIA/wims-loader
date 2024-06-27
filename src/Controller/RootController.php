@@ -33,7 +33,7 @@ class RootController extends AbstractWimsLoaderController
         } else if ($isStudent) {
             return $this->redirectToRoute('student');
         } else if ($isAdmin) {
-            return $this->redirectToRoute('adminClasses');
+            return $this->redirectToRoute('adminCohorts');
         }
 
         try {

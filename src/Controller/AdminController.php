@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
 
-use App\Repository\ClassesRepository;
+use App\Repository\CohortRepository;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,14 +11,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AdminController extends AbstractWimsLoaderController
 {
     public function __construct(
-        private ClassesRepository $classesRepo,
+        private CohortRepository $cohortRepo,
     ) {}
 
-    #[Route(path:"/admin/classes", name:"adminClasses")]
+    #[Route(path:"/admin/cohorts", name:"adminCohorts")]
     #[Template('web/admin.html.twig')]
     public function indexAdmin(Security $security): array
     {
-        $data = $this->classesRepo->findAllData();
+        $data = $this->cohortRepo->findAllData();
         return [
             'data' => $data,
         ];

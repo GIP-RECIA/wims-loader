@@ -1,9 +1,9 @@
 <?php
 namespace App\Service;
 
-use App\Entity\Classes;
+use App\Entity\Cohort;
 use App\Entity\User;
-use App\Repository\ClassesRepository;
+use App\Repository\CohortRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\Ldap\Entry;
 
@@ -14,7 +14,7 @@ class StudentService
 {
     public function __construct(
         private LdapService $ldapService,
-        private ClassesRepository $classRepo,
+        private CohortRepository $cohortRepo,
         private UserRepository $userRepo,
     ) {}
 
@@ -60,16 +60,16 @@ class StudentService
     }
 
     /**
-     * Permet de récupérer les étudiant d'une classe par wims (wims-loader) et
+     * Permet de récupérer les étudiant d'une cohort par wims (wims-loader) et
      * par ldap et en fait la différence pour voir si tout est synchronisé
      *
      * @param User $teacher
-     * @param Classes $classes
+     * @param Cohort $cohort
      * @return array Un array contenant dans wims la liste des élèves côté wims,
      *  dans ldap la liste des élèves côté ldap et dans sync un bool pour
      *  spécifier si l'on est bien synchronisé.
      */
-    public function diffStudentFromTeacherAndClass(User $teacher, Classes $classes): array
+    public function diffStudentFromTeacherAndCohort(User $teacher, Cohort $cohort): array
     {
         $res = [
             'wims' => [],
@@ -78,8 +78,8 @@ class StudentService
             'ldapUnsync' => [],
         ];
 
-        // On récupère les étudiants de la classe côté wims (wims-loader)
-        $srcUsersInWims = $this->userRepo->findByClass($classes);
+        // On récupère les étudiants de la cohorte côté wims (wims-loader)
+        $srcUsersInWims = $this->userRepo->findByCohort($cohort);
 
         foreach ($srcUsersInWims as $user) {
             $res['wims'][$user->getUid()] = [
@@ -90,8 +90,9 @@ class StudentService
 
         $uidInWims = array_keys($res['wims']);
 
-        // On récupère les étudiants de la classe côté ldap
-        $srcUsersInLdap = $this->ldapService->findStudentsBySirenAndClassName($teacher->getSirenCourant(), $classes->getName());
+        // On récupère les étudiants de la cohorte côté ldap
+        // FIXME: code différent si classe ou groupe pédagogique
+        $srcUsersInLdap = $this->ldapService->findStudentsBySirenAndClassName($teacher->getSirenCourant(), $cohort->getName());
 
         usort($srcUsersInLdap, function(Entry $a, Entry $b) {
             $lastNameComparison = strcmp($a->getAttribute('sn')[0], $b->getAttribute('sn')[0]);

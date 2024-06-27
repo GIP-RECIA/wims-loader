@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Classes;
+use App\Entity\Cohort;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -45,19 +45,19 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
-     * Undocumented function
+     * Récupérer par une cohorte les étudiants
      *
-     * @param Classes $classes
+     * @param Cohort $cohort
      * @return array
      */
-    public function findByClass(Classes $class): array
+    public function findByClass(Cohort $cohort): array
     {
         return $this->createQueryBuilder('u')
-            ->innerJoin('u.classes', 'c')
-            ->where('c = :class')
+            ->innerJoin('u.cohorts', 'c')
+            ->where('c = :cohort')
             ->orderBy('u.lastName')
             ->addOrderBy('u.firstName')
-            ->setParameter('class', $class)
+            ->setParameter('cohort', $cohort)
             ->getQuery()
             ->getResult();
     }

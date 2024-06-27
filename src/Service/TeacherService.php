@@ -1,10 +1,10 @@
 <?php
 namespace App\Service;
 
-use App\Entity\Classes;
-use App\Entity\ClassOrGroupType;
+use App\Entity\Cohort;
 use App\Entity\User;
-use App\Repository\ClassesRepository;
+use App\Enum\CohortType;
+use App\Repository\CohortRepository;
 use App\Repository\GroupingClassesRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,9 +21,9 @@ class TeacherService
         private StudentService $studentService,
         private UserRepository $userRepo,
         private GroupingClassesRepository $groupingClassesRepo,
-        private ClassesRepository $classRepository,
+        private CohortRepository $cohortRepo,
         private WimsFileObjectCreatorService $wims,
-        private ClassesService $classesService,
+        private CohortService $cohortService,
         private LdapService $ldapService,
     ) {}
 
@@ -34,7 +34,7 @@ class TeacherService
      * @param User $teacher L'enseignant
      * @return array 'classes' Les classes, 'groups' Les groupes pédagogiques
      */
-    public function getClassesAndGroupsOfTeacher(User $teacher): array
+    public function getCohortsOfTeacher(User $teacher): array
     {
         $res = ['classes' => [], 'groups' => []];
         $dataLdap = $this->ldapService->findOneUserByUid($teacher->getUid());
@@ -58,16 +58,16 @@ class TeacherService
         return $res;
     }
 
-    public function createClass(User $teacher, string $className, ClassOrGroupType $type): Classes
+    public function createCohort(User $teacher, string $cohortName, CohortType $type): Cohort
     {
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($teacher->getSirenCourant());
-        $class = $this->classRepository->findOneByGroupingClassesTeacherAndName($groupingClasses, $teacher, $className);
+        $class = $this->cohortRepo->findOneByGroupingClassesTeacherAndName($groupingClasses, $teacher, $cohortName);
         $structure = "ENTStructureSIREN=" . $teacher->getSirenCourant() . ",ou=structures,dc=esco-centre,dc=fr";
 
         if ($class !== null) {
             throw new AlreadyExistsException(
-                "La classe \"" . $className . "\" pour l'enseignant \"" .
-                $teacher->getFullName() . "\" existe déjà."
+                "La cohorte \"$cohortName\" de type " . Cohort::typeString($type)
+                . " pour l'enseignant \"" . $teacher->getFullName() . "\" existe déjà."
             );
         }
 
@@ -79,16 +79,17 @@ class TeacherService
             $this->wims->createTeacherInGroupingClassesFromObj($teacher, $groupingClasses);
         }
 
+        // FIXME: les matiéres c'est pareille pour les groupes ?
         // On récupère les matières de cet enseignant pour cette classe
         $res = $this->ldapService->findOneUserByUid($teacher->getUid());
         $resCodeSubjects = $res->getAttribute("ENTAuxEnsClassesMatieres");
         $resSubjects = $res->getAttribute("ESCOAuxEnsCodeMatiereEnseignEtab");
         $subjects = [];
-        $fullClassName = $structure . "$" . $className . "$";
+        $fullCohortName = $structure . "$" . $cohortName . "$";
 
         foreach ($resCodeSubjects as $codeSubject) {
-            if (str_starts_with($codeSubject, $fullClassName)) {
-                $codeSubjects = mb_substr($codeSubject, mb_strlen($fullClassName));
+            if (str_starts_with($codeSubject, $fullCohortName)) {
+                $codeSubjects = mb_substr($codeSubject, mb_strlen($fullCohortName));
                 $startWith = $structure . "$" . $codeSubjects . "$";
 
                 foreach ($resSubjects as $subject) {
@@ -99,50 +100,50 @@ class TeacherService
             }
         }
 
-        $class = (new Classes())
+        $cohort = (new Cohort())
             ->setTeacher($teacher)
             ->setGroupingClasses($groupingClasses)
-            ->setName($this->classesService->generateName($className, $teacher))
+            ->setName($this->cohortService->generateName($cohortName, $teacher))
             ->setSubjects(mb_substr(implode(', ', $subjects), 0, 255))
-            ->setType($type->value)
+            ->setType($type)
             ->setLastSyncAt();
-        // Création de la classe côté wims
-        $class = $this->wims->createClassInGroupingClassesFromObj($class);
-        $this->em->persist($class);
+        // Création côté wims d'une classe
+        $cohort = $this->wims->createClassInGroupingClassesFromObj($cohort);
+        $this->em->persist($cohort);
 
         // Récupération des élèves dans le ldap
         $uidStudents = $this->studentService->getListUidStudentFromSirenAndClassName(
             $groupingClasses->getSiren(),
-            $className);
-        // Ajout des élèves dans la classe
-        $this->commonAddStudentsInClass($uidStudents, $class);
+            $cohortName);
+        // Ajout des élèves dans la cohorte
+        $this->commonAddStudentsInCohort($uidStudents, $cohort);
 
         $this->em->flush();
 
-        return $class;
+        return $cohort;
     }
 
     /**
-     * Ajoute les élèves dans la classe
+     * Ajoute les élèves dans la cohorte
      *
      * @param array $uidStudents La liste des uid des élèves à ajouter
-     * @param Classes $class La classe dans laquelle ajouter les élèves
+     * @param Cohort $cohort La cohorte dans laquelle ajouter les élèves
      * @return void
      */
-    public function addStudentsInClass(array $uidStudents, Classes $class): void
+    public function addStudentsInCohort(array $uidStudents, Cohort $cohort): void
     {
-        $this->commonAddStudentsInClass($uidStudents, $class);
+        $this->commonAddStudentsInCohort($uidStudents, $cohort);
         $this->em->flush();
     }
 
     /**
-     * Partie commune des fonctions permettant d'ajouter des élèves dans une classe
+     * Partie commune des fonctions permettant d'ajouter des élèves dans une cohorte
      *
      * @param array $uidStudents La liste des uid des élèves à ajouter
-     * @param Classes $class La classe dans laquelle ajouter les élèves
+     * @param Cohort $cohort La cohorte dans laquelle ajouter les élèves
      * @return void
      */
-    private function commonAddStudentsInClass(array $uidStudents, Classes $class): void
+    private function commonAddStudentsInCohort(array $uidStudents, Cohort $cohort): void
     {
         $studentsBdd = $this->userRepo->findByUid($uidStudents);
         $students = [];
@@ -166,9 +167,9 @@ class TeacherService
         }
 
         foreach ($students as $student) {
-            $class->addStudent($student);
+            $cohort->addStudent($student);
             // Inscription des élèves côté wims
-            $this->wims->addUserInClassFromObj($student, $class);
+            $this->wims->addUserInClassFromObj($student, $cohort);
         }
     }
 }

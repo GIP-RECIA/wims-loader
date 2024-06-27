@@ -1,12 +1,11 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\ClassOrGroupType;
-use App\Repository\ClassesRepository;
+use App\Enum\CohortType;
+use App\Repository\CohortRepository;
 use App\Repository\GroupingClassesRepository;
 use App\Repository\UserRepository;
 use App\Service\LdapService;
-use Exception;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,7 +20,7 @@ class DebugController extends AbstractWimsLoaderController
         private LdapService $ldapService,
         private UserRepository $userRepo,
         private GroupingClassesRepository $groupingClassesRepo,
-        private ClassesRepository $classesRepo,
+        private CohortRepository $cohortRepo,
         private TranslatorInterface $translator,
     ) {}
 
@@ -46,9 +45,9 @@ class DebugController extends AbstractWimsLoaderController
 
         if ($groupingClasses !== null) {
             $dumpArray[$this->translator->trans('debug.categoryTitle.groupingClassesDataBdd')] = $groupingClasses;
-            $classesStudentBdd = $this->classesRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
+            $classesStudentBdd = $this->cohortRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
             $dumpArray[$this->translator->trans('debug.categoryTitle.classesDataBddForStudent')] = $classesStudentBdd;
-            $classesTeacherBdd = $this->classesRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, ClassOrGroupType::CLASSES);
+            $classesTeacherBdd = $this->cohortRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, CohortType::TYPE_CLASS);
             $dumpArray[$this->translator->trans('debug.categoryTitle.classesDataBddForTeacher')] = $classesTeacherBdd;
         }
         
