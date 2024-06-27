@@ -165,7 +165,7 @@ services:
                         geoloc: ''
                         lang: 'fr'
                         creation: 'now'
-                        expiration: '20240915'
+                        expiration: '%env(string:CLASSES_EXPIRATION_DATE)%'
                         limit: 50
                         top_score:
                         super_class:
