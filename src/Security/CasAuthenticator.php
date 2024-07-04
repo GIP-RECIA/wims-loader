@@ -39,6 +39,12 @@ class CasAuthenticator extends SecurityCasAuthenticator
 	    \phpCAS::setLogger();
 	    \phpCAS::setVerbose(false);
 
+        $casServiceBaseUrl = $this->getParameter('casServiceBaseUrl');
+
+        if (strpos($casServiceBaseUrl, '%DOMAIN%')) {
+            $casServiceBaseUrl = str_replace('%DOMAIN%', $request->server->get('SERVER_NAME'), $casServiceBaseUrl);
+        }
+
         \phpCAS::client(CAS_VERSION_2_0, $this->getParameter('host'), $this->getParameter('port'), is_null($this->getParameter('path')) ? '' : $this->getParameter('path'), $this->getParameter('casServiceBaseUrl'), true);
         
         if(is_bool($this->getParameter('ca')) && $this->getParameter('ca') == false) {
@@ -137,19 +143,14 @@ class CasAuthenticator extends SecurityCasAuthenticator
     private function getCleanAttributes(): array
     {
         $src = \phpCAS::getAttributes();
-        $sirenCourant = $src['ESCOSIRENCourant'];
-        $srcProfils = isset($src['ENTPersonProfils']) ? $src['ENTPersonProfils'] :
-            (isset($src['profils']) ? $src['profils'] : []);
+        $srcProfils = isset($src['ENTPersonProfils']) ? $src['ENTPersonProfils'] : [];
         $srcProfils = is_array($srcProfils) ? $srcProfils : [$srcProfils];
 
         return [
             'profils' => $srcProfils,
-            'lastName' => isset($src['ENTPersonNomPatro']) ? $src['ENTPersonNomPatro'] :
-                (isset($src['sn']) ? $src['sn'] : (isset($src['nom']) ? $src['nom'] : null)),
-            'firstName' => isset($src['ENTPersonAutresPrenoms']) ? $src['ENTPersonAutresPrenoms'] :
-                (isset($src['givenName']) ? $src['givenName'] : (isset($src['prenom']) ? $src['prenom'] : null)),
-            'mail' => $src['mail'],
-            'sirenCourant' => $sirenCourant,
+            'lastName' => isset($src['sn']) ? $src['sn'] : null,
+            'firstName' => isset($src['givenName']) ? $src['givenName'] : null,
+            'sirenCourant' => $src['ESCOSIRENCourant'],
         ];
     }
 }
