@@ -151,6 +151,7 @@ class CasAuthenticator extends SecurityCasAuthenticator
             'lastName' => isset($src['sn']) ? $src['sn'] : null,
             'firstName' => isset($src['givenName']) ? $src['givenName'] : null,
             'sirenCourant' => $src['ESCOSIRENCourant'],
+            'mail' => $src['mail'],
         ];
     }
 }
