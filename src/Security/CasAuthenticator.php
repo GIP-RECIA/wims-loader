@@ -45,7 +45,7 @@ class CasAuthenticator extends SecurityCasAuthenticator
             $casServiceBaseUrl = str_replace('%DOMAIN%', $request->server->get('SERVER_NAME'), $casServiceBaseUrl);
         }
 
-        \phpCAS::client(CAS_VERSION_2_0, $this->getParameter('host'), $this->getParameter('port'), is_null($this->getParameter('path')) ? '' : $this->getParameter('path'), $this->getParameter('casServiceBaseUrl'), true);
+        \phpCAS::client(CAS_VERSION_2_0, $this->getParameter('host'), $this->getParameter('port'), is_null($this->getParameter('path')) ? '' : $this->getParameter('path'), $casServiceBaseUrl, true);
         
         if(is_bool($this->getParameter('ca')) && $this->getParameter('ca') == false) {
             \phpCAS::setNoCasServerValidation();
