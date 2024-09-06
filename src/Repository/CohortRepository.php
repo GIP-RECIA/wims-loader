@@ -123,14 +123,14 @@ class CohortRepository extends ServiceEntityRepository
     public function findFullWimsIdOfStudentClass(User $student): array
     {
         return $this->createQueryBuilder('c')
-        ->innerJoin('c.groupingClasses', 'gc')
-        ->innerJoin('c.students', 's')
-        ->where('s = :student')
-        ->select('gc.idWims as idWimsGroupingClasses, c.idWims as idWimsClasses')
-        ->orderBy('gc.idWims')
-        ->setParameter('student', $student)
-        ->getQuery()
-        ->getArrayResult();
+            ->innerJoin('c.groupingClasses', 'gc')
+            ->innerJoin('c.students', 's')
+            ->where('s = :student')
+            ->select('gc.idWims as idWimsGroupingClasses, c.idWims as idWimsClasses')
+            ->orderBy('gc.idWims')
+            ->setParameter('student', $student)
+            ->getQuery()
+            ->getArrayResult();
     }
 
     /**
@@ -141,12 +141,35 @@ class CohortRepository extends ServiceEntityRepository
     public function findAllData(): array
     {
         return $this->createQueryBuilder('c')
-        ->innerJoin('c.groupingClasses', 'gc')
-        ->innerJoin('c.teacher', 't')
-        ->innerJoin('c.students', 's')
-        ->select('gc.name as gc_name, gc.uai as uai, c.name as c_name, t.lastName as lastName, t.firstName as firstName, c.subjects as subjects, COUNT(s.id) as nb_students, CONCAT(gc.idWims, \'/\', c.idWims) as id_wims, c.type as type')
-        ->groupBy('c.id')
-        ->getQuery()
-        ->getArrayResult();
+            ->innerJoin('c.groupingClasses', 'gc')
+            ->innerJoin('c.teacher', 't')
+            ->innerJoin('c.students', 's')
+            ->select('gc.name as gc_name, gc.uai as uai, c.name as c_name, t.lastName as lastName, t.firstName as firstName, c.subjects as subjects, COUNT(s.id) as nb_students, CONCAT(gc.idWims, \'/\', c.idWims) as id_wims, c.type as type')
+            ->groupBy('c.id')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
+     * Retourne la cohorte identifié par l'id wims complet
+     *
+     * @param string $fullIdWims L'id wims complet
+     * @return mixed La cohort ou null
+     */
+    public function findCohortByFullIdWims(string $fullIdWims): ?Cohort
+    {
+        list($idGroupingClasses, $idCohort) = explode('/', $fullIdWims);
+        $parameters = [
+            'groupingClassesIdWims' => $idGroupingClasses,
+            'cohortIdWims' => $idCohort,
+        ];
+
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.groupingClasses', 'gc')
+            ->where('gc.idWims = :groupingClassesIdWims')
+            ->andWhere('c.idWims = :cohortIdWims')
+            ->setParameters($parameters)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

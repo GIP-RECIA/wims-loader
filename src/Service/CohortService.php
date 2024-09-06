@@ -27,4 +27,9 @@ class CohortService
     {
         return mb_substr($baseCohortName, 0, 50);
     }
+
+    public function isFullIdConsistent(string $fullId): bool
+    {
+        return preg_match('/^\d{7}\/\d+$/', $fullId);
+    }
 }

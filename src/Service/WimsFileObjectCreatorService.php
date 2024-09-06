@@ -524,7 +524,7 @@ class WimsFileObjectCreatorService
       *
       * @return string La racine
       */
-     private function getRootFolder(): string
+     public function getRootFolder(): string
      {
         return $this->config['directory_structure'];
      }
