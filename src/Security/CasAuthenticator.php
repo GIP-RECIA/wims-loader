@@ -145,11 +145,13 @@ class CasAuthenticator extends SecurityCasAuthenticator
         $src = \phpCAS::getAttributes();
         $srcProfils = isset($src['ENTPersonProfils']) ? $src['ENTPersonProfils'] : [];
         $srcProfils = is_array($srcProfils) ? $srcProfils : [$srcProfils];
+        $keyFirstName = $this->config['ticketFirstName'];
+        $keyLastName = $this->config['ticketLastName'];
 
         return [
             'profils' => $srcProfils,
-            'lastName' => isset($src['sn']) ? $src['sn'] : null,
-            'firstName' => isset($src['givenName']) ? $src['givenName'] : null,
+            'lastName' => isset($src[$keyLastName]) ? $src[$keyLastName] : null,
+            'firstName' => isset($src[$keyFirstName]) ? $src[$keyFirstName] : null,
             'sirenCourant' => $src['ESCOSIRENCourant'],
             'mail' => $src['mail'],
         ];
