@@ -4,14 +4,17 @@
 
 {% block general_body %}
 <details open>
-    <summary>{{ "admin.classesImportedTitle"|trans }}</summary>
-    <table id="importedClasses" class="wimstable" style="text-align:center">
-        <caption>{{ "admin.classesImported"|trans }}</caption>
+    <summary>{{ "admin.cohortsImportedTitle"|trans }}</summary>
+    <p>
+        {{ "admin.numberCohortsImported"|trans({'%count%': data | length}) }}
+    </p>
+    <table id="importedCohorts" class="wimstable" style="text-align:center">
+        <caption>{{ "admin.cohortsImported"|trans }}</caption>
         <thead>
             <tr data-sort-method="thead">
                 <th scope="col" role="columnheader">{{ "tableHeader.groupingClasses"|trans }}</th>
                 <th scope="col" role="columnheader">{{ "tableHeader.uai"|trans }}</th>
-                <th scope="col" role="columnheader">{{ "tableHeader.classes"|trans }}</th>
+                <th scope="col" role="columnheader">{{ "tableHeader.cohort"|trans }}</th>
                 <th scope="col" role="columnheader">{{ "tableHeader.teacher"|trans }}</th>
                 <th scope="col" role="columnheader">{{ "tableHeader.subjects"|trans }}</th>
                 <th scope="col" role="columnheader">{{ "tableHeader.nbStudents"|trans }}</th>
@@ -39,6 +42,6 @@
     <script src="/wims/scripts/js/tablesort.number.js"></script>
 
     <script>
-    new Tablesort(document.getElementById("importedClasses"));
+    new Tablesort(document.getElementById("importedCohorts"));
     </script>
 {% endblock %}

@@ -30,6 +30,7 @@ tableHeader:
   groupingClasses: Établissement
   uai: UAI
   classes: Classe
+  cohort: Cohorte
   nbStudents: Nombre d'étudiants
   action: Action
 
@@ -100,9 +101,9 @@ cohortDetails:
     studentsAbsentFromWims: Certains élèves ne sont pas synchronisés avec Wims. Veuillez synchroniser pour corriger le problème.
 
 admin:
-  classesImportedTitle: Les classes importées
-  classesImported: Classes importées dans Wims
-
+  cohortsImportedTitle: Les classes importées
+  cohortsImported: Classes importées dans Wims
+  numberCohortsImported: Il y a %count% cohortes importées
 
 debug:
   title: Page de debug

@@ -29,6 +29,12 @@ class AdminController extends AbstractWimsLoaderController
         private CohortRepository $cohortRepo,
     ) {}
 
+    /**
+     * Route permettant d'afficher toutes les cohortes
+     *
+     * @param Security $security
+     * @return array
+     */
     #[Route(path:"/admin/cohorts", name:"adminCohorts")]
     #[Template('web/admin.html.twig')]
     public function indexAdmin(Security $security): array
