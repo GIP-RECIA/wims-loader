@@ -3,6 +3,7 @@ button:
   enter: Entrer
   details: Détails
   synchronise: Synchroniser
+  forceFullSynchroStudents: Forcer une synchronisation complète des élèves
   back: Retour
   uportalHeader:
     connexionEnt: Connexion 

@@ -76,10 +76,10 @@ class TeacherService
     public function createCohort(User $teacher, string $cohortName, CohortType $type): Cohort
     {
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($teacher->getSirenCourant());
-        $class = $this->cohortRepo->findOneByGroupingClassesTeacherAndName($groupingClasses, $teacher, $cohortName);
+        $cohort = $this->cohortRepo->findOneByGroupingClassesTeacherAndName($groupingClasses, $teacher, $cohortName);
         $structure = "ENTStructureSIREN=" . $teacher->getSirenCourant() . ",ou=structures,dc=esco-centre,dc=fr";
 
-        if ($class !== null) {
+        if ($cohort !== null) {
             throw new AlreadyExistsException(
                 "La cohorte \"$cohortName\" de type " . Cohort::cohortTypeString($type)
                 . " pour l'enseignant \"" . $teacher->getFullName() . "\" existe déjà."
@@ -122,8 +122,8 @@ class TeacherService
             ->setSubjects(mb_substr(implode(', ', $subjects), 0, 255))
             ->setType($type)
             ->setLastSyncAt();
-        // Création côté wims d'une classe
-        $cohort = $this->wims->createClassInGroupingClassesFromObj($cohort);
+        // Création côté wims d'une cohorte
+        $cohort = $this->wims->createCohortInGroupingClassesFromObj($cohort);
         $this->em->persist($cohort);
 
         // Récupération des élèves dans le ldap

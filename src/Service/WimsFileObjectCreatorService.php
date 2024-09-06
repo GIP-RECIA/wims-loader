@@ -268,12 +268,12 @@ class WimsFileObjectCreatorService
     }
 
     /**
-     * Créé une nouvelle classe wims dans le groupement de classes
+     * Créé une nouvelle cohorte wims dans le groupement de classes
      *
-     * @param Cohort $cohort La classe wims a créer
+     * @param Cohort $cohort La cohorte wims a créer
      * @return Cohort La cohorte mise à jour avec les données wims
      */
-    public function createClassInGroupingClassesFromObj(Cohort $cohort): Cohort
+    public function createCohortInGroupingClassesFromObj(Cohort $cohort): Cohort
     {
         $idWims = $this->createClassInGroupingClasses(
             $this->fromObjUserToDataArray($cohort->getTeacher()),

@@ -79,6 +79,7 @@
 {% endif %}
 <div class="wimscenter actions">
     {% if can_sync %}<a href="{{ url('teacherSyncCohort', { 'idCohort': cohort.id }) }}" class="wims_button" role="button">{{ "button.synchronise"|trans }}</a>{% endif %}
+    {# <a href="{{ url('teacherForceFullSyncStudentsCohort', { 'idCohort': cohort.id }) }}" class="wims_button wims_warning" role="button">{{ "button.forceFullSynchroStudents"|trans }}</a> #}
     <a href="{{ url('teacher') }}" class="wims_button wims_secondary_button" role="button">{{ "button.back"|trans }}</a>
 </div>
 
