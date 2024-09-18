@@ -17,6 +17,7 @@
 namespace App\Service;
 
 use App\Entity\Cohort;
+use App\Entity\GroupingClasses;
 use App\Entity\User;
 use App\Enum\CohortType;
 use App\Repository\CohortRepository;
@@ -32,6 +33,7 @@ class StudentService
         private LdapService $ldapService,
         private CohortRepository $cohortRepo,
         private UserRepository $userRepo,
+        private WimsFileObjectService $wimsFileObjectService
     ) {}
 
     /**
@@ -135,5 +137,24 @@ class StudentService
         $res['ldapUnsync'] = array_diff($uidInLdap, $uidInWims);
 
         return $res;
+    }
+
+    /**
+     * Récupère les différentes cohortes accessibles par un élève dans un établissement
+     *
+     * @param GroupingClasses $groupingClasses L'établissement
+     * @param User $student L'étudiant
+     * @return Cohort[] Un array contenant les différentes cohortes
+     */
+    public function getCohortsForStudentInGroupingClasses(GroupingClasses $groupingClasses, User $student): array
+    {
+        $idCohorts = $this->wimsFileObjectService->getIdCohortsOfStudentInGroupingClasses($groupingClasses, $student);
+
+        return $this->cohortRepo->findByIdWimsGroupingClassesAndIdWimsCohorts($groupingClasses, $idCohorts);
+
+        // ok 1 : trouver l'idwims du groupind clases
+        // 2 : consulter le fichier ".users/UID" et récupérer les fullid de la ligne "!set user_participate"
+        // 3 : rechercher dans la base wims-loader les fullid et reconstruire avec les données a afficher
+        //return $this->cohortRepo->findByGroupingClassesAndStudent($groupingClasses, $student);;
     }
 }

@@ -86,7 +86,7 @@ services:
                     class: ''
                     subclass: 'yes'
 
-    App\Service\WimsFileObjectCreatorService:
+    App\Service\WimsFileObjectService:
         arguments:
             $config:
                 directory_structure: '%env(resolve:DIRECTORY_STRUCTURE)%'

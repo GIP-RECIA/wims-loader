@@ -45,7 +45,7 @@ class StudentController extends AbstractWimsLoaderController
     {
         $user = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
-        $srcCohorts = $this->cohortRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
+        $srcCohorts = $this->StudentService->getCohortsForStudentInGroupingClasses($groupingClasses, $user);
         $autoRedirectStudent = $this->getParameter('app.autoRedirectStudent');
         $cohorts = ['classes' => [], 'groups' => []];
         $navigationBar = [['name' => $this->translator->trans('menu.studentZone')]];

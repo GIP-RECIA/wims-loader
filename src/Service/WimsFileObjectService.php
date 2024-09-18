@@ -24,12 +24,13 @@ use App\Exception\DirectoryAlreadyExistException;
 use App\Exception\InvalidClassException;
 use App\Exception\InvalidGroupingClassesException;
 use App\Exception\InvalidUserException;
+use Exception;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Twig\Environment;
 
-class WimsFileObjectCreatorService
+class WimsFileObjectService
 {
 
     public function __construct(
@@ -474,6 +475,54 @@ class WimsFileObjectCreatorService
         }
 
         $this->filesystem->dumpFile($filename, implode(PHP_EOL, $fileContents) . PHP_EOL);
+    }
+
+    /**
+     * Permet de récupérer la liste des FullId wims des cohortes de l'élève dans l'établissement
+     *
+     * @param GroupingClasses $groupingClasses L'établissement
+     * @param User $student L'élève
+     * @return string[] La liste des FullId wims
+     */
+    public function getIdCohortsOfStudentInGroupingClasses(GroupingClasses $groupingClasses, User $student): array
+    {
+        $idWims = $groupingClasses->getIdWims();
+        $filepath = $this->getRootFolder() . '/' . $groupingClasses->getIdWims() . '/.users/' . $student->getUid();
+        $startFullid = $groupingClasses->getIdWims() . '/';
+
+        // L'élève n'est actuellement inscrit dans aucune cohorte
+        if (!$this->filesystem->exists($filepath)) {
+            return [];
+        }
+
+        $handle = fopen($filepath, 'r');
+
+        if ($handle) {
+            // Lecture du fichier de l'utilisateur ligne par ligne
+            while (($line = fgets($handle)) != false) {
+                // Si on est sur la lign qui liste les cohortes de l'élève, on les liste et les retourne
+                if (str_starts_with($line, "!set user_participate=")) {
+                    fclose($handle);
+
+                    $fullids = explode(',', explode('=', $line)[1]);
+                    $res = [];
+
+                    foreach ($fullids as $fullid) {
+                        if (str_starts_with($fullid, $startFullid)) {
+                            $res[] = trim(explode('/', $fullid)[1]);
+                        }
+                    }
+
+                    return $res;
+                }
+            }
+
+            fclose($handle);
+        } else {
+            throw new Exception("Impossible d'ouvrir le fichier " . $filepath);
+        }
+
+        return [];
     }
 
     /**************************************************************************

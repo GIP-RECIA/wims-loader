@@ -37,7 +37,7 @@ class TeacherService
         private UserRepository $userRepo,
         private GroupingClassesRepository $groupingClassesRepo,
         private CohortRepository $cohortRepo,
-        private WimsFileObjectCreatorService $wims,
+        private WimsFileObjectService $wims,
         private CohortService $cohortService,
         private LdapService $ldapService,
     ) {}

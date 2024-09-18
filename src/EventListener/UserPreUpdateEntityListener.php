@@ -19,7 +19,7 @@ namespace App\EventListener;
 use App\Entity\User;
 use App\Repository\CohortRepository;
 use App\Repository\GroupingClassesRepository;
-use App\Service\WimsFileObjectCreatorService;
+use App\Service\WimsFileObjectService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
@@ -32,7 +32,7 @@ class UserPreUpdateEntityListener
     public function __construct(
         private GroupingClassesRepository $groupingClassesRepo,
         private CohortRepository $cohortRepo,
-        private WimsFileObjectCreatorService $wimsFileObjectCreatorService,
+        private WimsFileObjectService $wimsFileObjectCreatorService,
         private LoggerInterface $logger,
     ) {
     }

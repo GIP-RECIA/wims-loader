@@ -18,7 +18,7 @@ namespace App\Command;
 
 use App\Repository\CohortRepository;
 use App\Service\CohortService;
-use App\Service\WimsFileObjectCreatorService;
+use App\Service\WimsFileObjectService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -37,7 +37,7 @@ class CheckCohortCommand extends Command
     public function __construct(
         private CohortService $cohortService,
         private CohortRepository $cohortRepo,
-        private WimsFileObjectCreatorService $wimsFileObjectCreatorService,
+        private WimsFileObjectService $wimsFileObjectCreatorService,
         private Filesystem  $filesystem = new Filesystem(),
     ) {
         parent::__construct();

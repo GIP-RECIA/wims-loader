@@ -64,7 +64,7 @@ class CohortRepository extends ServiceEntityRepository
      *
      * @param GroupingClasses $groupingClasses L'établissement dans lequel rechercher les cohort
      * @param User $student L'élève dont on cherche les cohortes
-     * @return array La liste des cohortes de l'élève dans l'établissement courant
+     * @return Cohort[] La liste des cohortes de l'élève dans l'établissement courant
      */
     public function findByGroupingClassesAndStudent(GroupingClasses $groupingClasses, User $student): array
     {
@@ -76,6 +76,30 @@ class CohortRepository extends ServiceEntityRepository
             ->setParameters([
                 'groupingClasses' => $groupingClasses,
                 'student' => $student,
+            ])
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Retourne la liste de toutes les cohortes, et de leurs enseignants attitrés,
+     * auxquels l'élève est inscrit dans l'établissement spécifié.
+     *
+     * @param GroupingClasses $groupingClasses
+     * @param string[] $idWimsCohorts Les idWims des cohortes
+     * @return Cohort[] La liste des cohortes de l'élève dans l'établissement courant
+     */
+    public function findByIdWimsGroupingClassesAndIdWimsCohorts(GroupingClasses $groupingClasses, array $idWimsCohorts): array
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.teacher', 't')
+            ->addSelect('t')
+            ->where('c.groupingClasses = :groupingClasses')
+            ->andWhere('c.idWims IN (:idWimsCohorts)')
+            ->orderBy('c.type')
+            ->setParameters([
+                'groupingClasses' => $groupingClasses,
+                'idWimsCohorts' => $idWimsCohorts
             ])
             ->getQuery()
             ->getResult();

@@ -27,7 +27,7 @@ class GroupingClassesService
     public function __construct(
         private EntityManagerInterface $em,
         private LdapService $ldapService,
-        private WimsFileObjectCreatorService $wimsFileObjectCreator
+        private WimsFileObjectService $wimsFileObjectCreator
     ) {}
 
     /**
