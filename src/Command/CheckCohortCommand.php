@@ -28,7 +28,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 
 #[AsCommand(
-    name: 'wims:check-cohort',
+    name: 'wims-loader:check-cohort',
     description: "Contrôle la cohérence d'une cohorte.",
     hidden: false,
 )]
