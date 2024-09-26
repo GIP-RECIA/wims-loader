@@ -54,62 +54,21 @@ class CreateModtoolAccount extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $uid = $input->getArgument('uid');
-
         $userData = $this->ldapService->findOneUserByUid($uid);
+        $login = $userData->getAttribute('ENTPersonLogin')[0];
+        $password = "changeme" . random_int(1000, 9999);
+
         $this->wimsFileObjectCreatorService->createModtoolAccount($uid,
-            $userData->getAttribute('ENTPersonLogin')[0],
-            "changeme" . random_int(1000, 9999),
+            $login,
+            $password,
             $userData->getAttribute('givenName')[0],
             $userData->getAttribute('sn')[0],
             $userData->getAttribute('mail')[0]
         );
 
+        $io->text("login : " . $login);
+        $io->text("password : " . $password);
+
         return Command::SUCCESS;
-
-        /*if (!$this->cohortService->isFullIdConsistent($fullIdCohort)) {
-            $io->error("Le format de l'identifiant de la cohorte est invalide");
-
-            return Command::FAILURE;
-        }
-
-        $io->title('Contrôle de cohérence de la cohorte ' . $fullIdCohort);
-
-        //$io->section("Nombre d'élèves");
-
-        $cohort = $this->cohortRepo->findCohortByFullIdWims($fullIdCohort);
-
-        if (null === $cohort) {
-            $io->error("La cohorte n'existe pas côté wims-loader");
-            $error = true;
-        }
-
-        $folderCohort = $this->wimsFileObjectCreatorService->getRootFolder() . "/" . $fullIdCohort;
-        $fileUserList = $folderCohort . "/.userlist";
-
-        if (!file_exists($fileUserList)) {
-            $io->error("La cohorte n'existe pas côté wims");
-            $error = true;
-        }
-
-        if ($error) {
-            return Command::FAILURE;
-        }
-
-        $nbStudentsInWimsLoader = count($cohort->getStudents());
-        $lignes = file($fileUserList, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
-        $nbStudentsInWims = count($lignes);
-
-        if ($nbStudentsInWimsLoader !== $nbStudentsInWims) {
-            $io->error("Le nombre d'élèves est différent entre wims et wims-loader :");
-            $io->error(" - wims-loader : " . $nbStudentsInWimsLoader);
-            $io->error(" - wims        : " . $nbStudentsInWims);
-
-            return Command::FAILURE;
-        }
-
-        $io->writeln("Le nombre d'élève est bien de $nbStudentsInWims dans wims et wims-loader");
-
-
-        return Command::SUCCESS;*/
     }
 }

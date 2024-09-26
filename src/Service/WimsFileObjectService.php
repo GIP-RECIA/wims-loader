@@ -549,7 +549,7 @@ class WimsFileObjectService
     {
         $filepath = $this->getRootFolder() . '/../.developers';
         $lines = [
-            "# " . $uid,
+            "# " . $uid . " - " . date('d/m/Y'),
             ":" . $login,
             $password,
             $firstName . "," . $lastName,
