@@ -41,6 +41,16 @@ class WimsFileObjectService
     }
 
     /**
+     * Permet de récupérer le répertoire racine du projet
+     *
+     * @return string La racine
+     */
+    public function getRootFolder(): string
+    {
+       return $this->config['directory_structure'];
+    }
+
+    /**
      * Génère un nouvel id pour une structure en contrôlant qu'il n'existe pas
      * encore sur le système de fichier
      *
@@ -500,7 +510,7 @@ class WimsFileObjectService
         if ($handle) {
             // Lecture du fichier de l'utilisateur ligne par ligne
             while (($line = fgets($handle)) != false) {
-                // Si on est sur la lign qui liste les cohortes de l'élève, on les liste et les retourne
+                // Si on est sur la ligne qui liste les cohortes de l'élève, on les liste et les retourne
                 if (str_starts_with($line, "!set user_participate=")) {
                     fclose($handle);
 
@@ -523,6 +533,36 @@ class WimsFileObjectService
         }
 
         return [];
+    }
+
+    /**
+     * Génère un compte Modtool
+     * @param string $uid
+     * @param string $login
+     * @param string $password
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $mail
+     * @return void
+     */
+    public function createModtoolAccount(string $uid, string $login, string $password, string $firstName, string $lastName, string $mail): void
+    {
+        $filepath = $this->getRootFolder() . '/../.developers';
+        $lines = [
+            "# " . $uid,
+            ":" . $login,
+            $password,
+            $firstName . "," . $lastName,
+            $mail,
+        ];
+
+        $content = "";
+
+        foreach ($lines as $line) {
+            $content .= $this::utf8ToWindows1252($line) . "\n";
+        }
+
+        file_put_contents($filepath, $content , FILE_APPEND);
     }
 
     /**************************************************************************
@@ -567,16 +607,6 @@ class WimsFileObjectService
     /**************************************************************************
      * Travail sur les dossiers et fichiers                                   *
      **************************************************************************/
-
-     /**
-      * Permet de récupérer le répertoire racine du projet
-      *
-      * @return string La racine
-      */
-     public function getRootFolder(): string
-     {
-        return $this->config['directory_structure'];
-     }
 
      /**
       * Permet de récupérer la valeur d'une clé dans un fichier
