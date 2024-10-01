@@ -210,6 +210,7 @@ services:
                         institution_name: "Nom de l'établissement"
                         type: 2
                         type_name: 'group'
+                        limit: 5000
                 # Revoir cette section pour la supprimer
                 teacher:
                     files_append:
