@@ -59,6 +59,20 @@ class LdapService
         return $results[0];
     }
 
+    public function findOneUserByMail(string $mail): Entry
+    {
+        $results = $this
+            ->search(self::USER, "(mail=$mail)")
+            ->toArray();
+        $count = count($results);
+
+        if ($count !== 1) {
+            throw new LdapResultException("Le résultat de la requête ldap devrait contenir les données d'un utilisateur, mais elle en a $count");
+        }
+
+        return $results[0];
+    }
+
     /**
      * Retourne un tableau d'Entry représentant les données des utilisateurs
      * dont les uids ont été fournit dans un tableau en entrée

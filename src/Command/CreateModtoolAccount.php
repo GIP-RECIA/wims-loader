@@ -45,29 +45,39 @@ class CreateModtoolAccount extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription("Permet d'ajouter un compte Modtool à partir de l'uid de l'utilisateur.")
-            ->addArgument('uid', InputArgument::REQUIRED, "L'uid de l'utilisateur")
+            ->setDescription("Permet d'ajouter un compte Modtool à partir de l'uid ou le mail de l'utilisateur.")
+            ->addArgument('uidOrMail', InputArgument::REQUIRED, "L'uid ou le mail de l'utilisateur")
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $uid = $input->getArgument('uid');
-        $userData = $this->ldapService->findOneUserByUid($uid);
+        $uidOrMail = $input->getArgument('uidOrMail');
+        $userData = null;
+
+        if (strpos($uidOrMail, '@') !== false) {
+            $userData = $this->ldapService->findOneUserByMail($uidOrMail);
+        } else {
+            $userData = $this->ldapService->findOneUserByUid($uidOrMail);
+        }
+
         $login = $userData->getAttribute('ENTPersonLogin')[0];
         $password = "changeme" . random_int(1000, 9999);
+        $mail = $userData->getAttribute('mail')[0];
 
-        $this->wimsFileObjectCreatorService->createModtoolAccount($uid,
+        $this->wimsFileObjectCreatorService->createModtoolAccount(
+            $userData->getAttribute('uid')[0],
             $login,
             $password,
             $userData->getAttribute('givenName')[0],
             $userData->getAttribute('sn')[0],
-            $userData->getAttribute('mail')[0]
+            $mail
         );
 
         $io->text("login : " . $login);
         $io->text("password : " . $password);
+        $io->text("mail : " . $mail);
 
         return Command::SUCCESS;
     }
