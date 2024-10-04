@@ -83,13 +83,12 @@ class StudentService
      * Permet de récupérer les étudiant d'une cohort par wims (wims-loader) et
      * par ldap et en fait la différence pour voir si tout est synchronisé
      *
-     * @param User $teacher
      * @param Cohort $cohort
      * @return array Un array contenant dans wims la liste des élèves côté wims,
      *  dans ldap la liste des élèves côté ldap et dans sync un bool pour
      *  spécifier si l'on est bien synchronisé.
      */
-    public function diffStudentFromTeacherAndCohort(User $teacher, Cohort $cohort): array
+    public function diffStudentFromTeacherAndCohort(Cohort $cohort): array
     {
         $res = [
             'wims' => [],
@@ -111,7 +110,7 @@ class StudentService
         $uidInWims = array_keys($res['wims']);
 
         // On récupère les étudiants de la cohorte côté ldap
-        $srcUsersInLdap = $this->ldapService->findStudentsBySirenAndCohortName($teacher->getSirenCourant(), $cohort->getName(), $cohort->getType());
+        $srcUsersInLdap = $this->ldapService->findStudentsBySirenAndCohortName($cohort->getGroupingClasses()->getSiren(), $cohort->getName(), $cohort->getType());
 
         usort($srcUsersInLdap, function(Entry $a, Entry $b) {
             $lastNameComparison = strcmp($a->getAttribute('sn')[0], $b->getAttribute('sn')[0]);

@@ -16,20 +16,44 @@
  */
 namespace App\Service;
 
+use App\Entity\Cohort;
 use App\Entity\User;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Service qui va gérer les Cohorts
  */
 class CohortService
 {
-    public function generateName(string $baseCohortName, User $teacher): string
-    {
-        return mb_substr($baseCohortName, 0, 50);
-    }
+    public function __construct(
+        private GroupingClassesService $groupingClassesService,
+        private StudentService $studentService,
+        private TranslatorInterface $translator,
+        private UrlGeneratorInterface $urlGenerator,
+    ) {}
 
     public function isFullIdConsistent(string $fullId): bool
     {
         return preg_match('/^\d{7}\/\d+$/', $fullId);
+    }
+
+    /**
+     * Retourne les détails d'une cohorte importée pour pouvoir contrôler
+     * les élèves importés dans la cohorte et déclencher une synchro au besoin.
+     * 
+     * @param Cohort $cohort La cohorte dont on souhaite les détails
+     * @return array Les données a afficher sur la cohorte
+     */
+    public function detailsCohort(Cohort $cohort): array
+    {
+        $groupingClasses = $cohort->getGroupingClasses();
+        $diffStudents = $this->studentService->diffStudentFromTeacherAndCohort($cohort);
+
+        return [
+            'groupingClasses' => $groupingClasses,
+            'cohort' => $cohort,
+            'diffStudents' => $diffStudents,
+        ];
     }
 }

@@ -21,6 +21,7 @@ use App\Enum\CohortType;
 use App\Form\NameType;
 use App\Repository\CohortRepository;
 use App\Repository\UserRepository;
+use App\Service\CohortNameService;
 use App\Service\CohortService;
 use App\Service\GroupingClassesService;
 use App\Service\LdapService;
@@ -44,9 +45,10 @@ class TeacherController extends AbstractWimsLoaderController
     public function __construct(
         private AuthorizationCheckerInterface $authorizationChecker,
         private GroupingClassesService $groupingClassesService,
-        private StudentService $StudentService,
+        private StudentService $studentService,
         private TeacherService $teacherService,
         private CohortRepository $cohortRepo,
+        private CohortNameService $cohortNameService,
         private CohortService $cohortService,
         private UserRepository $userRepo,
         private LdapService $ldapService,
@@ -82,7 +84,7 @@ class TeacherController extends AbstractWimsLoaderController
         }
 
         foreach ($cohorts['classes'] as $baseClassName) {
-            if (!in_array($this->cohortService->generateName($baseClassName, $user), $importedClassesName)) {
+            if (!in_array($this->cohortNameService->generateName($baseClassName, $user), $importedClassesName)) {
                 $form = $this->createForm(NameType::class, [
                     'name' => $baseClassName], [
                     'action' => $this->generateUrl('teacherCreateClass'),
@@ -96,7 +98,7 @@ class TeacherController extends AbstractWimsLoaderController
         }
 
         foreach ($cohorts['groups'] as $baseGroupName) {
-            if (!in_array($this->cohortService->generateName($baseGroupName, $user), $importedGroupsName)) {
+            if (!in_array($this->cohortNameService->generateName($baseGroupName, $user), $importedGroupsName)) {
                 $form = $this->createForm(NameType::class, [
                     'name' => $baseGroupName], [
                     'action' => $this->generateUrl('teacherCreateGroup'),
@@ -157,10 +159,8 @@ class TeacherController extends AbstractWimsLoaderController
         #[MapEntity(id: 'idCohort')] Cohort $cohort
         ): array
     {
-        $teacher = $this->getUserFromSecurity($security);
-        $groupingClasses = $this->groupingClassesService->loadGroupingClasses($teacher->getSirenCourant());
-        $diffStudents = $this->StudentService->diffStudentFromTeacherAndCohort($teacher, $cohort);
-        $navigationBar = [
+        $res = $this->cohortService->detailsCohort($cohort);
+        $res['navigationBar'] = [
             [
                 'name' => $this->translator->trans('menu.teacherZone'),
                 'url' => $this->generateUrl('teacher'),
@@ -168,13 +168,8 @@ class TeacherController extends AbstractWimsLoaderController
                 'name' => $this->translator->trans('cohortDetails.title'),
             ]
         ];
-
-        return [
-            'groupingClasses' => $groupingClasses,
-            'navigationBar' => $navigationBar,
-            'cohort' => $cohort,
-            'diffStudents' => $diffStudents,
-        ];
+        
+        return $res;
     }
 
     /**
@@ -191,7 +186,7 @@ class TeacherController extends AbstractWimsLoaderController
     {
         $teacher = $this->getUserFromSecurity($security);
         $this->logger->info("Synchronisation cohort $cohort for teacher $teacher");
-        $diffStudents = $this->StudentService->diffStudentFromTeacherAndCohort($teacher, $cohort);
+        $diffStudents = $this->studentService->diffStudentFromTeacherAndCohort($cohort);
 
         try {
             if (sizeof($diffStudents['ldapUnsync']) > 0) {

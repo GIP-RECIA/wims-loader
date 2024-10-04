@@ -20,7 +20,7 @@ use App\Entity\Cohort;
 use App\Entity\GroupingClasses;
 use App\Entity\User;
 use App\Enum\CohortType;
-use App\Service\CohortService;
+use App\Service\CohortNameService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -36,7 +36,7 @@ class CohortRepository extends ServiceEntityRepository
 {
     public function __construct(
         private ManagerRegistry $registry,
-        private CohortService $cohortService,
+        private CohortNameService $cohortNameService,
         )
     {
         parent::__construct($registry, Cohort::class);
@@ -54,7 +54,7 @@ class CohortRepository extends ServiceEntityRepository
         return $this->findOneBy([
             'groupingClasses' => $groupingClasses,
             'teacher' => $teacher,
-            'name' => $this->cohortService->generateName($name, $teacher)
+            'name' => $this->cohortNameService->generateName($name, $teacher)
         ]);
     }
 
@@ -168,7 +168,7 @@ class CohortRepository extends ServiceEntityRepository
             ->innerJoin('c.groupingClasses', 'gc')
             ->innerJoin('c.teacher', 't')
             ->innerJoin('c.students', 's')
-            ->select('gc.name as gc_name, gc.uai as uai, c.name as c_name, t.lastName as lastName, t.firstName as firstName, c.subjects as subjects, COUNT(s.id) as nb_students, CONCAT(gc.idWims, \'/\', c.idWims) as id_wims, c.type as type')
+            ->select('gc.name as gc_name, gc.uai as uai, c.name as c_name, t.lastName as lastName, t.firstName as firstName, c.subjects as subjects, COUNT(s.id) as nb_students, CONCAT(gc.idWims, \'/\', c.idWims) as id_wims, c.type as type, c.id as id')
             ->groupBy('c.id')
             ->getQuery()
             ->getArrayResult();

@@ -13,6 +13,7 @@ menu:
   navigation: Navigation
   teacherZone: Zone Enseignant
   studentZone: Zone Élève
+  adminZone: Zone administrateur
   admin: Administration
   adminCohorts: Administration des cohortes
   home: Accueil

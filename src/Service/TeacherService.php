@@ -38,7 +38,7 @@ class TeacherService
         private GroupingClassesRepository $groupingClassesRepo,
         private CohortRepository $cohortRepo,
         private WimsFileObjectService $wims,
-        private CohortService $cohortService,
+        private CohortNameService $cohortNameService,
         private LdapService $ldapService,
     ) {}
 
@@ -118,7 +118,7 @@ class TeacherService
         $cohort = (new Cohort())
             ->setTeacher($teacher)
             ->setGroupingClasses($groupingClasses)
-            ->setName($this->cohortService->generateName($cohortName, $teacher))
+            ->setName($this->cohortNameService->generateName($cohortName, $teacher))
             ->setSubjects(mb_substr(implode(', ', $subjects), 0, 255))
             ->setType($type)
             ->setLastSyncAt();

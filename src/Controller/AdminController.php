@@ -16,17 +16,23 @@
  */
 namespace App\Controller;
 
+use App\Entity\Cohort;
 use App\Repository\CohortRepository;
+use App\Service\CohortService;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractWimsLoaderController
 {
     public function __construct(
         private CohortRepository $cohortRepo,
+        private CohortService $cohortService,
+        private TranslatorInterface $translator,
     ) {}
 
     /**
@@ -42,6 +48,33 @@ class AdminController extends AbstractWimsLoaderController
         $data = $this->cohortRepo->findAllData();
         return [
             'data' => $data,
+            'navigationBar' => [[
+                'name' => $this->translator->trans('menu.adminZone'),
+            ]]
         ];
+    }
+
+    /**
+     * Route affichant les détails d'une cohorte importée pour pouvoir contrôler
+     * les élèves importés dans la cohorte et déclencher une synchro au besoin.
+     */
+    #[Route(path:"/admin/detailsCohort/{idCohort}", name:"adminDetailsCohort")]
+    #[Template('web/adminDetailsCohort.html.twig')]
+    public function detailsCohort(
+        Security $security,
+        #[MapEntity(id: 'idCohort')] Cohort $cohort
+        ): array
+    {
+        $res = $this->cohortService->detailsCohort($cohort);
+        $res['navigationBar'] = [
+            [
+                'name' => $this->translator->trans('menu.adminZone'),
+                'url' => $this->generateUrl('adminCohorts'),
+            ], [
+                'name' => $this->translator->trans('cohortDetails.title'),
+            ]
+        ];
+        
+        return $res;
     }
 }
