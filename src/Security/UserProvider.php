@@ -17,8 +17,10 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Service\LdapService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -27,11 +29,15 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserProvider extends ServiceEntityRepository implements UserProviderInterface
 {
+    private RequestStack $requestStack;
+    private LdapService $ldapService;
     private $uidAdmin;
-    public function __construct(ManagerRegistry $registry, string $entityClass, string $uidAdmin)
+    public function __construct(ManagerRegistry $registry, string $entityClass, string $uidAdmin, RequestStack $requestStack, LdapService $ldapService)
     {
         parent::__construct($registry, $entityClass);
         $this->uidAdmin = $uidAdmin;
+        $this->requestStack = $requestStack;
+        $this->ldapService = $ldapService;
     }
     
     /**
@@ -45,12 +51,29 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
      */
     public function loadUserByIdentifier($identifier, $attributs = null): UserInterface
     {
+        $em = $this->getEntityManager();
+        $isAdmin = $this->uidAdmin === $identifier;
+
+        if ($isAdmin) {
+            $request = $this->requestStack->getCurrentRequest();
+            $fakeUserUid = $request->headers->get('fakeUserUid');
+
+            // Si on charge un faux utilisateur en étant qu'admin
+            if ($fakeUserUid !== null) {
+                $ldapUserData = $this->ldapService->findOneUserByUid($fakeUserUid);
+
+                return $em->getRepository(User::class)->findOneByUid($fakeUserUid)
+                    ->setSirenCourant($ldapUserData->getAttribute("ESCOSIRENCourant")[0])
+                    ->setRoles($this->calculateRoles($ldapUserData->getAttribute("ENTPersonProfils"), $identifier))
+                ;
+            }
+        }
+
         // Dans le cas où l'on n'a pas les informations du ticket cas, on retourne un user vide
         if ($attributs == null) {
             return new User();
         }
 
-        $em = $this->getEntityManager();
         $user = $em->getRepository(User::class)->findOneByUid($identifier);
         $firstName = mb_substr($attributs['firstName'], 0, 60);
         $lastName = mb_substr($attributs['lastName'], 0, 60);
@@ -76,39 +99,7 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
         $em->flush();
         
         $user->setSirenCourant($attributs['sirenCourant']);
-        $roles = [];
-
-        if ($identifier === '__NO_USER__') {
-            $roles = array('ROLE_ANON');
-        } else {
-            $roles = array('ROLE_ANON', 'ROLE_USER');
-
-            if ($attributs !== null) {
-                if (array_key_exists('profils', $attributs)) {
-                    foreach ($attributs['profils'] as $profil) {
-                        switch ($profil) {
-                            case 'National_ELV':
-                                $roles[] = 'ROLE_ELV';
-                                break;
-                            case 'National_ENS':
-                                $roles[] = 'ROLE_ENS';
-                                break;
-                            case 'National_DOC':
-                                $roles[] = 'ROLE_DOC';
-                                break;
-                            case 'National_COL':
-                                $roles[] = 'ROLE_COL';
-                                break;
-                        }
-                    } 
-                }
-            }
-        }
-
-        if ($this->uidAdmin === $identifier) {
-            $roles[] = 'ROLE_ADMIN';
-        }
-
+        $roles = $this->calculateRoles($attributs['profils'], $identifier);
         $user->setRoles($roles);
 
         return $user;
@@ -150,5 +141,39 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
     public function supportsClass(string $class): bool
     {
         return User::class === $class || is_subclass_of($class, User::class);
+    }
+
+    private function calculateRoles(array $profils, string $identifier): array
+    {
+        $roles = [];
+
+        if ($identifier === '__NO_USER__') {
+            $roles = ['ROLE_ANON'];
+        } else {
+            $roles = ['ROLE_ANON', 'ROLE_USER'];
+
+            foreach ($profils as $profil) {
+                switch ($profil) {
+                    case 'National_ELV':
+                        $roles[] = 'ROLE_ELV';
+                        break;
+                    case 'National_ENS':
+                        $roles[] = 'ROLE_ENS';
+                        break;
+                    case 'National_DOC':
+                        $roles[] = 'ROLE_DOC';
+                        break;
+                    case 'National_COL':
+                        $roles[] = 'ROLE_COL';
+                        break;
+                }
+            }
+        }
+
+        if ($this->uidAdmin === $identifier) {
+            $roles[] = 'ROLE_ADMIN';
+        }
+
+        return $roles;
     }
 }
