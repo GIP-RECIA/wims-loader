@@ -56,7 +56,7 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
 
         if ($isAdmin) {
             $request = $this->requestStack->getCurrentRequest();
-            $fakeUserUid = $request->headers->get('fakeUserUid');
+            $fakeUserUid = $request->headers->get('Fake-User-Uid');
 
             // Si on charge un faux utilisateur en étant qu'admin
             if ($fakeUserUid !== null) {
