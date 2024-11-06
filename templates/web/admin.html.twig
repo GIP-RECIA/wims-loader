@@ -17,7 +17,7 @@
                 <th scope="col" role="columnheader">{{ "tableHeader.cohort"|trans }}</th>
                 <th scope="col" role="columnheader">{{ "tableHeader.teacher"|trans }}</th>
                 <th scope="col" role="columnheader">{{ "tableHeader.subjects"|trans }}</th>
-                <th scope="col" role="columnheader">{{ "tableHeader.nbStudents"|trans }}</th>
+                {# <th scope="col" role="columnheader">{{ "tableHeader.nbStudents"|trans }}</th> #}
                 <th scope="col" role="columnheader">{{ "tableHeader.idWims"|trans }}</th>
                 <th scope="col" role="columnheader">{{ "tableHeader.action"|trans }}</th>
             </tr>
@@ -30,7 +30,7 @@
                 <td>{{ line.c_name }}</td>
                 <td>{{ line.lastName }} {{ line.firstName }}</td>
                 <td>{{ line.subjects }}</td>
-                <td>{{ line.nb_students }}</td>
+                {# <td>{{ line.nb_students }}</td> #}
                 <td>{{ line.id_wims }}</td>
                 <td>
                     <a href="{{ url('adminDetailsCohort', {idCohort: line.id}) }}" class="wims_button" role="button">{{ "button.details"|trans }}</a>
