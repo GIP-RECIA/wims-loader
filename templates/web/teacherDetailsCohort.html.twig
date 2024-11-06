@@ -49,18 +49,18 @@
 <fieldset class="property_fields blockcenter bloc-students">
     <legend>{{ "cohortDetails.blockStudents"|trans }}</legend>
     <div class="two-col">
-        <p>{{ "cohortDetails.fieldsBlockStudents.studentsInWims"|trans }} :</p>
-        <ul>
-        {% for uid, userData in diffStudents.wims %}
-            <li class="{% if uid in diffStudents.wimsUnsync %}nok-warn{% else %}ok{% endif %}">{{ userData.fullName }}</li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="two-col">
         <p>{{ "cohortDetails.fieldsBlockStudents.studentsInLdap"|trans }} :</p>
         <ul>
         {% for uid, userData in diffStudents.ldap %}
             <li class="{% if uid in diffStudents.ldapUnsync %}nok-error{% else %}ok{% endif %}">{{ userData.fullName }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="two-col">
+        <p>{{ "cohortDetails.fieldsBlockStudents.studentsInWims"|trans }} :</p>
+        <ul>
+        {% for uid, userData in diffStudents.wims %}
+            <li class="{% if uid in diffStudents.wimsUnsync %}nok-warn{% else %}ok{% endif %}">{{ userData.fullName }}</li>
         {% endfor %}
         </ul>
     </div>
@@ -79,6 +79,7 @@
 {% endif %}
 <div class="wimscenter actions">
     {% if admin_user is defined and admin_user == true %}
+    {% if can_sync %}<a href="{{ url('adminSyncCohort', { 'idCohort': cohort.id }) }}" class="wims_button" role="button">{{ "button.synchronise"|trans }}</a>{% endif %}
     <a href="{{ url('adminCohorts') }}" class="wims_button wims_secondary_button" role="button">{{ "button.back"|trans }}</a>
     {% else %}
     {% if can_sync %}<a href="{{ url('teacherSyncCohort', { 'idCohort': cohort.id }) }}" class="wims_button" role="button">{{ "button.synchronise"|trans }}</a>{% endif %}

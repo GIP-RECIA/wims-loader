@@ -18,6 +18,8 @@ namespace App\Service;
 
 use App\Entity\Cohort;
 use App\Entity\User;
+use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -29,8 +31,10 @@ class CohortService
     public function __construct(
         private GroupingClassesService $groupingClassesService,
         private StudentService $studentService,
+        private TeacherService $teacherService,
         private TranslatorInterface $translator,
         private UrlGeneratorInterface $urlGenerator,
+        private LoggerInterface $logger,
     ) {}
 
     public function isFullIdConsistent(string $fullId): bool
@@ -55,5 +59,35 @@ class CohortService
             'cohort' => $cohort,
             'diffStudents' => $diffStudents,
         ];
+    }
+
+    /**
+     * Fait une synchro des élèves d'une cohorte sans effacer les élèves qui
+     * sont en trop. La synchro est réalisé par l'utilisateur spécifié
+     * 
+     * @param Cohort $cohort
+     * @param User $user
+     * @return string[] Un message de retour
+     */
+    public function syncCohort(Cohort $cohort, User $user): array|null
+    {
+        $message = null;
+        $this->logger->info("Synchronisation cohort $cohort for user $user");
+        $diffStudents = $this->studentService->diffStudentFromTeacherAndCohort($cohort);
+
+        try {
+            if (sizeof($diffStudents['ldapUnsync']) > 0) {
+                $this->teacherService->addStudentsInCohort($diffStudents['ldapUnsync'], $cohort);
+                $message = ['type' => 'info', 'msg' => $this->translator->trans('teacherZone.message.syncStudentsOk')];
+            } else {
+                $message = ['type' => 'info', 'msg' => $this->translator->trans('teacherZone.message.noStudentsToSync')];
+            }
+        } catch (Exception $e) {
+            $this->logger->error("Error when synching cohort $cohort for user $user");
+            $this->logger->error($e);
+            $message = ['type' => 'alert', 'msg' => $this->translator->trans('teacherZone.message.syncStudentsNok')];
+        }
+
+        return $message;
     }
 }

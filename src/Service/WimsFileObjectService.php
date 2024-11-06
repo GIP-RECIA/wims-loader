@@ -270,9 +270,9 @@ class WimsFileObjectService
             $this->filesystem->appendToFile($fileUsersUid, $content);
         } else {
             // Ici on modifie seulement la ligne en question
-            $content = $this::Windows1252ToUtf8(file_get_contents($fileUsersUid));
+            $content = self::Windows1252ToUtf8(file_get_contents($fileUsersUid));
             $content = preg_replace('/^(!set user_supervise=.*)$/m', '$1,' . $id . '/' . $idClass, $content);
-            file_put_contents($fileUsersUid, $this::utf8ToWindows1252($content));
+            file_put_contents($fileUsersUid, self::utf8ToWindows1252($content));
         }
 
         return $idClass;
@@ -341,9 +341,9 @@ class WimsFileObjectService
 
             // Mise à jour de l'élève au niveau du groupement de classes
             $fileUsersUid = $groupingClassesFolder . '/.users' . '/' . $uid;
-            $content = $this::Windows1252ToUtf8(file_get_contents($fileUsersUid));
+            $content = self::Windows1252ToUtf8(file_get_contents($fileUsersUid));
             $content = preg_replace('/^(!set user_participate=.*)$/m', '$1,' . $id . '/' . $idClass, $content);
-            file_put_contents($fileUsersUid, $this::utf8ToWindows1252($content));
+            file_put_contents($fileUsersUid, self::utf8ToWindows1252($content));
         }
 
         // Insertion de l'élève au niveau de la classe
@@ -359,7 +359,7 @@ class WimsFileObjectService
         $data = [];
 
         foreach ($lines as $line) {
-            $line = ltrim($line, ':');
+            $line = ltrim(self::Windows1252ToUtf8($line), ':');
             $elems = explode(',', $line);
             $data[$elems[2]] = ['nom' => $elems[0], 'prenom' => $elems[1]];
         }
@@ -407,6 +407,33 @@ class WimsFileObjectService
             $cohort->getGroupingClasses()->getIdWims(),
             $cohort->getIdWims()
         );
+    }
+
+    /**
+     * Permet de récupérer une liste d'élèves à partir du fichier .userlist de
+     * la cohorte dans wims
+     * 
+     * @param Cohort $cohort La cohorte dont on souhaite récupérer les élèves
+     * @return string[][] La liste des élèves avec uid, nom, prénom
+     */
+    public function readUsersInClass(Cohort $cohort): array
+    {
+        $res = [];
+        $fileName = $this->getRootFolder() . '/' . $cohort->getFullIdWims() . '/.userlist';
+
+        if (!$this->filesystem->exists($fileName)) {
+            throw new \Exception("Le fichier '$fileName' n'existe pas.");
+        }
+
+        $fileContents = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        foreach ($fileContents as $key => $line) {
+            $line = ltrim(self::Windows1252ToUtf8($line), ':');
+            $arr = explode(',', $line);
+            $res[$arr[2]] = ['firstName' => $arr[1], 'lastName' => $arr[0]];
+        }
+
+        return $res;
     }
 
     /**
@@ -462,29 +489,31 @@ class WimsFileObjectService
      */
     public function replaceDataInUidFile(string $fileName, string $firstName, string $lastName, string $mail): void
     {
-        $filename = $this->getRootFolder() . '/' . $fileName;
+        $fileName = $this->getRootFolder() . '/' . $fileName;
 
-        if (!$this->filesystem->exists($filename)) {
+        if (!$this->filesystem->exists($fileName)) {
             throw new \Exception("Le fichier '$fileName' n'existe pas.");
         }
 
-        $fileContents = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $fileContents = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $searchLastName = '!set user_lastname=';
         $searchFirstName = '!set user_firstname=';
         $searchMail = '!set user_email=';
 
         // Parcourir chaque ligne et remplacer la ligne cible
         foreach ($fileContents as $key => $line) {
+            $line = self::Windows1252ToUtf8($line);
+
             if (str_starts_with($line, $searchLastName)) {
-                $fileContents[$key] = $this->utf8ToWindows1252($searchLastName . $lastName);
+                $fileContents[$key] = self::utf8ToWindows1252($searchLastName . $lastName);
             } else if (str_starts_with($line, $searchFirstName)) {
-                $fileContents[$key] = $this->utf8ToWindows1252($searchFirstName . $firstName);
+                $fileContents[$key] = self::utf8ToWindows1252($searchFirstName . $firstName);
             } else if (str_starts_with($line, $searchMail)) {
-                $fileContents[$key] = $this->utf8ToWindows1252($searchMail . $mail);
+                $fileContents[$key] = self::utf8ToWindows1252($searchMail . $mail);
             }
         }
 
-        $this->filesystem->dumpFile($filename, implode(PHP_EOL, $fileContents) . PHP_EOL);
+        $this->filesystem->dumpFile($fileName, implode(PHP_EOL, $fileContents) . PHP_EOL);
     }
 
     /**
@@ -559,7 +588,7 @@ class WimsFileObjectService
         $content = "";
 
         foreach ($lines as $line) {
-            $content .= $this::utf8ToWindows1252($line) . "\n";
+            $content .= self::utf8ToWindows1252($line) . "\n";
         }
 
         file_put_contents($filepath, $content , FILE_APPEND);
@@ -601,7 +630,7 @@ class WimsFileObjectService
     private function renderInWindows1252(string $template, array $data): string
     {
         $templateTwig = $this->twig->load($template);
-        return $this::utf8ToWindows1252($templateTwig->render($data));
+        return self::utf8ToWindows1252($templateTwig->render($data));
     }
 
     /**************************************************************************
@@ -620,7 +649,7 @@ class WimsFileObjectService
          // Vérifier si le fichier existe
          if ($this->filesystem->exists($file)) {
              // Lire le contenu du fichier en utilisant le bon encodage
-             $contenu = iconv('WINDOWS-1252', 'UTF-8', file_get_contents($file));
+             $contenu = self::Windows1252ToUtf8(file_get_contents($file));
  
              // Rechercher la ligne correspondante en utilisant une expression régulière
              if (preg_match('/^'.$key.'=(.*)$/m', $contenu, $matches)) {
@@ -648,7 +677,7 @@ class WimsFileObjectService
         foreach ($conf['files_append'] as $fileName) {
             $file = $folder . '/' . $fileName;
             $template = $this->twig->load($userType . '/'.$fileName.'.twig');
-            $content = $this::utf8ToWindows1252($template->render($data));
+            $content = self::utf8ToWindows1252($template->render($data));
             file_put_contents($file, $content , FILE_APPEND);
             $this->filesystem->chmod($file, $this->config['file_right']);
         }
@@ -677,24 +706,26 @@ class WimsFileObjectService
       */
      private function replaceFirstNameAndLastNameInFileList(string $fileName, string $uid, string $firstName, string $lastName, string $start = ""): void
      {
-         $filename = $this->getRootFolder() . '/' . $fileName;
+         $fileName = $this->getRootFolder() . '/' . $fileName;
  
-         if (!$this->filesystem->exists($filename)) {
+         if (!$this->filesystem->exists($fileName)) {
              throw new \Exception("Le fichier '$fileName' n'existe pas.");
          }
  
-         $fileContents = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+         $fileContents = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
          $search = ',' . $uid;
  
          // Parcourir chaque ligne et remplacer la ligne cible
          foreach ($fileContents as $key => $line) {
+            $line = self::Windows1252ToUtf8($line);
+
             if (str_ends_with($line, $search)) {
                 $newLine = $start . $lastName . ',' . $firstName . ',' . $uid;
-                $fileContents[$key] = $this->utf8ToWindows1252($newLine);
+                $fileContents[$key] = self::utf8ToWindows1252($newLine);
             }
          }
  
-         $this->filesystem->dumpFile($filename, implode(PHP_EOL, $fileContents) . PHP_EOL);
+         $this->filesystem->dumpFile($fileName, implode(PHP_EOL, $fileContents) . PHP_EOL);
      }
 
 
@@ -991,6 +1022,7 @@ class WimsFileObjectService
         // On commence par vérifier le fichier $fileList
         $regex = '/^[^,]*,[^,]*,' . $uid . '$/m';
 
+        // Pas besoin de conversion d'encodage car les uid n'utilisent que des caractères classiques
         if (!$this->filesystem->exists($fileList) || !preg_match($regex, file_get_contents($fileList))) {
             return false;
         }
@@ -998,6 +1030,7 @@ class WimsFileObjectService
         // Puis le fichier $fileListExternal
         $regex = '/^' . $uid . ':' . $uid . '$/m';
 
+        // Pas besoin de conversion d'encodage car les uid n'utilisent que des caractères classiques
         if (!$this->filesystem->exists($fileListExternal) || !preg_match($regex, file_get_contents($fileListExternal))) {
             return false;
         }
@@ -1051,6 +1084,7 @@ class WimsFileObjectService
         $regex = '#^!set user_participate=((|.+,)'.$class.'(|,.+))$#m';
 
         // Normalement l'existence du fichier a déjà été testé avant
+        // pas besoin de conversion d'encodage car l'il de la class n'utilise que des caractères classiques
         if (!preg_match($regex, file_get_contents($file))) {
             return false;
         }
@@ -1123,9 +1157,8 @@ class WimsFileObjectService
         foreach ($conf['files'] as $fileName) {
             $file = $folder.'/'.$fileName;
             $template = $this->twig->load('structure/'.$fileName.'.twig');
-            $content = $template->render($data);
-            $contentWindows1252 = iconv('UTF-8', 'WINDOWS-1252', $content);
-            file_put_contents($file, $contentWindows1252);
+            $content = self::utf8ToWindows1252($template->render($data));
+            file_put_contents($file, $content);
             $this->filesystem->chmod($file, $this->config['file_right']);
         }
     }

@@ -97,13 +97,12 @@ class StudentService
             'ldapUnsync' => [],
         ];
 
-        // On récupère les étudiants de la cohorte côté wims (wims-loader)
-        $srcUsersInWims = $this->userRepo->findByCohort($cohort);
+        // On récupère les étudiants de la cohorte côté wims
+        $srcUsersInWims = $this->wimsFileObjectService->readUsersInClass($cohort);
 
-        foreach ($srcUsersInWims as $user) {
-            $res['wims'][$user->getUid()] = [
-                'user' => $user,
-                'fullName' => $user->getLastName() . ' ' . $user->getFirstName(),
+        foreach ($srcUsersInWims as $uid => $user) {
+            $res['wims'][$uid] = [
+                'fullName' => $user['lastName'] . ' ' . $user['firstName'],
             ];
         }
 

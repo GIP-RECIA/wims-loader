@@ -22,6 +22,7 @@ use App\Service\CohortService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -76,5 +77,29 @@ class AdminController extends AbstractWimsLoaderController
         ];
         
         return $res;
+    }
+
+    /**
+     * Route réalisant une nouvelle synchro sur la cohorte
+     * 
+     * @param Cohort $cohort La cohorte a synchroniser
+     * @return Response La redirection vers la page de détails
+     */
+    #[Route(path:"/admin/syncCohort/{idCohort}", name:"adminSyncCohort")]
+    public function syncClass(
+        Security $security,
+        #[MapEntity(id: 'idCohort')] Cohort $cohort
+        ): Response
+    {
+        $user = $this->getUserFromSecurity($security);
+        $message = $this->cohortService->syncCohort($cohort, $user);
+
+        if (null !== $message) {
+            $this->addFlash($message['type'], $message['msg']);
+        }
+        
+        return $this->redirectToRoute('adminDetailsCohort', [
+            'idCohort' => $cohort->getId(),
+        ]);
     }
 }

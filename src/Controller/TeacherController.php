@@ -185,22 +185,12 @@ class TeacherController extends AbstractWimsLoaderController
         ): Response
     {
         $teacher = $this->getUserFromSecurity($security);
-        $this->logger->info("Synchronisation cohort $cohort for teacher $teacher");
-        $diffStudents = $this->studentService->diffStudentFromTeacherAndCohort($cohort);
+        $message = $this->cohortService->syncCohort($cohort, $teacher);
 
-        try {
-            if (sizeof($diffStudents['ldapUnsync']) > 0) {
-                $this->teacherService->addStudentsInCohort($diffStudents['ldapUnsync'], $cohort);
-                $this->addFlash('info', $this->translator->trans('teacherZone.message.syncStudentsOk'));
-            } else {
-                $this->addFlash('info', $this->translator->trans('teacherZone.message.noStudentsToSync'));
-            }
-        } catch (Exception $e) {
-            $this->logger->error("Error when synching cohort $cohort for teacher $teacher");
-            $this->logger->error($e);
-            $this->addFlash('alert', $this->translator->trans('teacherZone.message.syncStudentsNok'));
+        if (null !== $message) {
+            $this->addFlash($message['type'], $message['msg']);
         }
-
+        
         return $this->redirectToRoute('teacherDetailsCohort', [
             'idCohort' => $cohort->getId(),
         ]);

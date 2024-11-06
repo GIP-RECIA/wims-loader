@@ -58,7 +58,7 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
             $request = $this->requestStack->getCurrentRequest();
             $fakeUserUid = $request->headers->get('Fake-User-Uid');
 
-            // Si on charge un faux utilisateur en étant qu'admin
+            // Si on charge un faux utilisateur en étant admin
             if ($fakeUserUid !== null) {
                 $ldapUserData = $this->ldapService->findOneUserByUid($fakeUserUid);
 
