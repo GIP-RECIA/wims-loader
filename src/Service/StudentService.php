@@ -126,7 +126,7 @@ class StudentService
                 $lastNameComparison = strcmp($a['lastName'], $b['lastName']);
     
                 if ($lastNameComparison === 0) {
-                    return strcmp($a->getAttribute('givenName')[0], $b->getAttribute('givenName')[0]);
+                    return strcmp($a['firstName'], $b['firstName']);
                 }
     
                 return $lastNameComparison;
