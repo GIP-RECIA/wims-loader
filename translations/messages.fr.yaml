@@ -12,6 +12,7 @@ button:
 menu:
   navigation: Navigation
   teacherZone: Zone Enseignant
+  teacherFaq: FAQ sur Wims
   studentZone: Zone Élève
   adminZone: Zone administrateur
   admin: Administration

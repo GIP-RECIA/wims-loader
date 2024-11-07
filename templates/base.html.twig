@@ -144,6 +144,11 @@
                     <div class="menuitem">
                         <a href="{{ url('teacher') }}"><span>{{ "menu.teacherZone"|trans }} </span></a>
                     </div>
+                        {% if external_url_teacher_faq is defined and external_url_teacher_faq is not empty %}
+                        <div class="menuitem">
+                            <a href="{{ external_url_teacher_faq }}" target="_blank"><span>{{ "menu.teacherFaq"|trans }} </span></a>
+                        </div>
+                        {% endif %}
                     {% endif %}
                     {% if is_granted('ROLE_ELV') %}
                     <div class="menuitem">
