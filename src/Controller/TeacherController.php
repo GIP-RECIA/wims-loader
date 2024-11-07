@@ -196,26 +196,6 @@ class TeacherController extends AbstractWimsLoaderController
         ]);
     }
 
-    // FIXME: a finir
-    /**
-     * Route permettant de forcer une synchro complète sur la cohorte (effacement et recréation des fichiers)
-     * 
-     * @param Cohort $cohort La cohorte a synchroniser
-     * @return Response La redirection vers la page de détails
-     */
-    #[Route(path:"/enseignant/forceFullSyncStudentsCohort/{idCohort}", name:"teacherForceFullSyncStudentsCohort")]
-    public function forceFullSyncStudents(
-        Security $security,
-        #[MapEntity(id: 'idCohort')] Cohort $cohort
-        ): Response
-    {
-        // TODO: ajouter le flash
-        $this->addFlash('info', $this->translator->trans('home.title'));
-        return $this->redirectToRoute('teacherDetailsCohort', [
-            'idCohort' => $cohort->getId(),
-        ]);
-    }
-
     /**
      * Route permettant de réaliser l'import d'une cohorte. Cette route n'affiche
      * rien car elle fait directement une redirection vers la page de l'enseignant

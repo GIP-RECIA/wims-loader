@@ -35,6 +35,7 @@ class CohortService
         private TranslatorInterface $translator,
         private UrlGeneratorInterface $urlGenerator,
         private LoggerInterface $logger,
+        private WimsFileObjectService $wimsFileObjectService,
     ) {}
 
     public function isFullIdConsistent(string $fullId): bool
@@ -89,5 +90,17 @@ class CohortService
         }
 
         return $message;
+    }
+
+    /**
+     * Efface tous les utilisateurs de la cohorte.
+     * FIXME: cette fonction n'efface pas les liens vers la cohorte dans les fichiers des utilisateurs, il faudra corriger cela
+     * 
+     * @param Cohort $cohort La cohorte que l'on souhaite vider
+     * @return void
+     */
+    public function emptyCohort(Cohort $cohort): void
+    {
+        $this->wimsFileObjectService->emptyClasses($cohort);
     }
 }

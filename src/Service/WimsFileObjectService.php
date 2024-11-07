@@ -615,6 +615,23 @@ class WimsFileObjectService
         return $res;
     }
 
+
+    /**
+     * Efface tous les utilisateurs de la cohorte.
+     * FIXME: cette fonction n'efface pas les liens vers la cohorte dans les fichiers des utilisateurs, il faudra corriger cela
+     * 
+     * @param Cohort $cohort La cohorte que l'on souhaite vider
+     * @return void
+     */
+    public function emptyClasses(Cohort $cohort): void
+    {
+        $files = ['.userlist', '.userlist_external', '.usernextlist', '.userprevlist'];
+
+        foreach ($files as $file) {
+            file_put_contents($this->getRootFolder() . '/' . $cohort->getFullIdWims() . '/' . $file, '');
+        }
+    }
+
     /**************************************************************************
      * Encodage                                                               *
      **************************************************************************/

@@ -102,4 +102,29 @@ class AdminController extends AbstractWimsLoaderController
             'idCohort' => $cohort->getId(),
         ]);
     }
+
+    /**
+     * Route permettant de forcer une synchro complète sur la cohorte (effacement et recréation des fichiers)
+     * 
+     * @param Cohort $cohort La cohorte a synchroniser
+     * @return Response La redirection vers la page de détails
+     */
+    #[Route(path:"/admin/forceFullSyncStudentsCohort/{idCohort}", name:"adminForceFullSyncStudentsCohort")]
+    public function forceFullSyncStudents(
+        Security $security,
+        #[MapEntity(id: 'idCohort')] Cohort $cohort
+        ): Response
+    {
+        $this->cohortService->emptyCohort($cohort);
+        $user = $this->getUserFromSecurity($security);
+        $message = $this->cohortService->syncCohort($cohort, $user);
+
+        if (null !== $message) {
+            $this->addFlash($message['type'], $message['msg']);
+        }
+
+        return $this->redirectToRoute('adminDetailsCohort', [
+            'idCohort' => $cohort->getId(),
+        ]);
+    }
 }
