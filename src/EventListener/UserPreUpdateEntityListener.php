@@ -32,7 +32,7 @@ class UserPreUpdateEntityListener
     public function __construct(
         private GroupingClassesRepository $groupingClassesRepo,
         private CohortRepository $cohortRepo,
-        private WimsFileObjectService $wimsFileObjectCreatorService,
+        private WimsFileObjectService $wimsFileObjectService,
         private LoggerInterface $logger,
     ) {
     }
@@ -45,12 +45,12 @@ class UserPreUpdateEntityListener
         $mail = $this->getValueOrDefault($dataChange, 'mail', $user->getMail());
 
         // Récupérer les établissements en tant qu'enseignant et boucler
-        $idWimsGroupingClasses = $this->groupingClassesRepo->findIdWimsGroupingClassesByTeacher($user);
+        $idsWimsGroupingClasses = $this->groupingClassesRepo->findIdWimsGroupingClassesByTeacher($user);
 
         // Mettre à jour l'enseignant dans tous les établissement où il est
         //  présent dans le fichier .teacherlist
-        foreach ($idWimsGroupingClasses as $idWims) {
-            $this->wimsFileObjectCreatorService
+        foreach ($idsWimsGroupingClasses as $idWims) {
+            $this->wimsFileObjectService
                 ->replaceFirstNameAndLastNameInTeacherList(
                     $idWims,
                     $user->getUid(),
@@ -59,44 +59,40 @@ class UserPreUpdateEntityListener
                 );
         }
 
-        $idsWims = $this->cohortRepo->findFullWimsIdOfStudentClass($user);
-        $lastIdWimsGroupingClasses = null;
+        $idsWimsGroupingClasses = $this->wimsFileObjectService->findGroupingClassesIdWimsOfUser($user);
 
-        foreach ($idsWims as $idWims) {
-            $idWimsGroupingClasses = $idWims['idWimsGroupingClasses'];
-            $idWimsClasses = $idWims['idWimsClasses'];
-
-            // Si on est sur un établissement que l'on n'a pas encore traité
-            //  On réalise les modifications du userlist
-            if ($lastIdWimsGroupingClasses != $idWimsGroupingClasses) {
-                $lastIdWimsGroupingClasses = $idWimsGroupingClasses;
-
-                $this->wimsFileObjectCreatorService
-                    ->replaceFirstNameAndLastNameInUserList(
-                        $idWimsGroupingClasses,
-                        $user->getUid(),
-                        $firstName,
-                        $lastName,
-                    );
-                
-
-                // Et on fini par le fichier ayant le nom de l'uid
-                $this->wimsFileObjectCreatorService
-                ->replaceDataInUidFile(
-                    $idWimsGroupingClasses . '/.users/' . $user->getUid(),
-                    $firstName, $lastName, $mail
-                );
-            }
-
-            // Puis on traite le userlist de la classe
-            $this->wimsFileObjectCreatorService
+        // Pour chaque établissement de l'élève
+        foreach($idsWimsGroupingClasses as $idWimsGroupingClasses) {
+            // On met à jour ses données dans le fichier .userlist de l'établissement
+            $this->wimsFileObjectService
                 ->replaceFirstNameAndLastNameInUserList(
-                    $idWimsGroupingClasses . '/' . $idWimsClasses,
+                    $idWimsGroupingClasses,
                     $user->getUid(),
                     $firstName,
                     $lastName,
                 );
 
+            // Et on fini par le fichier ayant le nom de l'uid
+            $this->wimsFileObjectService
+            ->replaceDataInUidFile(
+                $idWimsGroupingClasses . '/.users/' . $user->getUid(),
+                $firstName, $lastName, $mail
+            );
+
+            $groupingClasses = $this->groupingClassesRepo->findOneByIdWims($idWimsGroupingClasses);
+            $idsWimsClasses = $this->wimsFileObjectService->getIdCohortsOfStudentInGroupingClasses($groupingClasses, $user);
+
+            // Pour chaque cohorte de l'élève
+            foreach($idsWimsClasses as $idWimsClasses) {
+                // On traite le userlist de la classe
+                $this->wimsFileObjectService
+                    ->replaceFirstNameAndLastNameInUserList(
+                        $idWimsGroupingClasses . '/' . $idWimsClasses,
+                        $user->getUid(),
+                        $firstName,
+                        $lastName,
+                    );
+            }
         }
     }
 

@@ -59,31 +59,8 @@ class CohortRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retourne la liste de toutes les cohorts auxquels l'élève est inscrit dans
-     * l'établissement spécifié.
-     *
-     * @param GroupingClasses $groupingClasses L'établissement dans lequel rechercher les cohort
-     * @param User $student L'élève dont on cherche les cohortes
-     * @return Cohort[] La liste des cohortes de l'élève dans l'établissement courant
-     */
-    public function findByGroupingClassesAndStudent(GroupingClasses $groupingClasses, User $student): array
-    {
-        return $this->createQueryBuilder('c')
-            ->innerJoin('c.students', 's')
-            ->where('c.groupingClasses = :groupingClasses')
-            ->andWhere('s = :student')
-            ->orderBy('c.type')
-            ->setParameters([
-                'groupingClasses' => $groupingClasses,
-                'student' => $student,
-            ])
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * Retourne la liste de toutes les cohortes, et de leurs enseignants attitrés,
-     * auxquels l'élève est inscrit dans l'établissement spécifié.
+     * Retourne la liste de toutes les cohortes dont on a passé les idWims en
+     * paramètre, et leurs enseignants attitrés dans l'établissement spécifié.
      *
      * @param GroupingClasses $groupingClasses
      * @param string[] $idWimsCohorts Les idWims des cohortes
@@ -135,26 +112,6 @@ class CohortRepository extends ServiceEntityRepository
             ->setParameters($parameters)
             ->getQuery()
             ->getResult();
-    }
-
-    /**
-     * Retourne la liste des idWims complet des cohortes dans lesquelles est
-     * présent l'étudiant.
-     *
-     * @param User $student L'étudiant dont on recherche les cohortes
-     * @return string[] Les idWims complet des cohortes de l'étudiant
-     */
-    public function findFullWimsIdOfStudentClass(User $student): array
-    {
-        return $this->createQueryBuilder('c')
-            ->innerJoin('c.groupingClasses', 'gc')
-            ->innerJoin('c.students', 's')
-            ->where('s = :student')
-            ->select('gc.idWims as idWimsGroupingClasses, c.idWims as idWimsClasses')
-            ->orderBy('gc.idWims')
-            ->setParameter('student', $student)
-            ->getQuery()
-            ->getArrayResult();
     }
 
     /**

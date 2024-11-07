@@ -37,7 +37,7 @@ class CheckCohortCommand extends Command
     public function __construct(
         private CohortService $cohortService,
         private CohortRepository $cohortRepo,
-        private WimsFileObjectService $wimsFileObjectCreatorService,
+        private WimsFileObjectService $wimsFileObjectService,
         private Filesystem  $filesystem = new Filesystem(),
     ) {
         parent::__construct();
@@ -74,7 +74,7 @@ class CheckCohortCommand extends Command
             $error = true;
         }
 
-        $folderCohort = $this->wimsFileObjectCreatorService->getRootFolder() . "/" . $fullIdCohort;
+        $folderCohort = $this->wimsFileObjectService->getRootFolder() . "/" . $fullIdCohort;
         $fileUserList = $folderCohort . "/.userlist";
 
         if (!file_exists($fileUserList)) {

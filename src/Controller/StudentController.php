@@ -20,6 +20,7 @@ use App\Enum\CohortType;
 use App\Repository\CohortRepository;
 use App\Service\GroupingClassesService;
 use App\Service\StudentService;
+use App\Service\WimsFileObjectService;
 use App\Service\WimsUrlGeneratorService;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +35,7 @@ class StudentController extends AbstractWimsLoaderController
     public function __construct(
         private AuthorizationCheckerInterface $authorizationChecker,
         private GroupingClassesService $groupingClassesService,
-        private StudentService $StudentService,
+        private StudentService $studentService,
         private CohortRepository $cohortRepo,
         private WimsUrlGeneratorService $wimsUrlGeneratorService,
         private TranslatorInterface $translator,
@@ -45,7 +46,7 @@ class StudentController extends AbstractWimsLoaderController
     {
         $user = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
-        $srcCohorts = $this->StudentService->getCohortsForStudentInGroupingClasses($groupingClasses, $user);
+        $srcCohorts = $this->studentService->getCohortsForStudentInGroupingClasses($groupingClasses, $user);
         $autoRedirectStudent = $this->getParameter('app.autoRedirectStudent');
         $cohorts = ['classes' => [], 'groups' => []];
         $navigationBar = [['name' => $this->translator->trans('menu.studentZone')]];

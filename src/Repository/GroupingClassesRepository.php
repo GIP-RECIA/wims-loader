@@ -48,6 +48,17 @@ class GroupingClassesRepository extends ServiceEntityRepository
     }
 
     /**
+     * Permet de récupérer un établissement à partir de son idWims
+     *
+     * @param string $idWims L'idWims de l'établissement
+     * @return GroupingClasses|null L'établissement s'il existe
+     */
+    public function findOneByIdWims(string $idWims): ?GroupingClasses
+    {
+        return $this->findOneBy(['idWims' => $idWims]);
+    }
+
+    /**
      * Permet de savoir si un enseignant est déjà enregistré dans un établissement
      *
      * @param GroupingClasses $groupingClasses L'établissement

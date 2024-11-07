@@ -102,7 +102,8 @@ class StudentService
 
         foreach ($srcUsersInWims as $uid => $user) {
             $res['wims'][$uid] = [
-                'fullName' => $user['lastName'] . ' ' . $user['firstName'],
+                'lastName' => $user['lastName'],
+                'firstName' => $user['firstName'],
             ];
         }
 
@@ -111,21 +112,25 @@ class StudentService
         // On récupère les étudiants de la cohorte côté ldap
         $srcUsersInLdap = $this->ldapService->findStudentsBySirenAndCohortName($cohort->getGroupingClasses()->getSiren(), $cohort->getName(), $cohort->getType());
 
-        usort($srcUsersInLdap, function(Entry $a, Entry $b) {
-            $lastNameComparison = strcmp($a->getAttribute('sn')[0], $b->getAttribute('sn')[0]);
-
-            if ($lastNameComparison === 0) {
-                return strcmp($a->getAttribute('givenName')[0], $b->getAttribute('givenName')[0]);
-            }
-
-            return $lastNameComparison;
-        });
-
         foreach ($srcUsersInLdap as $user) {
             $res['ldap'][strtolower($user->getAttribute('uid')[0])] = [
                 'user' => $user,
-                'fullName' => $user->getAttribute('sn')[0] . ' ' . $user->getAttribute('givenName')[0],
+                'lastName' => $user->getAttribute('sn')[0],
+                'firstName' => $user->getAttribute('givenName')[0],
             ];
+        }
+
+        // On tri les tableaux pour els avoir dans le même ordre
+        foreach (['ldap', 'wims'] as $key) {
+            uasort($res[$key], function($a, $b) {
+                $lastNameComparison = strcmp($a['lastName'], $b['lastName']);
+    
+                if ($lastNameComparison === 0) {
+                    return strcmp($a->getAttribute('givenName')[0], $b->getAttribute('givenName')[0]);
+                }
+    
+                return $lastNameComparison;
+            });
         }
 
         $uidInLdap = array_keys($res['ldap']);
@@ -149,10 +154,5 @@ class StudentService
         $idCohorts = $this->wimsFileObjectService->getIdCohortsOfStudentInGroupingClasses($groupingClasses, $student);
 
         return $this->cohortRepo->findByIdWimsGroupingClassesAndIdWimsCohorts($groupingClasses, $idCohorts);
-
-        // ok 1 : trouver l'idwims du groupind clases
-        // 2 : consulter le fichier ".users/UID" et récupérer les fullid de la ligne "!set user_participate"
-        // 3 : rechercher dans la base wims-loader les fullid et reconstruire avec les données a afficher
-        //return $this->cohortRepo->findByGroupingClassesAndStudent($groupingClasses, $student);;
     }
 }

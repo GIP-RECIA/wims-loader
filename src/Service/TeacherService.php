@@ -184,7 +184,6 @@ class TeacherService
         }
 
         foreach ($students as $student) {
-            $cohort->addStudent($student);
             // Inscription des élèves côté wims
             $this->wims->addUserInClassFromObj($student, $cohort);
         }

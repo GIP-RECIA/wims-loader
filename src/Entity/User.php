@@ -57,12 +57,6 @@ class User implements UserInterface
     #[ORM\ManyToMany(targetEntity: GroupingClasses::class, mappedBy: 'registeredTeachers')]
     private Collection $groupingClasses;
 
-    /**
-     * @var Collection<int, Cohort>
-     */
-    #[ORM\ManyToMany(targetEntity: Cohort::class, mappedBy: 'students')]
-    private Collection $cohorts;
-
     public function __construct()
     {
         $this->groupingClasses = new ArrayCollection();
@@ -217,30 +211,6 @@ class User implements UserInterface
         if ($this->groupingClasses->removeElement($groupingClass)) {
             $groupingClass->removeRegisteredTeacher($this);
         }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Cohort>
-     */
-    public function getCohorts(): Collection
-    {
-        return $this->cohorts;
-    }
-
-    public function addCohort(Cohort $cohort): static
-    {
-        if (!$this->cohorts->contains($cohort)) {
-            $this->cohorts->add($cohort);
-        }
-
-        return $this;
-    }
-
-    public function removeCohort(Cohort $cohort): static
-    {
-        $this->cohorts->removeElement($cohort);
 
         return $this;
     }

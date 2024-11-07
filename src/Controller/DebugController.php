@@ -20,6 +20,7 @@ use App\Repository\CohortRepository;
 use App\Repository\GroupingClassesRepository;
 use App\Repository\UserRepository;
 use App\Service\LdapService;
+use App\Service\StudentService;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,6 +37,7 @@ class DebugController extends AbstractWimsLoaderController
         private GroupingClassesRepository $groupingClassesRepo,
         private CohortRepository $cohortRepo,
         private TranslatorInterface $translator,
+        private StudentService $studentService,
     ) {}
 
     /**
@@ -58,7 +60,7 @@ class DebugController extends AbstractWimsLoaderController
 
         if ($groupingClasses !== null) {
             $dumpArray[$this->translator->trans('debug.categoryTitle.groupingClassesDataBdd')] = $groupingClasses;
-            $classesStudentBdd = $this->cohortRepo->findByGroupingClassesAndStudent($groupingClasses, $user);
+            $classesStudentBdd = $this->studentService->getCohortsForStudentInGroupingClasses($groupingClasses, $user);
             $dumpArray[$this->translator->trans('debug.categoryTitle.cohortsDataBddForStudent')] = $classesStudentBdd;
             $classesTeacherBdd = $this->cohortRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
             $dumpArray[$this->translator->trans('debug.categoryTitle.cohortsDataBddForTeacher')] = $classesTeacherBdd;

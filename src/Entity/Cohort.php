@@ -51,12 +51,6 @@ class Cohort
     private ?\DateTimeImmutable $lastSyncAt = null;
 
     /**
-     * @var Collection<int, User>
-     */
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'cohort')]
-    private Collection $students;
-
-    /**
      * La ou les matières de cette cohorte
      *
      * @var string|null
@@ -69,7 +63,6 @@ class Cohort
 
     public function __construct()
     {
-        $this->students = new ArrayCollection();
     }
 
     public function __toString()
@@ -152,30 +145,6 @@ class Cohort
     public function setLastSyncAt(): static
     {
         $this->lastSyncAt = new \DateTimeImmutable();
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, User>
-     */
-    public function getStudents(): Collection
-    {
-        return $this->students;
-    }
-
-    public function addStudent(User $student): static
-    {
-        if (!$this->students->contains($student)) {
-            $this->students->add($student);
-        }
-
-        return $this;
-    }
-
-    public function removeStudent(User $student): static
-    {
-        $this->students->removeElement($student);
 
         return $this;
     }

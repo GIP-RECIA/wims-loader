@@ -517,24 +517,23 @@ class WimsFileObjectService
     }
 
     /**
-     * Permet de récupérer la liste des FullId wims des cohortes de l'élève dans l'établissement
+     * Permet de récupérer la liste des id wims des cohortes de l'élève dans l'établissement
      *
      * @param GroupingClasses $groupingClasses L'établissement
      * @param User $student L'élève
-     * @return string[] La liste des FullId wims
+     * @return string[] La liste des id wims
      */
     public function getIdCohortsOfStudentInGroupingClasses(GroupingClasses $groupingClasses, User $student): array
     {
-        $idWims = $groupingClasses->getIdWims();
-        $filepath = $this->getRootFolder() . '/' . $groupingClasses->getIdWims() . '/.users/' . $student->getUid();
-        $startFullid = $groupingClasses->getIdWims() . '/';
+        $filePath = $this->getRootFolder() . '/' . $groupingClasses->getIdWims() . '/.users/' . $student->getUid();
+        $startFullId = $groupingClasses->getIdWims() . '/';
 
         // L'élève n'est actuellement inscrit dans aucune cohorte
-        if (!$this->filesystem->exists($filepath)) {
+        if (!$this->filesystem->exists($filePath)) {
             return [];
         }
 
-        $handle = fopen($filepath, 'r');
+        $handle = fopen($filePath, 'r');
 
         if ($handle) {
             // Lecture du fichier de l'utilisateur ligne par ligne
@@ -543,12 +542,12 @@ class WimsFileObjectService
                 if (str_starts_with($line, "!set user_participate=")) {
                     fclose($handle);
 
-                    $fullids = explode(',', explode('=', $line)[1]);
+                    $fullIds = explode(',', explode('=', $line)[1]);
                     $res = [];
 
-                    foreach ($fullids as $fullid) {
-                        if (str_starts_with($fullid, $startFullid)) {
-                            $res[] = trim(explode('/', $fullid)[1]);
+                    foreach ($fullIds as $fullId) {
+                        if (str_starts_with($fullId, $startFullId)) {
+                            $res[] = trim(explode('/', $fullId)[1]);
                         }
                     }
 
@@ -558,7 +557,7 @@ class WimsFileObjectService
 
             fclose($handle);
         } else {
-            throw new Exception("Impossible d'ouvrir le fichier " . $filepath);
+            throw new Exception("Impossible d'ouvrir le fichier " . $filePath);
         }
 
         return [];
@@ -592,6 +591,28 @@ class WimsFileObjectService
         }
 
         file_put_contents($filepath, $content , FILE_APPEND);
+    }
+
+    /**
+     * Récupère la liste des idWims d'établissement d'un utilisateur
+     * @param \App\Entity\User $user
+     * @return array
+     */
+    public function findGroupingClassesIdWimsOfUser(User $user): array
+    {
+        $res = [];
+        $finder = new Finder();
+
+        $finder->files()
+            ->in($this->getRootFolder() . "/*/.users/")
+            ->name($user->getUid())
+            ->depth('== 0');
+
+        foreach ($finder as $file) {
+            $res[] = explode('/', $file->getPath())[5];
+        }
+
+        return $res;
     }
 
     /**************************************************************************

@@ -34,7 +34,7 @@ class CreateModtoolAccount extends Command
 {
     public function __construct(
         private LdapService $ldapService,
-        private WimsFileObjectService $wimsFileObjectCreatorService,
+        private WimsFileObjectService $wimsFileObjectService,
     ) {
         parent::__construct();
     }
@@ -63,7 +63,7 @@ class CreateModtoolAccount extends Command
         $password = "changeme" . random_int(1000, 9999);
         $mail = $userData->getAttribute('mail')[0];
 
-        $this->wimsFileObjectCreatorService->createModtoolAccount(
+        $this->wimsFileObjectService->createModtoolAccount(
             $userData->getAttribute('uid')[0],
             $login,
             $password,

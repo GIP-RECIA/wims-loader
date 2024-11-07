@@ -190,7 +190,7 @@ class TeacherController extends AbstractWimsLoaderController
         if (null !== $message) {
             $this->addFlash($message['type'], $message['msg']);
         }
-        
+
         return $this->redirectToRoute('teacherDetailsCohort', [
             'idCohort' => $cohort->getId(),
         ]);

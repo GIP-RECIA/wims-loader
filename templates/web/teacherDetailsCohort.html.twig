@@ -52,7 +52,7 @@
         <p>{{ "cohortDetails.fieldsBlockStudents.studentsInLdap"|trans }} :</p>
         <ul>
         {% for uid, userData in diffStudents.ldap %}
-            <li class="{% if uid in diffStudents.ldapUnsync %}nok-error{% else %}ok{% endif %}">{{ userData.fullName }}</li>
+            <li class="{% if uid in diffStudents.ldapUnsync %}nok-error{% else %}ok{% endif %}">{{ userData.lastName }} {{ userData.firstName }}</li>
         {% endfor %}
         </ul>
     </div>
@@ -60,7 +60,7 @@
         <p>{{ "cohortDetails.fieldsBlockStudents.studentsInWims"|trans }} :</p>
         <ul>
         {% for uid, userData in diffStudents.wims %}
-            <li class="{% if uid in diffStudents.wimsUnsync %}nok-warn{% else %}ok{% endif %}">{{ userData.fullName }}</li>
+            <li class="{% if uid in diffStudents.wimsUnsync %}nok-warn{% else %}ok{% endif %}">{{ userData.lastName }} {{ userData.firstName }}</li>
         {% endfor %}
         </ul>
     </div>
