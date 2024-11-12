@@ -94,7 +94,6 @@ class CohortService
 
     /**
      * Efface tous les utilisateurs de la cohorte.
-     * FIXME: cette fonction n'efface pas les liens vers la cohorte dans les fichiers des utilisateurs, il faudra corriger cela
      * 
      * @param Cohort $cohort La cohorte que l'on souhaite vider
      * @return void

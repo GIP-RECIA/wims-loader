@@ -427,7 +427,7 @@ class WimsFileObjectService
 
         $fileContents = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-        foreach ($fileContents as $key => $line) {
+        foreach ($fileContents as $line) {
             $line = ltrim(self::Windows1252ToUtf8($line), ':');
             $arr = explode(',', $line);
             $res[$arr[2]] = ['firstName' => $arr[1], 'lastName' => $arr[0]];
@@ -618,13 +618,34 @@ class WimsFileObjectService
 
     /**
      * Efface tous les utilisateurs de la cohorte.
-     * FIXME: cette fonction n'efface pas les liens vers la cohorte dans les fichiers des utilisateurs, il faudra corriger cela
      * 
      * @param Cohort $cohort La cohorte que l'on souhaite vider
      * @return void
      */
     public function emptyClasses(Cohort $cohort): void
     {
+        $usersInfo = $this->readUsersInClass($cohort);
+
+        foreach ($usersInfo as $uid => $userInfo) {
+            $filePath = $this->getRootFolder() . '/' . $cohort->getGroupingClasses()->getIdWims() . '/.users/' . $uid;
+            $content = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $prefixToFind = '!set user_participate=';  // La ligne commence par !set user_participate=
+    
+            $newContent = [];
+            $cid = $cohort->getFullIdWims();
+            foreach ($content as $ligne) {
+                if (str_starts_with($ligne, $prefixToFind)) {
+                    // Suppression de la mention "7414903/2," ou "7414903/2" sans virgule
+                    $ligne = str_replace([',' . $cid, $cid . ',', $cid], '', $ligne);
+                }
+    
+                $newContent[] = $ligne;
+            }
+    
+            // Écriture du contenu modifié dans le fichier
+            file_put_contents($filePath, implode(PHP_EOL, $newContent));
+        }
+
         $files = ['.userlist', '.userlist_external', '.usernextlist', '.userprevlist'];
 
         foreach ($files as $file) {
