@@ -42,7 +42,7 @@ class GroupingClasses
     #[ORM\Column(length: 15)]
     private ?string $siren = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 255)]
     private ?string $name = null;
 
     /**
