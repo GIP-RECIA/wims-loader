@@ -15,6 +15,8 @@ parameters:
 
     external_url_teacher_faq: '%env(default::EXTERNAL_URL_TEACHER_FAQ)%'
     global_message: '%env(default::GLOBAL_MESSAGE)%'
+    maintenance_mode: '%env(default::MAINTENANCE_MODE)%'
+    maintenance_message: '%env(default::MAINTENANCE_MESSAGE)%'
 
 twig:
     globals:
@@ -50,6 +52,13 @@ services:
                 gateway: '%env(bool:CAS_GATEWAY)%'
                 ticketFirstName: '%env(string:CAS_TICKET_FIRST_NAME)%'
                 ticketLastName: '%env(string:CAS_TICKET_LAST_NAME)%'
+    
+    App\EventListener\MaintenanceListener:
+        arguments:
+            $maintenanceMode: '%maintenance_mode%'
+            $maintenanceMessage: '%maintenance_message%'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 255 }
     
     
     App\Service\LdapService:

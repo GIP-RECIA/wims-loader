@@ -4,65 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <title>{{ title_page }}</title>
-        <!-- icon wims disabled to display icon of site -->
-        <!-- <link rel="icon" type="image/png" href="/wims/gifs/wims_logo.png" /> -->
-        
-        <!-- makes browsers render all elements more consistently -->
-        <link rel="stylesheet" href="/wims/scripts/js/external/normalize.min.css">
-
-        <!-- Foundation Accordion -->
-        <link rel="stylesheet" href="/wims/html/themes/_css/foundation_accordion.css">
-
-        <link href="/wims/html/themes/standard/css.css?ver=4.26" rel="stylesheet">
-        <link href="/wims/gifs/themes/default/icon-min.css?ver=4.26" rel="stylesheet">
-
-        <!-- METAS iOS : -->
-        <link rel="apple-touch-icon" href="/wims/gifs/wims_logo.png">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-
-        <!-- prevents links from apps from opening in mobile safari>
-        <script src="scripts/js/external/safari_mobile_links/compressed.js"></script-->
-
-        <!-- Librairies JQUERY -->
-        <script src="/wims/scripts/js/external/jquery/jquery.min.js"></script>
-        <link rel="stylesheet" href="/wims/scripts/js/external/jquery-ui/themes/smoothness/jquery-ui.min.css">
-        <script src="/wims/scripts/js/external/jquery-ui/jquery-ui.min.js"></script>
-
-        <!-- JQUERY pour autocompletion -->
-        <script src="/wims/scripts/js/interface/autocomplete.js"></script>
-
-        <!-- Style pour impression -->
-        <link rel="stylesheet" media="print" href="html/themes/_css/print.css">
-
-        {% if entNetocentre %}
-        {# début ajout bandeau et footer ENT #}
-        <style>
-            body{
-                padding-bottom:55px;
-            }
-            extended-uportal-header {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 1001;
-            }
-            extended-uportal-footer {
-                position: fixed;
-                width: 100%;
-                bottom: 0;
-                left: 0;
-            }
-        </style>
-        {# fin ajout bandeau et footer ENT #}
-        {% endif %}
-
-        {% block style %}
-        {% endblock %}
-
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
+        {% include 'web/include/head.html.twig' %}
     </head>
     <body class="main_body">
         {% if entNetocentre %}
@@ -197,49 +139,6 @@
             {% endblock %}
         </div>
 
-        {% if entNetocentre %}
-        {# début ajout footer ENT #}
-        <extended-uportal-footer domain="{{ app.request.host }}"
-            template-api-path="/commun/portal_template_api.tpl.json"
-            links=\'[{"title":"Accessibilité : partiellement conforme"},{"title":"CGU","href":"/files/textes/droits_usage.html"},{"title":"Apereo.org","href":"https://www.apereo.org/"},{"title":"ESUP-Portail","href":"https://www.esup-portail.org/"}]\' >
-        </extended-uportal-footer>
-        {# fin ajout footer ENT #}
-        {% endif %}
-
-        <!-- Foundation for Sites 6 footer template (see http://foundation.zurb.com/sites/docs/)  -->
-
-        <script src="/wims/scripts/js/external/what-input/what-input.min.js"></script>
-
-        <script src="/wims/html/themes/_inc/foundation/foundation.core.js"></script>
-        <script src="/wims/html/themes/_inc/foundation/foundation.util.mediaQuery.js"></script>
-
-        <script src="/wims/html/themes/_inc/foundation/foundation.util.keyboard.js"></script>
-        <script src="/wims/html/themes/_inc/foundation/foundation.util.box.js"></script>
-        <script src="/wims/html/themes/_inc/foundation/foundation.util.nest.js"></script>
-        <script src="/wims/html/themes/_inc/foundation/foundation.util.touch.min.js"></script>
-
-        <script src="/wims/html/themes/_inc/basic_triggers.js"></script>
-
-
-        <script src="/wims/html/themes/_inc/foundation/foundation.util.motion.js"></script>
-        <script src="/wims/html/themes/_inc/foundation/foundation.reveal.js"></script>
-
-        <script src="/wims/html/themes/_inc/foundation/foundation.dropdownMenu.js"></script>
-
-        <script src="/wims/html/themes/_inc/foundation/foundation.accordion.min.js"></script>
-
-        <script>jQuery(function($) {$(document).foundation();});</script>
-
-        {% if entNetocentre %}
-        {# début ajout bandeau ENT #}
-        <script type="text/javascript" src="/commun/extended-uportal-header.min.js"></script>
-        {# fin ajout bandeau ENT #}
-        {# début ajout footer ENT #}
-        <script type="text/javascript" src="/commun/extended-uportal-footer.min.js"></script>
-        {# fin ajout footer ENT #}
-        {% endif %}
-
-        {% block endjs %}
-        {% endblock %}
+        {% include 'web/include/footer.html.twig' %}
     </body>
 </html>

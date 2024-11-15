@@ -1,0 +1,38 @@
+{# templates/web/maintenance.html.twig #}<!DOCTYPE html>
+<html>
+{% if title_page is not defined %}{% set title_page = "Page d'accueil" %}{% endif %}
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ title_page }}</title>
+        {% include 'web/include/head.html.twig' %}
+    </head>
+    <body class="main_body">
+        {% if entNetocentre %}
+        {# début ajout bandeau ENT #}
+        <extended-uportal-header messages='[{"locales": ["fr", "fr-FR"], "messages": { "message": {"header": {"login": "{{ "button.uportalHeader.connexionEnt"|trans }}" } }}}]'
+            domain="{{ app.request.host }}" height="38px"
+            fname="Wims" template-api-path="/commun/portal_template_api.tpl.json" >
+        </extended-uportal-header>
+        {# fin ajout bandeau ENT #}
+        {% endif %}
+
+        <div id="wimsbodybox">
+            <div id="wimspagebox">
+                <div class="wimsbody">
+                    <div class="wims_msg info">
+                        <h1>Maintenance en cours</h1>
+                        <p>
+                            {% if maintenance_message is defined and maintenance_message is not empty %}
+                                {{ maintenance_message|raw }}
+                            {% else %}
+                                Notre site est actuellement en maintenance.<br>Merci de revenir plus tard.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include 'web/include/footer.html.twig' %}
+    </body>
+</html>
