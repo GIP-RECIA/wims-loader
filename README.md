@@ -35,3 +35,6 @@ Voici les variables a définir dans ce fichier et leurs fonctions :
 * `ADMIN_UID` : L'uid de l'utilisateur qui est admin de Wims-loader
 * `CLASSES_EXPIRATION_DATE` : La date d’expiration des classes, a changer tous les ans
 * `ENT_NETOCENTRE` : A passer a true uniquement dans le cas de l'ENT Netocentre
+* `GLOBAL_MESSAGE` : Si cette variable existe, contient un message qui s'affichera sur toutes les pages
+* `MAINTENANCE_MODE` : Si cette variable existe et qu'elle vaut `true`, active le mode maintenance qui bloque toutes les pages pour afficher un message de maintenance
+* `MAINTENANCE_MESSAGE` : Si cette variable existe, contient un message de maintenance qui vient remplacer celui par défaut quand le mode maintenance est actif
