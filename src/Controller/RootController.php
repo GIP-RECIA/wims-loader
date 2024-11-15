@@ -64,6 +64,17 @@ class RootController extends AbstractWimsLoaderController
     }
 
     /**
+     * Permet de tester la bonne gestion des logs d'erreur
+     *
+     * @return Response
+     */
+    #[Route(path:"/error", name:"error")]
+    public function error(): Response
+    {
+        throw new Exception("Erreur de test");
+    }
+
+    /**
      * Permet de se déconnecter et de retourner au portail
      *
      * @param Security $security
