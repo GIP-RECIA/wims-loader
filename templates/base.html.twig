@@ -122,6 +122,10 @@
                         <div class="wims_msg alert">{{ message }}</div>
                     {% endfor %}
 
+                    {% if global_message is defined and global_message is not empty %}
+                        <div class="wims_msg info">{{ global_message }}</div>
+                    {% endif %}
+
                     {% for message in app.flashes('info') %}
                         <div class="wims_msg info">{{ message }}</div>
                     {% endfor %}

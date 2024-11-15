@@ -14,10 +14,12 @@ parameters:
     app.autoRedirectStudent: '%env(bool:AUTO_REDIRECT_STUDENT)%'
 
     external_url_teacher_faq: '%env(default::EXTERNAL_URL_TEACHER_FAQ)%'
+    global_message: '%env(default::GLOBAL_MESSAGE)%'
 
 twig:
     globals:
         external_url_teacher_faq: '%external_url_teacher_faq%'
+        global_message: '%global_message%'
 
 services:
     # default configuration for services in *this* file
