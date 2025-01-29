@@ -982,10 +982,12 @@ class WimsFileObjectService
             $subFolder = $folder . '/' . $subFolder;
 
             if (!$this->filesystem->exists($subFolder)) {
-                throw new InvalidClassException(
+                // Comme le sous répertoire n'existe pas, on le créé pour corriger le problème.
+                $this->filesystem->mkdir($subFolder);
+                /*throw new InvalidClassException(
                     "Le sous dossier '$subFolder' pour la classe '$idClass' du".
                     " groupement de classes '$id' n'existe pas"
-                );
+                );*/
             }
 
             if (!is_dir($subFolder)) {
