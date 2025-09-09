@@ -9,8 +9,8 @@
     <body class="main_body">
         {% if entNetocentre %}
         {# début ajout bandeau ENT #}
-        <extended-uportal-header messages='[{"locales": ["fr", "fr-FR"], "messages": { "message": {"header": {"login": "{{ "button.uportalHeader.connexionEnt"|trans }}" } }}}]'
-            domain="{{ app.request.host }}" height="38px"
+        <extended-uportal-header
+            domain="{{ app.request.host }}"
             fname="Wims" template-api-path="/commun/portal_template_api.tpl.json" >
         </extended-uportal-header>
         {# fin ajout bandeau ENT #}

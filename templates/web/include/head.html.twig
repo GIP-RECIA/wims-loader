@@ -1,4 +1,6 @@
 {# templates/web/include/head.html.twig #}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
         <!-- icon wims disabled to display icon of site -->
         <!-- <link rel="icon" type="image/png" href="/wims/gifs/wims_logo.png" /> -->
         
@@ -32,21 +34,31 @@
         {% if entNetocentre %}
         {# début ajout bandeau et footer ENT #}
         <style>
-            body{
-                padding-bottom:55px;
-            }
-            extended-uportal-header {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 1001;
-            }
             extended-uportal-footer {
-                position: fixed;
-                width: 100%;
-                bottom: 0;
-                left: 0;
+                display: none;
+            }
+            @media only screen and (hover: hover) and (pointer: fine) {
+                body {
+                    height: calc(calc(100% - var(--recia-header-height, 68px)) - 10px);
+                }
+
+                extended-uportal-footer {
+                    display: unset;
+                    position: fixed;
+                    bottom: 0;
+                    right: 0;
+                    left: 0;
+                    transition: transform .2s;
+                }
+
+                extended-uportal-header:hover ~ extended-uportal-footer,
+                extended-uportal-footer:hover {
+                    transform: translateY(0) !important;
+                }
+
+                body:hover extended-uportal-footer {
+                    transform: translateY(calc(100% - 10px));
+                }
             }
         </style>
         {# fin ajout bandeau et footer ENT #}

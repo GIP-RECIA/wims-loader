@@ -3,8 +3,7 @@
         {% if entNetocentre %}
         {# début ajout footer ENT #}
         <extended-uportal-footer domain="{{ app.request.host }}"
-            template-api-path="/commun/portal_template_api.tpl.json"
-            links=\'[{"title":"Accessibilité : partiellement conforme"},{"title":"CGU","href":"/files/textes/droits_usage.html"},{"title":"Apereo.org","href":"https://www.apereo.org/"},{"title":"ESUP-Portail","href":"https://www.esup-portail.org/"}]\' >
+            template-api-path="/commun/portal_template_api.tpl.json" >
         </extended-uportal-footer>
         {# fin ajout footer ENT #}
         {% endif %}
@@ -35,10 +34,10 @@
 
         {% if entNetocentre %}
         {# début ajout bandeau ENT #}
-        <script type="text/javascript" src="/commun/extended-uportal-header.min.js"></script>
+        <script type="text/javascript" src="/resource-server/webjars/gip-recia__ui-webcomponents/dist/r-header.js"></script>
         {# fin ajout bandeau ENT #}
         {# début ajout footer ENT #}
-        <script type="text/javascript" src="/commun/extended-uportal-footer.min.js"></script>
+        <script type="text/javascript" src="/resource-server/webjars/gip-recia__ui-webcomponents/dist/r-footer.js"></script>
         {# fin ajout footer ENT #}
         {% endif %}
 
