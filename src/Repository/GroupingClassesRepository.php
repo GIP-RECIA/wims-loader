@@ -72,10 +72,8 @@ class GroupingClassesRepository extends ServiceEntityRepository
             ->innerJoin('gc.registeredTeachers', 'u')
             ->where($qb->expr()->eq('gc', ':groupingClasses'))
             ->andWhere($qb->expr()->eq('u', ':teacher'))
-            ->setParameters([
-                'groupingClasses' => $groupingClasses,
-                'teacher' => $teacher,
-            ])
+            ->setParameter('groupingClasses', $groupingClasses)
+            ->setParameter('teacher', $teacher)
             ->getQuery()
             ->getSingleScalarResult();
 
