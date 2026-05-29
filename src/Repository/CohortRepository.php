@@ -89,7 +89,7 @@ class CohortRepository extends ServiceEntityRepository
      * @param CohortType $type Le type des cohortes recherchées, null pour toutes
      * @return array La liste des cohortes de l'enseignant dans l'établissement courant
      */
-    public function findByGroupingClassesAndTeacher(GroupingClasses $groupingClasses, User $teacher, CohortType $type = null): array
+    public function findByGroupingClassesAndTeacher(GroupingClasses $groupingClasses, User $teacher, ?CohortType $type = null): array
     {
         $req = $this->createQueryBuilder('c')
             ->where('c.groupingClasses = :groupingClasses')
