@@ -109,7 +109,7 @@ class GroupingClassesRepository extends ServiceEntityRepository
             ->where($qb->expr()->eq('u', ':teacher'))
             ->setParameter('teacher', $teacher)
             ->getQuery()
-            ->getSingleColumnResult();
-        return $result;
+            ->getResult();
+        return array_column($result, 'idWims');
     }
 }
