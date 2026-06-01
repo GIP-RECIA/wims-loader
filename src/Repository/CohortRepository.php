@@ -74,10 +74,8 @@ class CohortRepository extends ServiceEntityRepository
             ->where('c.groupingClasses = :groupingClasses')
             ->andWhere('c.idWims IN (:idWimsCohorts)')
             ->orderBy('c.type')
-            ->setParameters([
-                'groupingClasses' => $groupingClasses,
-                'idWimsCohorts' => $idWimsCohorts
-            ])
+            ->setParameter('groupingClasses', $groupingClasses)
+            ->setParameter('idWimsCohorts', $idWimsCohorts)
             ->getQuery()
             ->getResult();
     }
@@ -91,25 +89,20 @@ class CohortRepository extends ServiceEntityRepository
      * @param CohortType $type Le type des cohortes recherchées, null pour toutes
      * @return array La liste des cohortes de l'enseignant dans l'établissement courant
      */
-    public function findByGroupingClassesAndTeacher(GroupingClasses $groupingClasses, User $teacher, CohortType $type = null): array
+    public function findByGroupingClassesAndTeacher(GroupingClasses $groupingClasses, User $teacher, ?CohortType $type = null): array
     {
-        $parameters = [
-            'groupingClasses' => $groupingClasses,
-            'teacher' => $teacher,
-        ];
-
         $req = $this->createQueryBuilder('c')
             ->where('c.groupingClasses = :groupingClasses')
-            ->andWhere('c.teacher = :teacher');
-            
+            ->andWhere('c.teacher = :teacher')
+            ->setParameter('groupingClasses', $groupingClasses)
+            ->setParameter('teacher', $teacher);
 
         if ($type !== null) {
-            $parameters['type'] = $type;
-            $req->andWhere('c.type = :type');
+            $req->andWhere('c.type = :type')
+                ->setParameter('type', $type);
         }
 
         return $req->orderBy('c.name')
-            ->setParameters($parameters)
             ->getQuery()
             ->getResult();
     }
@@ -139,16 +132,13 @@ class CohortRepository extends ServiceEntityRepository
     public function findCohortByFullIdWims(string $fullIdWims): ?Cohort
     {
         list($idGroupingClasses, $idCohort) = explode('/', $fullIdWims);
-        $parameters = [
-            'groupingClassesIdWims' => $idGroupingClasses,
-            'cohortIdWims' => $idCohort,
-        ];
 
         return $this->createQueryBuilder('c')
             ->innerJoin('c.groupingClasses', 'gc')
             ->where('gc.idWims = :groupingClassesIdWims')
             ->andWhere('c.idWims = :cohortIdWims')
-            ->setParameters($parameters)
+            ->setParameter('groupingClassesIdWims', $idGroupingClasses)
+            ->setParameter('cohortIdWims', $idCohort)
             ->getQuery()
             ->getOneOrNullResult();
     }

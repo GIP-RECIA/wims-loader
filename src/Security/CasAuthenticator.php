@@ -25,7 +25,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CasAuthenticator extends SecurityCasAuthenticator
 {
-    public function __construct(array $config = [], EventDispatcherInterface $eventDispatcher = null)
+    public function __construct(array $config = [], ?EventDispatcherInterface $eventDispatcher = null)
     {
         parent::__construct($config, $eventDispatcher);
     }

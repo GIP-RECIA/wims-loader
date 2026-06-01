@@ -96,7 +96,7 @@ class UserPreUpdateEntityListener
         }
     }
 
-    private function getValueOrDefault(array $array, string $key, string $default = null): string
+    private function getValueOrDefault(array $array, string $key, ?string $default = null): ?string
     {
         return array_key_exists($key, $array) ? $array[$key][1] : $default;
     }

@@ -17,6 +17,7 @@
 namespace App\Security;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote as VoterVote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DevEnvVoter extends Voter
@@ -26,7 +27,7 @@ class DevEnvVoter extends Voter
         return $attribute === 'IS_DEV_ENV';
     }
 
-    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token, ?VoterVote $vote = null): bool
     {
         return $_ENV['APP_ENV'] === 'dev';
     }
