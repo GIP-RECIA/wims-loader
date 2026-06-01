@@ -1,12 +1,31 @@
-/* Correction des chemins des images de tri pour /wims-loader */
-table.dataTable thead .sorting {
-    background-image: url('/wims-loader/css/datatables/images/sort_both.png');
-}
-table.dataTable thead .sorting_asc {
-    background-image: url('/wims-loader/css/datatables/images/sort_asc.png');
-}
+/* Utilisation de flèches Unicode au lieu des images */
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
 table.dataTable thead .sorting_desc {
-    background-image: url('/wims-loader/css/datatables/images/sort_desc.png');
+    background-image: none !important;
+    padding-right: 20px;
+    position: relative;
+}
+
+table.dataTable thead .sorting::after {
+    content: "⇅";
+    position: absolute;
+    right: 5px;
+    opacity: 0.3;
+}
+
+table.dataTable thead .sorting_asc::after {
+    content: "▲";
+    position: absolute;
+    right: 5px;
+    opacity: 1;
+}
+
+table.dataTable thead .sorting_desc::after {
+    content: "▼";
+    position: absolute;
+    right: 5px;
+    opacity: 1;
 }
 
 /* Personnalisation DataTables pour garder l'apparence WIMS */
