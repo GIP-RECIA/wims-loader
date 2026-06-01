@@ -42,10 +42,77 @@
 {% endblock %}
 
 {% block endjs %}
-    <script src="/wims/scripts/js/tablesort.js"></script>
-    <script src="/wims/scripts/js/tablesort.number.js"></script>
-
+    <link rel="stylesheet" href="/wims-loader/css/datatables/jquery.dataTables.min.css">
+    <script src="/wims-loader/js/datatables/jquery.dataTables.min.js"></script>
+    
     <script>
-    new Tablesort(document.getElementById("importedCohorts"));
+    $(document).ready(function() {
+        $('#importedCohorts').DataTable({
+            pageLength: 25,
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Tous"]],
+            language: {
+                url: '/wims-loader/js/datatables/dataTables.fr-FR.json'
+            },
+            order: [[0, 'asc']],
+            columnDefs: [
+                { orderable: false, targets: -1 }
+            ]
+        });
+    });
     </script>
+    
+    <style>
+    /* Personnalisation DataTables pour garder l'apparence WIMS */
+    .dataTables_wrapper {
+        font-family: inherit;
+    }
+    
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        color: inherit;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .dataTables_wrapper .dataTables_filter input,
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid #676767;
+        padding: 3px 5px;
+        border-radius: 3px;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 3px 8px;
+        margin: 0 2px;
+        border: 1px solid #676767;
+        border-radius: 3px;
+        background-color: #666666;
+        color: #ffffff !important;
+        cursor: pointer;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #676767;
+        border-color: #676767;
+        color: #ffffff !important;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #676767;
+        border-color: #676767;
+        color: #ffffff !important;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    /* Garde le style du tableau WIMS */
+    #importedCohorts_wrapper table.wimstable {
+        margin-top: 10px;
+    }
+    </style>
 {% endblock %}
