@@ -13,6 +13,14 @@ table.dataTable thead .sorting_desc_disabled {
     cursor: pointer;
 }
 
+/* Désactiver le pseudo-élément ::before qui crée le trait */
+table.dataTable thead .sorting::before,
+table.dataTable thead .sorting_asc::before,
+table.dataTable thead .sorting_desc::before {
+    content: none !important;
+    display: none !important;
+}
+
 table.dataTable thead .sorting::after {
     content: "⇅";
     position: absolute;
