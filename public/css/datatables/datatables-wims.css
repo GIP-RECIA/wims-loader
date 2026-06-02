@@ -64,3 +64,16 @@ body table.dataTable thead > tr > td.sorting_asc_disabled::after,
 body table.dataTable thead > tr > td.sorting_desc_disabled::after {
     content: '' !important;
 }
+
+body table.dataTable thead > tr > th.sorting::before,
+body table.dataTable thead > tr > th.sorting_asc::before,
+body table.dataTable thead > tr > th.sorting_desc::before,
+body table.dataTable thead > tr > th.sorting_asc_disabled::before,
+body table.dataTable thead > tr > th.sorting_desc_disabled::before,
+body table.dataTable thead > tr > td.sorting::before,
+body table.dataTable thead > tr > td.sorting_asc::before,
+body table.dataTable thead > tr > td.sorting_desc::before,
+body table.dataTable thead > tr > td.sorting_asc_disabled::before,
+body table.dataTable thead > tr > td.sorting_desc_disabled::before {
+    content: '' !important;
+}
