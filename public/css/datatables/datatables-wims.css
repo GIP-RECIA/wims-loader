@@ -1,50 +1,3 @@
-/* Utilisation de flèches Unicode au lieu des images */
-table.dataTable thead .sorting,
-table.dataTable thead .sorting_asc,
-table.dataTable thead .sorting_desc,
-table.dataTable thead .sorting_asc_disabled,
-table.dataTable thead .sorting_desc_disabled {
-    background-image: none !important;
-    background-repeat: no-repeat !important;
-    background-position: center right !important;
-    background-size: 0 !important;
-    padding-right: 20px;
-    position: relative;
-    cursor: pointer;
-}
-
-/* Désactiver le pseudo-élément ::before qui crée le trait */
-table.dataTable thead .sorting::before,
-table.dataTable thead .sorting_asc::before,
-table.dataTable thead .sorting_desc::before {
-    content: none !important;
-    display: none !important;
-}
-
-table.dataTable thead .sorting::after {
-    content: "⇅";
-    position: absolute;
-    right: 5px;
-    opacity: 0.5;
-    color: #ffffff;
-}
-
-table.dataTable thead .sorting_asc::after {
-    content: "▲";
-    position: absolute;
-    right: 5px;
-    opacity: 1;
-    color: #ffffff;
-}
-
-table.dataTable thead .sorting_desc::after {
-    content: "▼";
-    position: absolute;
-    right: 5px;
-    opacity: 1;
-    color: #ffffff;
-}
-
 /* Personnalisation DataTables pour garder l'apparence WIMS */
 .dataTables_wrapper {
     font-family: inherit;
@@ -96,4 +49,18 @@ table.dataTable thead .sorting_desc::after {
 /* Garde le style du tableau WIMS */
 #importedCohorts_wrapper table.wimstable {
     margin-top: 10px;
+}
+
+/* Suppression des flèches de tri par défaut de DataTables */
+body table.dataTable thead > tr > th.sorting::after,
+body table.dataTable thead > tr > th.sorting_asc::after,
+body table.dataTable thead > tr > th.sorting_desc::after,
+body table.dataTable thead > tr > th.sorting_asc_disabled::after,
+body table.dataTable thead > tr > th.sorting_desc_disabled::after,
+body table.dataTable thead > tr > td.sorting::after,
+body table.dataTable thead > tr > td.sorting_asc::after,
+body table.dataTable thead > tr > td.sorting_desc::after,
+body table.dataTable thead > tr > td.sorting_asc_disabled::after,
+body table.dataTable thead > tr > td.sorting_desc_disabled::after {
+    content: '' !important;
 }
