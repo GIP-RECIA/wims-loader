@@ -44,7 +44,10 @@ class TeacherService
 
     /**
      * Permet de récupérer les classes et les groupes pédagogiques d'un
-     * enseignant
+     * enseignant dans le ldap
+     * 
+     * Récupération par les attributs ENTAuxEnsClasses et ENTAuxEnsGroupes dans
+     * le compte ldap de l'enseignant
      *
      * @param User $teacher L'enseignant
      * @return array 'classes' Les classes, 'groups' Les groupes pédagogiques

@@ -70,13 +70,18 @@ class TeacherController extends AbstractWimsLoaderController
     {
         $user = $this->getUserFromSecurity($security);
         $groupingClasses = $this->groupingClassesService->loadGroupingClasses($user->getSirenCourant());
+        // La liste des classes déjà importé
         $importedClasses = $this->cohortRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, CohortType::TYPE_CLASS);
+        // La liste des groupes déjà importé
         $importedGroups = $this->cohortRepo->findByGroupingClassesAndTeacher($groupingClasses, $user, CohortType::TYPE_GROUP);
         $importedClassesName = [];
         $importedGroupsName = [];
+        // La liste des classes que l'on peux importer
         $formsClassesToImport = [];
+        // La liste des groupes pédagogiques que l'on peux importer
         $formsGroupsToImport = [];
         $navigationBar = [['name' => $this->translator->trans('menu.teacherZone')]];
+        // Les différentes cohortes de l'enseignant dans le ldap
         $cohorts = $this->teacherService->getCohortsOfTeacher($user);
 
         foreach ($importedClasses as $classes) {
