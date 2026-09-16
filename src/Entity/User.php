@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © 2024 GIP-RECIA (https://www.recia.fr/)
  *
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace App\Entity;
 
 use App\Repository\UserRepository;
@@ -117,6 +119,7 @@ class User implements UserInterface
     /**
      * @see UserInterface
      */
+    #[\Deprecated]
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
