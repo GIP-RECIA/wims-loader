@@ -29,30 +29,32 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SIREN', fields: ['siren'])]
 class GroupingClasses
 {
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     #[ORM\Column(length: 8)]
     private ?string $uai = null;
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     #[ORM\Column(length: 7)]
     private ?string $idWims = null;
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     #[ORM\Column(length: 15)]
     private ?string $siren = null;
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
     /**
      * @var Collection<int, User>
      */
+    #[Groups(['groupingclasses:read'])]
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'groupingClasses')]
     private Collection $registeredTeachers;
 

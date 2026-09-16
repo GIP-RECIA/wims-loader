@@ -30,6 +30,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_UID', fields: ['uid'])]
 class User implements UserInterface
 {
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -38,26 +39,26 @@ class User implements UserInterface
     /**
      * @var list<string> The user roles
      */
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     private array $roles = [];
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     #[ORM\Column(length: 8)]
     private ?string $uid = null;
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     #[ORM\Column(length: 60)]
     private ?string $firstName = null;
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     #[ORM\Column(length: 60)]
     private ?string $lastName = null;
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     #[ORM\Column(length: 60)]
     private ?string $mail = null;
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
     private ?string $sirenCourant = null;
 
     /**

@@ -62,13 +62,19 @@ class DebugController extends AbstractWimsLoaderController
                 'groups' => ['user:read'],
             ]),
             $this->translator->trans('debug.categoryTitle.userDataLdap') => $serializer->normalize($userLdap),
-            $this->translator->trans('debug.categoryTitle.userDataBdd') => $serializer->normalize($userBdd),
+            $this->translator->trans('debug.categoryTitle.userDataBdd') => $serializer->normalize($userBdd, null, [
+                'groups' => ['user:read'],
+            ]),
         ];
 
         if ($groupingClasses !== null) {
-            $dumpArray[$this->translator->trans('debug.categoryTitle.groupingClassesDataBdd')] = $groupingClasses;
+            $dumpArray[$this->translator->trans('debug.categoryTitle.groupingClassesDataBdd')] = $serializer->normalize($groupingClasses, null, [
+                'groups' => ['groupingclasses:read'],
+            ]);
+            // TODO: retourne des cohortes
             $classesStudentBdd = $this->studentService->getCohortsForStudentInGroupingClasses($groupingClasses, $user);
             $dumpArray[$this->translator->trans('debug.categoryTitle.cohortsDataBddForStudent')] = $classesStudentBdd;
+            // TODO: retourne des cohortes
             $classesTeacherBdd = $this->cohortRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
             $dumpArray[$this->translator->trans('debug.categoryTitle.cohortsDataBddForTeacher')] = $classesTeacherBdd;
         }

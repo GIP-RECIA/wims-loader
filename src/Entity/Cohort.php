@@ -21,6 +21,7 @@ use App\Repository\CohortRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 
 #[ORM\Entity(repositoryClass: CohortRepository::class)]
@@ -28,25 +29,31 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_GROUPINGCLASSES_NAME', fields: ['GroupingClasses', 'name', 'teacher'])]
 class Cohort
 {
+    #[Groups(['cohort:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['cohort:read'])]
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?GroupingClasses $groupingClasses = null;
 
+    #[Groups(['cohort:read'])]
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $teacher = null;
 
+    #[Groups(['cohort:read'])]
     #[ORM\Column]
     private ?int $idWims = null;
 
+    #[Groups(['cohort:read'])]
     #[ORM\Column(length: 50)]
     private ?string $name = null;
 
+    #[Groups(['cohort:read'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $lastSyncAt = null;
 
@@ -55,9 +62,11 @@ class Cohort
      *
      * @var string|null
      */
+    #[Groups(['cohort:read'])]
     #[ORM\Column(length: 255)]
     private ?string $subjects = null;
 
+    #[Groups(['cohort:read'])]
     #[ORM\Column]
     private ?CohortType $type = null;
 
