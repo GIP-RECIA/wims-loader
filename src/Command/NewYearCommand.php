@@ -28,7 +28,7 @@ class NewYearCommand extends Command
 
         $question = new ConfirmationQuestion(
             'Ceci va complètement effacer les données afin de repartir sur une nouvelle année scolaire.' . PHP_EOL .
-            'Êtes-vous sûr de vouloir poursuivre ? (y/N) ',
+            'Êtes-vous sûr de vouloir poursuivre ?',
             false
         );
 
