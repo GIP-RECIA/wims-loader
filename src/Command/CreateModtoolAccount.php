@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © 2024 GIP-RECIA (https://www.recia.fr/)
  *
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace App\Command;
 
 use App\Service\LdapService;
@@ -60,7 +62,7 @@ class CreateModtoolAccount extends Command
         }
 
         $login = $userData->getAttribute('ENTPersonLogin')[0];
-        $password = "changeme" . random_int(1000, 9999);
+        $password = $this->generatePassword();
         $mail = $userData->getAttribute('mail')[0];
 
         $this->wimsFileObjectService->createModtoolAccount(
@@ -77,5 +79,28 @@ class CreateModtoolAccount extends Command
         $io->text("mail : " . $mail);
 
         return Command::SUCCESS;
+    }
+
+    private function generatePassword(int $length = 10): string
+    {
+        $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lower = 'abcdefghijklmnopqrstuvwxyz';
+        $digits = '0123456789';
+        $all = $upper . $lower . $digits;
+
+        // Garantit au moins un caractère de chaque catégorie
+        $password = [
+            $upper[random_int(0, strlen($upper) - 1)],
+            $lower[random_int(0, strlen($lower) - 1)],
+            $digits[random_int(0, strlen($digits) - 1)],
+        ];
+
+        for ($i = count($password); $i < $length; $i++) {
+            $password[] = $all[random_int(0, strlen($all) - 1)];
+        }
+
+        shuffle($password);
+
+        return implode('', $password);
     }
 }
