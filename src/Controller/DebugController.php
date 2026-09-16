@@ -23,12 +23,13 @@ use App\Service\LdapService;
 use App\Service\StudentService;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_USER')]
-#[IsGranted('IS_DEV_ENV')]
+#[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("IS_DEV_ENV")'))]
 class DebugController extends AbstractWimsLoaderController
 {
     public function __construct(

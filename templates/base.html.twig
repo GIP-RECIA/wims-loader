@@ -117,7 +117,7 @@
                     {% endif %}
                 </div>
                 {% endif %}
-                {% if is_granted('IS_DEV_ENV') %}
+                {% if is_granted('IS_DEV_ENV') or is_granted('ROLE_ADMIN') %}
                 <div class="modubox_content">
                     <h2 class="menu_title">
                         <span> {{ "menu.debug"|trans }}</span>
