@@ -25,19 +25,28 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 //use User
 
 class UserProvider extends ServiceEntityRepository implements UserProviderInterface
 {
-    private RequestStack $requestStack;
-    private LdapService $ldapService;
-    private $uidAdmin;
-    public function __construct(ManagerRegistry $registry, string $entityClass, string $uidAdmin, RequestStack $requestStack, LdapService $ldapService)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        string $entityClass,
+        #[Autowire('%env(string:ADMIN_UID)%')]
+        private string $uidAdmin,
+        #[Autowire('%env(string:CAS_TICKET_FIRST_NAME)%')]
+        private string $ldapFirstName,
+        #[Autowire('%env(string:CAS_TICKET_LAST_NAME)%')]
+        private string $ldapLastName,
+        private RequestStack $requestStack,
+        private LdapService $ldapService
+    ) {
         parent::__construct($registry, $entityClass);
         $this->uidAdmin = $uidAdmin;
         $this->requestStack = $requestStack;
         $this->ldapService = $ldapService;
+
     }
     
     /**
@@ -61,6 +70,8 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
             // Si on charge un faux utilisateur en étant admin
             if ($fakeUserUid !== null) {
                 $ldapUserData = $this->ldapService->findOneUserByUid($fakeUserUid);
+                $user = $this->prepareUser($fakeUserUid, $ldapUserData->getAttribute($this->ldapFirstName)[0],
+                    $ldapUserData->getAttribute($this->ldapLastName)[0], $ldapUserData->getAttribute('mail')[0]);
 
                 return $em->getRepository(User::class)->findOneByUid($fakeUserUid)
                     ->setSirenCourant($ldapUserData->getAttribute("ESCOSIRENCourant")[0])
@@ -74,30 +85,7 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
             return new User();
         }
 
-        $user = $em->getRepository(User::class)->findOneByUid($identifier);
-        $firstName = mb_substr($attributs['firstName'], 0, 60);
-        $lastName = mb_substr($attributs['lastName'], 0, 60);
-        $mail = $attributs['mail'];
-
-
-        if ($user === null) {
-            // Si l'utilisateur n'existe pas en base, on le créé
-            $user = (new User())
-                ->setUid($identifier)
-                ->setFirstName($firstName)
-                ->setLastName($lastName)
-                ->setMail($mail);
-            $em->persist($user);
-        } else {
-            // L'utilisateur a été chargé de la base et on vérifie qu'il n'a pas évolué
-            $user
-                ->setFirstName($firstName)
-                ->setLastName($lastName)
-                ->setMail($mail);
-        }
-
-        $em->flush();
-        
+        $user = $this->prepareUser($identifier, $attributs['firstName'], $attributs['lastName'], $attributs['mail']);
         $user->setSirenCourant($attributs['sirenCourant']);
         $roles = $this->calculateRoles($attributs['profils'], $identifier);
         $user->setRoles($roles);
@@ -175,5 +163,33 @@ class UserProvider extends ServiceEntityRepository implements UserProviderInterf
         }
 
         return $roles;
+    }
+
+    private function prepareUser(string $userUid, string $firstName, string $lastName, string $mail): User
+    {
+        $em = $this->getEntityManager();
+        $user = $em->getRepository(User::class)->findOneByUid($userUid);
+        $firstName = mb_substr($firstName, 0, 60);
+        $lastName = mb_substr($lastName, 0, 60);
+
+        if ($user === null) {
+            // Si l'utilisateur n'existe pas en base, on le créé
+            $user = (new User())
+                ->setUid($userUid)
+                ->setFirstName($firstName)
+                ->setLastName($lastName)
+                ->setMail($mail);
+            $em->persist($user);
+        } else {
+            // L'utilisateur a été chargé de la base et on vérifie qu'il n'a pas évolué
+            $user
+                ->setFirstName($firstName)
+                ->setLastName($lastName)
+                ->setMail($mail);
+        }
+
+        $em->flush();
+
+        return $user;
     }
 }
