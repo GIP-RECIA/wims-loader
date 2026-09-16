@@ -20,6 +20,7 @@ use App\Repository\GroupingClassesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: GroupingClassesRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_ID', fields: ['id'])]
@@ -33,15 +34,19 @@ class GroupingClasses
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 8)]
     private ?string $uai = null;
 
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 7)]
     private ?string $idWims = null;
 
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 15)]
     private ?string $siren = null;
 
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 

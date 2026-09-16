@@ -58,7 +58,9 @@ class DebugController extends AbstractWimsLoaderController
         $groupingClasses = $this->groupingClassesRepo->findOneBySiren($user->getSirenCourant());
         $navigationBar = [['name' => $this->translator->trans('menu.debug')]];
         $dumpArray = [
-            $this->translator->trans('debug.categoryTitle.user') => $serializer->normalize($user),
+            $this->translator->trans('debug.categoryTitle.user') => $serializer->normalize($user, null, [
+                'groups' => ['user:read'],
+            ]),
             $this->translator->trans('debug.categoryTitle.userDataLdap') => $serializer->normalize($userLdap),
             $this->translator->trans('debug.categoryTitle.userDataBdd') => $serializer->normalize($userBdd),
         ];

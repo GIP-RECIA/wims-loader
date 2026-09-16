@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_ID', fields: ['id'])]
@@ -37,25 +38,32 @@ class User implements UserInterface
     /**
      * @var list<string> The user roles
      */
+    #[Groups(['user:read'])]
     private array $roles = [];
 
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 8)]
     private ?string $uid = null;
 
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 60)]
     private ?string $firstName = null;
 
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 60)]
     private ?string $lastName = null;
 
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 60)]
     private ?string $mail = null;
 
+    #[Groups(['user:read'])]
     private ?string $sirenCourant = null;
 
     /**
      * @var Collection<int, GroupingClasses>
      */
+    #[Groups(['user:read'])]
     #[ORM\ManyToMany(targetEntity: GroupingClasses::class, mappedBy: 'registeredTeachers')]
     private Collection $groupingClasses;
 
