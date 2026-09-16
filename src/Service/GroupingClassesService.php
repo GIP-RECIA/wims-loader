@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © 2024 GIP-RECIA (https://www.recia.fr/)
  *
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace App\Service;
 
 use App\Entity\GroupingClasses;
@@ -28,7 +30,8 @@ class GroupingClassesService
         private EntityManagerInterface $em,
         private LdapService $ldapService,
         private WimsFileObjectService $wimsFileObjectCreator
-    ) {}
+    ) {
+    }
 
     /**
      * Permet de charger un GroupingClasses et le créer au besoin
@@ -46,9 +49,19 @@ class GroupingClassesService
                 ->setSiren($siren)
                 ->setUai($res->getAttribute('ENTStructureUAI')[0])
                 ->setName($res->getAttribute('ESCOStructureNomCourt')[0]);
-            $groupingClasses = $this->wimsFileObjectCreator->createNewGroupingClassesFromObj($groupingClasses);
-            $this->em->persist($groupingClasses);
-            $this->em->flush();
+
+            try {
+                $groupingClasses = $this->wimsFileObjectCreator->createNewGroupingClassesFromObj($groupingClasses);
+                $this->em->persist($groupingClasses);
+                $this->em->flush();
+            } catch (\Exception $e) {
+                // En cas d'erreur lors de la création du dossier WIMS, on ne persiste pas l'entité
+                throw new \RuntimeException(
+                    "Erreur lors de la création du groupement de classes dans WIMS : " . $e->getMessage(),
+                    0,
+                    $e
+                );
+            }
         }
 
         return $groupingClasses;
