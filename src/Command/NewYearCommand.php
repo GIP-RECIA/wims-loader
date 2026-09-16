@@ -69,7 +69,7 @@ class NewYearCommand extends Command
 
     private function updateExpirationDate(): void
     {
-        $year = (int) date('Y');
+        $year = (int) date('Y') + 1;
         $expirationDate = sprintf('%d0815', $year);
 
         $envFile = $this->kernel->getProjectDir() . '/.env.local';
