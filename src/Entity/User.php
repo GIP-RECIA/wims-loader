@@ -39,26 +39,26 @@ class User implements UserInterface
     /**
      * @var list<string> The user roles
      */
-    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read', 'cohort:student-read'])]
     private array $roles = [];
 
-    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read', 'cohort:student-read'])]
     #[ORM\Column(length: 8)]
     private ?string $uid = null;
 
-    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read', 'cohort:student-read'])]
     #[ORM\Column(length: 60)]
     private ?string $firstName = null;
 
-    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read', 'cohort:student-read'])]
     #[ORM\Column(length: 60)]
     private ?string $lastName = null;
 
-    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read', 'cohort:student-read'])]
     #[ORM\Column(length: 60)]
     private ?string $mail = null;
 
-    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read'])]
+    #[Groups(['user:read', 'groupingclasses:read', 'cohort:read', 'cohort:student-read'])]
     private ?string $sirenCourant = null;
 
     /**

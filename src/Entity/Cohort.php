@@ -29,7 +29,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_GROUPINGCLASSES_NAME', fields: ['GroupingClasses', 'name', 'teacher'])]
 class Cohort
 {
-    #[Groups(['cohort:read'])]
+    #[Groups(['cohort:read', 'cohort:teacher-read', 'cohort:student-read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -40,20 +40,20 @@ class Cohort
     #[ORM\JoinColumn(nullable: false)]
     private ?GroupingClasses $groupingClasses = null;
 
-    #[Groups(['cohort:read'])]
+    #[Groups(['cohort:read', 'cohort:student-read'])]
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $teacher = null;
 
-    #[Groups(['cohort:read'])]
+    #[Groups(['cohort:read', 'cohort:teacher-read', 'cohort:student-read'])]
     #[ORM\Column]
     private ?int $idWims = null;
 
-    #[Groups(['cohort:read'])]
+    #[Groups(['cohort:read', 'cohort:teacher-read', 'cohort:student-read'])]
     #[ORM\Column(length: 50)]
     private ?string $name = null;
 
-    #[Groups(['cohort:read'])]
+    #[Groups(['cohort:read', 'cohort:teacher-read', 'cohort:student-read'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $lastSyncAt = null;
 
@@ -62,11 +62,11 @@ class Cohort
      *
      * @var string|null
      */
-    #[Groups(['cohort:read'])]
+    #[Groups(['cohort:read', 'cohort:teacher-read', 'cohort:student-read'])]
     #[ORM\Column(length: 255)]
     private ?string $subjects = null;
 
-    #[Groups(['cohort:read'])]
+    #[Groups(['cohort:read', 'cohort:teacher-read', 'cohort:student-read'])]
     #[ORM\Column]
     private ?CohortType $type = null;
 
