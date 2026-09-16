@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace App\Service;
 
 use App\Entity\Cohort;
@@ -36,7 +37,7 @@ class WimsFileObjectService
     public function __construct(
         private Environment $twig,
         private array $config,
-        private Filesystem  $filesystem = new Filesystem()
+        private Filesystem $filesystem = new Filesystem()
     ) {
     }
 
@@ -47,7 +48,7 @@ class WimsFileObjectService
      */
     public function getRootFolder(): string
     {
-       return $this->config['directory_structure'];
+        return $this->config['directory_structure'];
     }
 
     /**
@@ -896,7 +897,7 @@ class WimsFileObjectService
      *  groupement de classes est mal formé ou si la structure du groupement
      *  de classes est invalide
      */
-    private function isGroupingClassesExist(string $id): bool
+    public function isGroupingClassesExist(string $id): bool
     {
         $folder = $this->getRootFolder() . '/' . $id;
 

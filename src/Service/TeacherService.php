@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © 2024 GIP-RECIA (https://www.recia.fr/)
  *
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace App\Service;
 
 use App\Entity\Cohort;
@@ -40,12 +42,13 @@ class TeacherService
         private WimsFileObjectService $wims,
         private CohortNameService $cohortNameService,
         private LdapService $ldapService,
-    ) {}
+    ) {
+    }
 
     /**
      * Permet de récupérer les classes et les groupes pédagogiques d'un
      * enseignant dans le ldap
-     * 
+     *
      * Récupération par les attributs ENTAuxEnsClasses et ENTAuxEnsGroupes dans
      * le compte ldap de l'enseignant
      *
@@ -86,6 +89,14 @@ class TeacherService
             throw new AlreadyExistsException(
                 "La cohorte \"$cohortName\" de type " . Cohort::cohortTypeString($type)
                 . " pour l'enseignant \"" . $teacher->getFullName() . "\" existe déjà."
+            );
+        }
+
+        // Vérifier que le groupement de classes existe dans WIMS
+        if (!$this->wims->isGroupingClassesExist($groupingClasses->getIdWims())) {
+            throw new \RuntimeException(
+                "Le groupement de classes avec l'ID WIMS '" . $groupingClasses->getIdWims() .
+                "' n'existe pas dans le système de fichiers WIMS. Veuillez contacter l'administrateur."
             );
         }
 
@@ -168,11 +179,11 @@ class TeacherService
         $studentsBdd = $this->userRepo->findByUid($uidStudents);
         $students = [];
         $studentsToCreate = [];
-    
+
         foreach ($studentsBdd as $student) {
             $students[$student->getUid()] = $student;
         }
-    
+
         foreach ($uidStudents as $uidStudent) {
             if (!array_key_exists($uidStudent, $students)) {
                 $studentsToCreate[] = $uidStudent;
