@@ -110,11 +110,9 @@
                     </h2>
                 </div>
                 <div class="wimsmenu menu">
-                    {% if is_granted('ROLE_ADMIN') %}
                     <div class="menuitem">
                         <a href="{{ url('adminCohorts') }}"><span>{{ "menu.adminCohorts"|trans }} </span></a>
                     </div>
-                    {% endif %}
                 </div>
                 {% endif %}
                 {% if is_granted('IS_DEV_ENV') or is_granted('ROLE_ADMIN') %}
