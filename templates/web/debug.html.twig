@@ -12,7 +12,7 @@
 {% if dumpArray is defined %}
     {% for key, value in dumpArray %}
         <h2>{{ key }}</h2>
-        <pre>{{ value|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+        <pre>{{ value|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES')) }}</pre>
     {% endfor %}
 {% endif %}
 

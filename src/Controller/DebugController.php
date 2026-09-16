@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © 2024 GIP-RECIA (https://www.recia.fr/)
  *
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace App\Controller;
 
 use App\Repository\CohortRepository;
@@ -26,6 +28,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_USER')]
@@ -39,14 +42,15 @@ class DebugController extends AbstractWimsLoaderController
         private CohortRepository $cohortRepo,
         private TranslatorInterface $translator,
         private StudentService $studentService,
-    ) {}
+    ) {
+    }
 
     /**
      * Affichage des headers
      */
     #[Route(path:"/debug/infos", name:"debug_user")]
     #[Template('web/debug.html.twig')]
-    public function infos(Security $security): array
+    public function infos(Security $security, NormalizerInterface $serializer): array
     {
         $user = $this->getUserFromSecurity($security);
         $userLdap = $this->ldapService->findOneUserByUid($user->getUid());
@@ -54,9 +58,9 @@ class DebugController extends AbstractWimsLoaderController
         $groupingClasses = $this->groupingClassesRepo->findOneBySiren($user->getSirenCourant());
         $navigationBar = [['name' => $this->translator->trans('menu.debug')]];
         $dumpArray = [
-            $this->translator->trans('debug.categoryTitle.user') => $user,
-            $this->translator->trans('debug.categoryTitle.userDataLdap') => $userLdap,
-            $this->translator->trans('debug.categoryTitle.userDataBdd') => $userBdd,
+            $this->translator->trans('debug.categoryTitle.user') => $serializer->normalize($user),
+            $this->translator->trans('debug.categoryTitle.userDataLdap') => $serializer->normalize($userLdap),
+            $this->translator->trans('debug.categoryTitle.userDataBdd') => $serializer->normalize($userBdd),
         ];
 
         if ($groupingClasses !== null) {
@@ -66,7 +70,7 @@ class DebugController extends AbstractWimsLoaderController
             $classesTeacherBdd = $this->cohortRepo->findByGroupingClassesAndTeacher($groupingClasses, $user);
             $dumpArray[$this->translator->trans('debug.categoryTitle.cohortsDataBddForTeacher')] = $classesTeacherBdd;
         }
-        
+
         return [
             'navigationBar' => $navigationBar,
             'dumpArray' => $dumpArray,
@@ -83,7 +87,7 @@ class DebugController extends AbstractWimsLoaderController
         $navigationBar = [['name' => $this->translator->trans('menu.debug')]];
         ob_start();
         phpinfo();
-        $phpinfo = ob_get_contents ();
+        $phpinfo = ob_get_contents();
         ob_end_clean();
 
         return [
