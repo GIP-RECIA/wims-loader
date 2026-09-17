@@ -963,7 +963,7 @@ class WimsFileObjectService
      *  groupement de classes est mal formé ou si la structure du groupement
      *  de classes est invalide
      */
-    private function isClassExist(string $id, string $idClass): bool
+    public function isClassExist(string $id, string $idClass): bool
     {
         $folder = $this->getRootFolder() . '/' . $id . '/' . $idClass;
 

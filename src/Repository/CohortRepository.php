@@ -110,14 +110,14 @@ class CohortRepository extends ServiceEntityRepository
     /**
      * Retourne la liste de toutes les cohortes
      *
-     * @return Cohort[] La liste de toutes les cohortes
+     * @return array La liste de toutes les cohortes
      */
     public function findAllData(): array
     {
         return $this->createQueryBuilder('c')
             ->innerJoin('c.groupingClasses', 'gc')
             ->innerJoin('c.teacher', 't')
-            ->select('gc.name as gc_name, gc.uai as uai, c.name as c_name, t.lastName as lastName, t.firstName as firstName, c.subjects as subjects, CONCAT(gc.idWims, \'/\', c.idWims) as id_wims, c.type as type, c.id as id')
+            ->select('gc.name as gc_name, gc.uai as uai, c.name as c_name, t.lastName as lastName, t.firstName as firstName, c.subjects as subjects, CONCAT(gc.idWims, \'/\', c.idWims) as id_wims, c.type as type, c.id as id, c.idWims as cohort_id_wims, gc.idWims as groupingClasses_id_wims')
             ->groupBy('c.id')
             ->getQuery()
             ->getArrayResult();
