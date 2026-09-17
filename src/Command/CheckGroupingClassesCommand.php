@@ -58,10 +58,17 @@ class CheckGroupingClassesCommand extends Command
         $missing = [];
         $existing = [];
 
-        $io->progressStart($total);
+        // Afficher la barre uniquement dans un terminal interactif
+        $showProgress = $output->isDecorated();
+
+        if ($showProgress) {
+            $io->progressStart($total);
+        }
 
         foreach ($groupingClassesList as $groupingClasses) {
-            $io->progressAdvance();
+            if ($showProgress) {
+                $io->progressAdvance();
+            }
 
             $idWims = $groupingClasses->getIdWims();
 
@@ -95,7 +102,9 @@ class CheckGroupingClassesCommand extends Command
             }
         }
 
-        $io->progressFinish();
+        if ($showProgress) {
+            $io->progressFinish();
+        }
 
         if ($error) {
             $io->error('Des incohérences ont été détectées');

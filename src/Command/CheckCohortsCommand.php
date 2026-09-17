@@ -61,10 +61,17 @@ class CheckCohortsCommand extends Command
         $missing = [];
         $existing = [];
 
-        $io->progressStart($total);
+        // Afficher la barre uniquement dans un terminal interactif
+        $showProgress = $output->isDecorated();
+
+        if ($showProgress) {
+            $io->progressStart($total);
+        }
 
         foreach ($cohortsList as $cohort) {
-            $io->progressAdvance();
+            if ($showProgress) {
+                $io->progressAdvance();
+            }
 
             $idWims = $cohort['id_wims'];
 
@@ -109,7 +116,9 @@ class CheckCohortsCommand extends Command
             }
         }
 
-        $io->progressFinish();
+        if ($showProgress) {
+            $io->progressFinish();
+        }
 
         if ($error) {
             $io->error('Des incohérences ont été détectées');
