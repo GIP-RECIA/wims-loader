@@ -20,6 +20,7 @@ namespace App\Command;
 use App\Repository\CohortRepository;
 use App\Repository\GroupingClassesRepository;
 use App\Service\WimsFileObjectService;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -78,22 +79,33 @@ class CheckCohortsCommand extends Command
                 continue;
             }
 
-            if (!$this->wimsFileObjectService->isClassExist($cohort['groupingClasses_id_wims'], $cohort['cohort_id_wims'])) {
+            try {
+                if (!$this->wimsFileObjectService->isClassExist($cohort['groupingClasses_id_wims'], $cohort['cohort_id_wims'])) {
+                    $missing[] = [
+                        'name' => $cohort['c_name'],
+                        'etab' => $cohort['gc_name'],
+                        'uai' => $cohort['uai'],
+                        'id_wims' => $idWims,
+                        'reason' => 'Dossier absent dans le système de fichiers'
+                    ];
+                    $error = true;
+                } else {
+                    $existing[] = [
+                        'name' => $cohort['c_name'],
+                        'etab' => $cohort['gc_name'],
+                        'uai' => $cohort['uai'],
+                        'id_wims' => $idWims,
+                    ];
+                }
+            } catch (Exception $e) {
                 $missing[] = [
                     'name' => $cohort['c_name'],
                     'etab' => $cohort['gc_name'],
                     'uai' => $cohort['uai'],
                     'id_wims' => $idWims,
-                    'reason' => 'Dossier absent dans le système de fichiers'
+                    'reason' => 'Erreur lors de la vérification: ' . $e->getMessage()
                 ];
                 $error = true;
-            } else {
-                $existing[] = [
-                    'name' => $cohort['c_name'],
-                    'etab' => $cohort['gc_name'],
-                    'uai' => $cohort['uai'],
-                    'id_wims' => $idWims,
-                ];
             }
         }
 
@@ -101,7 +113,7 @@ class CheckCohortsCommand extends Command
 
         if ($error) {
             $io->error('Des incohérences ont été détectées');
-            $io->section('Établissements manquants ou incorrects');
+            $io->section('Classes ou groupes pédagogiques manquantes ou incorrectes');
 
             $rows = [];
             foreach ($missing as $item) {
@@ -119,12 +131,12 @@ class CheckCohortsCommand extends Command
                 $rows
             );
 
-            $io->note(sprintf('%d établissement(s) sur %d sont incorrects', count($missing), $total));
+            $io->note(sprintf('%d classe(s) ou groupe(s) pédagogique(s) sur %d sont incorrects', count($missing), $total));
 
             return Command::FAILURE;
         }
 
-        $io->success(sprintf('Tous les %d établissements sont cohérents', $total));
+        $io->success(sprintf('Toutes les %d classes et tous les groupes pédagogiques sont cohérents', $total));
 
         return Command::SUCCESS;
     }
