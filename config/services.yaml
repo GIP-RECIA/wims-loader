@@ -69,6 +69,15 @@ services:
                 encryption: '%env(string:LDAP_ENCRYPTION)%'
                 dn: '%env(string:LDAP_DN)%'
                 password: '%env(string:LDAP_PASSWORD)%'
+    
+    App\Command\CheckConnectionsCommand:
+        arguments:
+            $ldapConfig:
+                host: '%env(string:LDAP_HOSTNAME)%'
+                port: '%env(int:LDAP_PORT)%'
+                encryption: '%env(string:LDAP_ENCRYPTION)%'
+                dn: '%env(string:LDAP_DN)%'
+                password: '%env(string:LDAP_PASSWORD)%'
 
     App\Security\UserProvider:
         arguments:

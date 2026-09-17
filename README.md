@@ -38,3 +38,15 @@ Voici les variables a définir dans ce fichier et leurs fonctions :
 * `GLOBAL_MESSAGE` : Si cette variable existe, contient un message qui s'affichera sur toutes les pages
 * `MAINTENANCE_MODE` : Si cette variable existe et qu'elle vaut `true`, active le mode maintenance qui bloque toutes les pages pour afficher un message de maintenance
 * `MAINTENANCE_MESSAGE` : Si cette variable existe, contient un message de maintenance qui vient remplacer celui par défaut quand le mode maintenance est actif
+
+## Les commandes
+
+wims-loader vient avec un ensemble de commandes pour le gérer et contrôler que tout va bien.
+
+* `wims-loader-check-all` : Réalise tous les contrôles sauf `check-cohort`
+* `wims-loader:check-cohort <cohort-id>` : Vérifie que tout est normal pour la cohorte indiquée
+* `wims-loader:check-cohorts` : Vérifie que toutes les cohortes existent bien côté wims
+* `wims-loader:check-connections` : Vérifie la connexion au ldap et a la base
+* `wims-loader:check-grouping-classes` : Vérifie que tous les établissement existent côté wims
+* `wims-loader:create-modtool-account <uidOrMail>` : Récupére les informations de l'utilisateur dans le ldap et créé son compte modtool
+* `wims-loader:new-year` : Procédure de nettoyage de wims-loader pour commencer une nouvelle année
