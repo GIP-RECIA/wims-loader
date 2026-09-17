@@ -7,6 +7,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -67,6 +68,11 @@ final class CheckAllCommand extends Command
             $io->success('Tous les checks sont OK.');
         } else {
             $io->error('Au moins un check a échoué.');
+            
+            if ($output instanceof ConsoleOutputInterface) {
+                $errorOutput = $output->getErrorOutput();
+                $errorOutput->writeln('Des incohérences ont été détectées avec wims-loader, merci de vérifier.');
+            }
         }
 
         return $exitCode;
