@@ -1220,7 +1220,14 @@ class WimsFileObjectService
             $file = $folder.'/'.$fileName;
             $template = $this->twig->load('structure/'.$fileName.'.twig');
             $content = self::utf8ToWindows1252($template->render($data));
-            file_put_contents($file, $content);
+            
+            // S'assurer que le fichier est créé même si le contenu est vide
+            if ($content === '') {
+                $this->filesystem->touch($file);
+            } else {
+                file_put_contents($file, $content);
+            }
+            
             $this->filesystem->chmod($file, $this->config['file_right']);
         }
     }
